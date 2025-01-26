@@ -26,8 +26,8 @@
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import StartScreen from "./StartScreen";
-import ChooseFlagSystem from "./(SessionOwner)/(CreateFlow)/ChooseFlagSystem";
-import { Colors } from "../Constants/Colors";
+import ChooseFlagSystem from "./SessionOwner/CreateFlow/ChooseFlagSystem";
+import AddParticipants from "./SessionOwner/CreateFlow/AddParticipants";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +42,7 @@ export function RootStack() {
     >
       <Stack.Screen name="Start" component={StartScreen} />
       <Stack.Screen name="ChooseFlagSystem" component={ChooseFlagSystem} />
+      <Stack.Screen name="AddParticipants" component={AddParticipants} />
     </Stack.Navigator>
   );
 }

@@ -1,11 +1,23 @@
 import Button from "@/app/Components/Button";
 import { Colors } from "@/app/Constants/Colors";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
+import { ParamListBase } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "expo-router";
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 function ChooseFlagSystem() {
+  const { navigate } =
+    useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
+  const handlePress = (id: string) => {
+    if (id === "red-flag") {
+      navigate("AddParticipants");
+    } else {
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View>
@@ -14,14 +26,12 @@ function ChooseFlagSystem() {
       <View>
         <Button
           text="Red Flag"
-          id="red-flag"
-          onPress={() => {}}
+          onPress={() => handlePress("red-flag")}
           styles={{ button: styles.redButton }}
         />
         <Button
           text="Green Flag"
-          id="green-flag"
-          onPress={() => {}}
+          onPress={() => handlePress("green-flag")}
           styles={{ button: styles.greenButton }}
         />
       </View>
@@ -34,10 +44,8 @@ const styles = StyleSheet.create({
     ...generic.container,
   },
   title: {
-    ...fontStyles.large,
-    color: Colors.white,
+    ...generic.title,
     bottom: 40,
-    alignSelf: "center",
   },
   redButton: {
     backgroundColor: Colors.red,

@@ -11,67 +11,27 @@ import {
 import { Colors } from "../Constants/Colors";
 import { fontStyles } from "../Constants/GenericStyles";
 
-const sizes: {
-  large: {
-    button: ViewStyle;
-    text: TextStyle;
-  };
-  medium: {
-    button: ViewStyle;
-    text: TextStyle;
-  };
-} = {
-  large: {
-    button: {
-      paddingHorizontal: 30, // Wider button for a sleek look
-      paddingVertical: 15, // Adjust height
-    },
-    text: {
-      ...fontStyles.medium,
-    },
-  },
-  medium: {
-    button: {
-      paddingHorizontal: 15,
-      paddingVertical: 12,
-    },
-    text: {
-      ...fontStyles.small,
-    },
-  },
-};
-
-type SizeVariant = "large" | "medium";
-
 type Props = {
   text: string;
-  onPress: () => void;
+  id: string;
+  onPress: (id: string) => void;
   color?: string;
   styles?: { button?: StyleProp<ViewStyle>; buttonText?: StyleProp<TextStyle> };
-  sizeVariant?: SizeVariant;
 };
 
 function Button({
   text,
   onPress,
-  sizeVariant = "large",
+  id,
   styles: customStyles = { button: {}, buttonText: {} },
 }: Props) {
   return (
     <TouchableOpacity
-      style={[styles.button, sizes[sizeVariant].button, customStyles.button]}
+      style={[styles.button, customStyles.button]}
       activeOpacity={0.7}
-      onPress={onPress}
+      onPress={() => onPress(id)}
     >
-      <Text
-        style={[
-          styles.buttonText,
-          sizes[sizeVariant].text,
-          customStyles.buttonText,
-        ]}
-      >
-        {text}
-      </Text>
+      <Text style={[styles.buttonText, customStyles.buttonText]}>{text}</Text>
     </TouchableOpacity>
   );
 }
@@ -87,9 +47,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2, // Subtle shadow
     shadowRadius: 6,
     elevation: 5, // For Android shadow
+    paddingHorizontal: 30, // Wider button for a sleek look
+    paddingVertical: 15, // Adjust height
   },
   buttonText: {
     color: Colors.white,
+    fontSize: fontStyles.medium.fontSize, // Slightly smaller, more modern
     fontWeight: "600", // Less bold for a refined appearance
     textTransform: "uppercase", // Modern touch
     letterSpacing: 1, // Cleaner spacing between letters

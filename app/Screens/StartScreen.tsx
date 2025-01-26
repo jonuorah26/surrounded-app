@@ -1,9 +1,9 @@
-import { StyleSheet, View, Text, GestureResponderEvent } from "react-native";
+import { StyleSheet, View, GestureResponderEvent } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "../Components/Button";
 import PlaceholderLogo from "../Components/PlaceholderLogo";
 import { useRouter } from "expo-router";
-import { generic } from "../Constants/GenericStyles";
+import { fontStyles, generic } from "../Constants/GenericStyles";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Colors } from "../Constants/Colors";
@@ -19,6 +19,7 @@ export default function Start() {
     } else {
     }
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.logo}>
@@ -27,13 +28,11 @@ export default function Start() {
       <View style={styles.containerButtons}>
         <Button
           text="Create A Session"
-          id={"create-session"}
-          onPress={handlePress}
+          onPress={() => handlePress("create-session")}
         />
         <Button
           text="Join A Session"
-          id={"join-session"}
-          onPress={handlePress}
+          onPress={() => handlePress("join-session")}
         />
       </View>
     </View>
@@ -45,9 +44,9 @@ const styles = StyleSheet.create({
     ...generic.container,
   },
   containerButtons: {
-    bottom: 40,
+    bottom: 30,
   },
   logo: {
-    bottom: 100,
+    bottom: 90,
   },
 });
