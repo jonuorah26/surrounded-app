@@ -4,17 +4,23 @@ import Button from "../Components/Button";
 import PlaceholderLogo from "../Components/PlaceholderLogo";
 import { useRouter } from "expo-router";
 import { generic } from "../Constants/GenericStyles";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Colors } from "../Constants/Colors";
 
 export default function Start() {
-  const { push, navigate } = useRouter();
+  //const { push, navigate } = useRouter();
+  const { navigate } =
+    useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const handlePress = (id: string) => {
     if (id === "create-session") {
-      push("/Screens/(SessionOwner)/(CreateFlow)/ChooseFlagSystem");
+      // navigate("/Screens/(SessionOwner)/(CreateFlow)/ChooseFlagSystem");
+      navigate("ChooseFlagSystem");
     } else {
     }
   };
   return (
-    <View style={generic.container}>
+    <View style={styles.container}>
       <View style={styles.logo}>
         <PlaceholderLogo />
       </View>
@@ -35,6 +41,9 @@ export default function Start() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    ...generic.container,
+  },
   containerButtons: {
     bottom: 40,
   },

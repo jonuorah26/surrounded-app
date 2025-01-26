@@ -1,18 +1,47 @@
-import { Stack } from "expo-router";
+// import { Stack } from "expo-router";
+// import { Colors } from "../Constants/Colors";
+// import { View } from "react-native";
+// import { generic } from "../Constants/GenericStyles";
 
-export default function Layout() {
+// export default function Layout() {
+//   return (
+//     // <Stack screenOptions={{ headerShown: false }}>
+//     //   <Stack.Screen name="StartScreen" />
+//     // </Stack>
+//     <Stack
+//       screenOptions={{
+//         headerBackButtonDisplayMode: "default",
+//         headerShown: false,
+//         headerStyle: {
+//           backgroundColor: "transparent",
+//         },
+//         contentStyle: { flex: 1, backgroundColor: "transparent" },
+//       }}
+//     >
+//       <Stack.Screen name="StartScreen" />
+//       <Stack.Screen name="(SessionOwner)" />
+//     </Stack>
+//   );
+// }
+
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import StartScreen from "./StartScreen";
+import ChooseFlagSystem from "./(SessionOwner)/(CreateFlow)/ChooseFlagSystem";
+import { Colors } from "../Constants/Colors";
+
+const Stack = createNativeStackNavigator();
+
+export function RootStack() {
   return (
-    // <Stack screenOptions={{ headerShown: false }}>
-    //   <Stack.Screen name="StartScreen" />
-    // </Stack>
-    <Stack
+    <Stack.Navigator
       screenOptions={{
-        headerBackButtonDisplayMode: "default",
-        headerShown: false,
+        headerTransparent: true,
+        title: "",
+        headerBackButtonDisplayMode: "minimal", // Show a minimal back button
       }}
     >
-      <Stack.Screen name="StartScreen" />
-      <Stack.Screen name="(SessionOwner)" />
-    </Stack>
+      <Stack.Screen name="Start" component={StartScreen} />
+      <Stack.Screen name="ChooseFlagSystem" component={ChooseFlagSystem} />
+    </Stack.Navigator>
   );
 }

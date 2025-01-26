@@ -4,24 +4,34 @@ import {
   StyleSheet,
   Text,
   GestureResponderEvent,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
 } from "react-native";
 import { Colors } from "../Constants/Colors";
+import { fontStyles } from "../Constants/GenericStyles";
 
 type Props = {
   text: string;
   id: string;
   onPress: (id: string) => void;
   color?: string;
+  styles?: { button?: StyleProp<ViewStyle>; buttonText?: StyleProp<TextStyle> };
 };
 
-function Button({ text, onPress, id }: Props) {
+function Button({
+  text,
+  onPress,
+  id,
+  styles: customStyles = { button: {}, buttonText: {} },
+}: Props) {
   return (
     <TouchableOpacity
-      style={styles.button}
+      style={[styles.button, customStyles.button]}
       activeOpacity={0.7}
       onPress={() => onPress(id)}
     >
-      <Text style={styles.buttonText}>{text}</Text>
+      <Text style={[styles.buttonText, customStyles.buttonText]}>{text}</Text>
     </TouchableOpacity>
   );
 }
@@ -42,7 +52,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.white,
-    fontSize: 25, // Slightly smaller, more modern
+    fontSize: fontStyles.medium.fontSize, // Slightly smaller, more modern
     fontWeight: "600", // Less bold for a refined appearance
     textTransform: "uppercase", // Modern touch
     letterSpacing: 1, // Cleaner spacing between letters

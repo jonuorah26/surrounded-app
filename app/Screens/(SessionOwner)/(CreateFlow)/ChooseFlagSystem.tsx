@@ -1,19 +1,29 @@
 import Button from "@/app/Components/Button";
 import { Colors } from "@/app/Constants/Colors";
-import { generic } from "@/app/Constants/GenericStyles";
+import { fontStyles, generic } from "@/app/Constants/GenericStyles";
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function ChooseFlagSystem() {
   return (
-    <View style={[generic.container]}>
+    <View style={styles.container}>
       <View>
-        <Text>Choose A Flag System</Text>
+        <Text style={styles.title}>Choose A Flag System</Text>
       </View>
       <View>
-        <Button text="Red Flag" id="red-flag" onPress={() => {}} />
-        <Button text="Green Flag" id="red-flag" onPress={() => {}} />
+        <Button
+          text="Red Flag"
+          id="red-flag"
+          onPress={() => {}}
+          styles={{ button: styles.redButton }}
+        />
+        <Button
+          text="Green Flag"
+          id="green-flag"
+          onPress={() => {}}
+          styles={{ button: styles.greenButton }}
+        />
       </View>
     </View>
   );
@@ -21,8 +31,19 @@ function ChooseFlagSystem() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: Colors.blue,
+    ...generic.container,
+  },
+  title: {
+    ...fontStyles.large,
+    color: Colors.white,
+    bottom: 40,
+    alignSelf: "center",
+  },
+  redButton: {
+    backgroundColor: Colors.red,
+  },
+  greenButton: {
+    backgroundColor: Colors.green,
   },
   containerButtons: {
     bottom: 40,
