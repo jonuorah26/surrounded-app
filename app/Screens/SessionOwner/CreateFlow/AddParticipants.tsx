@@ -14,6 +14,9 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import Button from "@/app/Components/Button";
 import { preventAutoHideAsync } from "expo-splash-screen";
 import FlagIndicator from "@/app/Components/FlagIndicator";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import ContinueButton from "@/app/Components/ContinueButton";
 
 function AddParticipants() {
   const [checked, setChecked] = useState<"checked" | "unchecked">("unchecked");
@@ -22,6 +25,8 @@ function AddParticipants() {
     min: undefined | string;
     max: undefined | string;
   }>({ min: undefined, max: undefined });
+  const { navigate } =
+    useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   const handleCheck = () => {
     if (checked === "checked") {
@@ -57,6 +62,8 @@ function AddParticipants() {
       );
     } else if (parseInt(values.max) < parseInt(values.min)) {
       alert("Minimum participant count cannot be greater than the maximum");
+    } else {
+      navigate("Threshold");
     }
   };
 
@@ -90,7 +97,12 @@ function AddParticipants() {
                 mode="outlined"
                 keyboardType="number-pad"
                 style={styles.textInput}
-                outlineStyle={styles.InputBorder}
+                outlineStyle={{
+                  ...styles.InputBorder,
+                  borderColor: maxInputDisabled
+                    ? Colors.disabledGray
+                    : Colors.yellow,
+                }}
                 disabled={maxInputDisabled}
                 value={values.max}
                 onChangeText={(e) => handleTextInput(e, "max")}
@@ -111,12 +123,7 @@ function AddParticipants() {
               />
             </View>
           </View>
-          <Button
-            text="Continue"
-            onPress={handleContinue}
-            styles={{ button: styles.button, buttonText: styles.buttonText }}
-            sizeVariant="medium"
-          />
+          <ContinueButton onPress={handleContinue} />
         </KeyboardAwareScrollView>
       </View>
     </View>
@@ -145,19 +152,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     width: "40%",
     alignSelf: "center",
+    textAlign: "center",
   },
-
   InputBorder: {
     borderColor: Colors.yellow,
     borderRadius: 20,
   },
-  button: {
-    alignSelf: "flex-end",
-    position: "absolute",
-    top: 700,
-    right: 10,
-  },
-  buttonText: {},
 });
 
 export default AddParticipants;
