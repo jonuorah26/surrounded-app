@@ -1,38 +1,22 @@
-// import { Stack } from "expo-router";
-// import { Colors } from "../Constants/Colors";
-// import { View } from "react-native";
-// import { generic } from "../Constants/GenericStyles";
-
-// export default function Layout() {
-//   return (
-//     // <Stack screenOptions={{ headerShown: false }}>
-//     //   <Stack.Screen name="StartScreen" />
-//     // </Stack>
-//     <Stack
-//       screenOptions={{
-//         headerBackButtonDisplayMode: "default",
-//         headerShown: false,
-//         headerStyle: {
-//           backgroundColor: "transparent",
-//         },
-//         contentStyle: { flex: 1, backgroundColor: "transparent" },
-//       }}
-//     >
-//       <Stack.Screen name="StartScreen" />
-//       <Stack.Screen name="(SessionOwner)" />
-//     </Stack>
-//   );
-// }
-
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationProp,
+} from "@react-navigation/native-stack";
 import StartScreen from "./StartScreen";
 import ChooseFlagSystem from "./SessionOwner/CreateFlow/ChooseFlagSystem";
 import AddParticipants from "./SessionOwner/CreateFlow/AddParticipants";
 import ThresholdScreen from "./SessionOwner/CreateFlow/RedFlag/ThresholdScreen";
 import { Colors } from "../Constants/Colors";
 import SessionKeyGeneratedScreen from "./SessionOwner/CreateFlow/SessionKeyGeneratedScreen";
+import AllowParticipantsDuringSession from "./SessionOwner/CreateFlow/AllowParticipantsDuringSession";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { fontStyles } from "../Constants/GenericStyles";
+import { Alert, TouchableOpacity } from "react-native";
+import ModeratorScreen from "./SessionOwner/ModeratorScreen";
 
 const Stack = createNativeStackNavigator();
+export type StackNavigation = NativeStackNavigationProp<ParamListBase>;
 
 export function RootStack() {
   return (
@@ -44,13 +28,56 @@ export function RootStack() {
         headerTintColor: Colors.yellow,
       }}
     >
-      <Stack.Screen name="Start" component={StartScreen} />
+      <Stack.Screen name="ModeratorScreen" component={ModeratorScreen} />
+      <Stack.Screen
+        name="Start"
+        component={StartScreen}
+        options={{ gestureEnabled: false, headerBackVisible: false }}
+      />
       <Stack.Screen name="ChooseFlagSystem" component={ChooseFlagSystem} />
       <Stack.Screen name="AddParticipants" component={AddParticipants} />
+      <Stack.Screen
+        name={"AllowParticipantsDuringSession"}
+        component={AllowParticipantsDuringSession}
+      />
       <Stack.Screen name="Threshold" component={ThresholdScreen} />
       <Stack.Screen
         name="SessionKeyGenerated"
         component={SessionKeyGeneratedScreen}
+        options={{
+          headerLeft: () => {
+            const router = useNavigation<StackNavigation>();
+
+            const handleExit = () => {
+              Alert.alert(
+                "Alert",
+                "Exiting will end the session. Are you sure you want to leave?",
+                [
+                  {
+                    text: "Yes",
+                    onPress: () => router.navigate("Start"),
+                    style: "destructive",
+                  },
+                  {
+                    text: "No",
+                    style: "cancel",
+                  },
+                ]
+              );
+            };
+
+            return (
+              <TouchableOpacity onPress={handleExit}>
+                <MaterialIcons
+                  name="exit-to-app"
+                  size={fontStyles.large.fontSize + 2}
+                  color={Colors.yellow}
+                />
+              </TouchableOpacity>
+            );
+          },
+          gestureEnabled: false,
+        }}
       />
     </Stack.Navigator>
   );

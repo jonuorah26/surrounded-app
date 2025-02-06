@@ -3,6 +3,7 @@ import { NavigationIndependentTree } from "@react-navigation/native";
 import { RootStack } from "./Screens/_layout";
 import { View, StyleSheet } from "react-native";
 import { DefaultTheme, PaperProvider } from "react-native-paper";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const theme = {
   ...DefaultTheme,
@@ -23,11 +24,13 @@ const theme = {
 export default function Index() {
   return (
     <View style={styles.container}>
-      <PaperProvider theme={theme}>
-        <NavigationIndependentTree>
-          <RootStack />
-        </NavigationIndependentTree>
-      </PaperProvider>
+      <SafeAreaProvider>
+        <PaperProvider theme={theme}>
+          <NavigationIndependentTree>
+            <RootStack />
+          </NavigationIndependentTree>
+        </PaperProvider>
+      </SafeAreaProvider>
     </View>
   );
 }

@@ -7,11 +7,11 @@ import { fontStyles, generic } from "../Constants/GenericStyles";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Colors } from "../Constants/Colors";
+import { StackNavigation } from "./_layout";
 
 export default function Start() {
   //const { push, navigate } = useRouter();
-  const { navigate } =
-    useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const { navigate } = useNavigation<StackNavigation>();
   const handlePress = (id: string) => {
     if (id === "create-session") {
       // navigate("/Screens/(SessionOwner)/(CreateFlow)/ChooseFlagSystem");
@@ -44,9 +44,9 @@ const styles = StyleSheet.create({
     ...generic.container,
   },
   containerButtons: {
-    bottom: 30,
+    bottom: "4%",
   },
   logo: {
-    bottom: 90,
+    bottom: "11%",
   },
 });

@@ -1,31 +1,36 @@
 import { StyleSheet, TextStyle } from "react-native";
 import { Colors } from "./Colors";
+import { scaleFont } from "./Dimensions";
+
+const basic: TextStyle = {
+  color: Colors.white,
+  fontWeight: "600",
+};
 
 export const fontStyles = StyleSheet.create({
+  xlarge: {
+    ...basic,
+    fontSize: scaleFont(55),
+  },
   large: {
-    color: Colors.white,
-    fontSize: 30,
-    fontWeight: "600",
+    ...basic,
+    fontSize: scaleFont(33),
   },
   medium: {
-    color: Colors.white,
-    fontSize: 25,
-    fontWeight: "600",
+    ...basic,
+    fontSize: scaleFont(28),
   },
   small: {
-    color: Colors.white,
-    fontSize: 20,
-    fontWeight: "600",
+    ...basic,
+    fontSize: scaleFont(23),
   },
   xsmall: {
-    color: Colors.white,
-    fontSize: 15,
-    fontWeight: "600",
+    ...basic,
+    fontSize: scaleFont(18),
   },
   xxsmall: {
-    color: Colors.white,
-    fontSize: 10,
-    fontWeight: "600",
+    ...basic,
+    fontSize: scaleFont(13),
   },
 });
 

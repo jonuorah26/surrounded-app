@@ -1,6 +1,7 @@
 import ContinueButton from "@/app/Components/ContinueButton";
 import FlagIndicator from "@/app/Components/FlagIndicator";
 import { Colors } from "@/app/Constants/Colors";
+import { scaleHeight, scaleWidth, SH } from "@/app/Constants/Dimensions";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
 import { ParamListBase } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -27,81 +28,84 @@ function ThresholdScreen() {
   };
 
   const handleContinue = () => {
-    var proceed = true;
     if (value === "") {
       alert("Please select an option.");
-      proceed = false;
+      return;
     } else if (value === "custom") {
       if (!!custom === false) {
         alert('Please enter a value if using "Custom" option.');
-        proceed = false;
+        return;
       } else if (parseInt(custom) === 0) {
         alert('"Custom" value cannot be less than 1');
-        proceed = false;
+        return;
       }
     }
 
-    if (proceed) {
-      navigate("SessionKeyGenerated");
-    }
+    navigate("SessionKeyGenerated");
   };
 
   return (
-    <View style={generic.container}>
-      <FlagIndicator color={Colors.red} />
-      <View style={{ flex: 1, zIndex: 2, elevation: 2 }}>
+    <View style={[generic.container]}>
+      <View style={{ flex: 1 }}>
+        <FlagIndicator color={Colors.red} />
+      </View>
+      <View style={{ flex: 20, zIndex: 2, elevation: 2 }}>
         <KeyboardAwareScrollView
           contentContainerStyle={styles.scrollContainer}
           enableOnAndroid={true} // Smooth behavior on Android
           keyboardShouldPersistTaps="handled" // Allows taps even when the keyboard is open
           extraScrollHeight={20} // Ensures extra spacing for inputs near the keyboard
         >
-          <View style={styles.container}>
-            <Text style={styles.title}>Vote Out Threshold</Text>
-            <RadioButton.Group
-              onValueChange={(newValue) =>
-                handleValueChange(newValue as RadioValue)
-              }
-              value={value}
-            >
-              <View style={styles.radioContainer}>
-                <RadioButton.Item
-                  label="Majority of Participants"
-                  value="majority"
-                  color={Colors.yellow}
-                  labelStyle={styles.label}
-                  style={styles.radioItem}
-                  mode="android"
-                  position="leading"
-                />
-                <View>
+          <View style={[styles.container, { flex: 1 }]}>
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <Text style={styles.title}>Vote Out Threshold</Text>
+            </View>
+            <View style={{ flex: 2 }}>
+              <RadioButton.Group
+                onValueChange={(newValue) =>
+                  handleValueChange(newValue as RadioValue)
+                }
+                value={value}
+              >
+                <View style={styles.radioContainer}>
                   <RadioButton.Item
-                    label="Custom"
-                    value="custom"
+                    label="Majority of Participants"
+                    value="majority"
                     color={Colors.yellow}
-                    style={styles.radioItem}
                     labelStyle={styles.label}
+                    style={styles.radioItem}
                     mode="android"
                     position="leading"
                   />
-                  <TextInput
-                    mode="outlined"
-                    keyboardType="number-pad"
-                    style={styles.textInput}
-                    outlineStyle={{
-                      ...styles.InputBorder,
-                      borderColor:
-                        value === "custom"
-                          ? Colors.yellow
-                          : Colors.disabledGray,
-                    }}
-                    disabled={value !== "custom"}
-                    value={custom}
-                    onChangeText={(text) => setCustom(text)}
-                  />
+                  <View>
+                    <RadioButton.Item
+                      label="Custom"
+                      value="custom"
+                      color={Colors.yellow}
+                      style={styles.radioItem}
+                      labelStyle={styles.label}
+                      mode="android"
+                      position="leading"
+                    />
+                    <TextInput
+                      mode="outlined"
+                      keyboardType="number-pad"
+                      style={styles.textInput}
+                      outlineStyle={{
+                        ...styles.InputBorder,
+                        borderColor:
+                          value === "custom"
+                            ? Colors.yellow
+                            : Colors.disabledGray,
+                      }}
+                      disabled={value !== "custom"}
+                      value={custom}
+                      onChangeText={(text) => setCustom(text)}
+                    />
+                  </View>
                 </View>
-              </View>
-            </RadioButton.Group>
+              </RadioButton.Group>
+            </View>
           </View>
           <ContinueButton onPress={handleContinue} />
         </KeyboardAwareScrollView>
@@ -122,26 +126,36 @@ const styles = StyleSheet.create({
   },
   title: {
     ...generic.title,
-    bottom: 80,
+    //bottom: 80,
+    //bottom: "30%",
+    //bottom: scaleHeight(140),
+    //bottom: SH(0.14),
   },
   label: {
     ...fontStyles.medium,
     fontSize: fontStyles.large.fontSize - 3,
-    margin: 10,
+    //margin: 10,
+    //margin: "3%",
+    margin: scaleHeight(10),
     textAlign: "left",
-    padding: 10,
-    top: 3,
+    //padding: 10,
+    //padding: "2%",
+    padding: scaleHeight(8),
+    //top: "5%",
+    top: scaleHeight(4),
     marginLeft: 0,
   },
   radioItem: {},
   radioContainer: {
     alignItems: "center",
-    gap: 20,
+    //gap: 20,
+    gap: scaleHeight(30),
   },
   textInput: {
-    width: 100,
+    //width: 100,
+    width: scaleWidth(100),
     alignSelf: "center",
-    left: 15,
+    left: "5%",
     textAlign: "center",
   },
   InputBorder: {

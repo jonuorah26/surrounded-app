@@ -7,6 +7,7 @@ import {
   StyleProp,
   ViewStyle,
   TextStyle,
+  Pressable,
 } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { fontStyles } from "../Constants/GenericStyles";
@@ -49,6 +50,7 @@ type Props = {
   color?: string;
   styles?: { button?: StyleProp<ViewStyle>; buttonText?: StyleProp<TextStyle> };
   sizeVariant?: SizeVariant;
+  disabled?: boolean;
 };
 
 function Button({
@@ -56,12 +58,20 @@ function Button({
   onPress,
   sizeVariant = "large",
   styles: customStyles = { button: {}, buttonText: {} },
+  disabled = false,
 }: Props) {
   return (
-    <TouchableOpacity
-      style={[styles.button, sizes[sizeVariant].button, customStyles.button]}
-      activeOpacity={0.7}
+    <Pressable
+      // style={[styles.button, sizes[sizeVariant].button, customStyles.button]}
+      style={({ pressed }) => [
+        { opacity: pressed ? 0.5 : 1 },
+        styles.button,
+        sizes[sizeVariant].button,
+        customStyles.button,
+      ]}
+      //activeOpacity={0.7}
       onPress={onPress}
+      disabled={disabled}
     >
       <Text
         style={[
@@ -72,7 +82,7 @@ function Button({
       >
         {text}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

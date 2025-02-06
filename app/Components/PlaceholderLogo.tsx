@@ -1,6 +1,8 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { Colors } from "../Constants/Colors";
+import { fontStyles } from "../Constants/GenericStyles";
+import { scaleArea, scaleHeight, scaleWidth } from "../Constants/Dimensions";
 
 function PlaceholderLogo() {
   return (
@@ -24,16 +26,19 @@ const styles = StyleSheet.create({
   logoContainer: {
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 10,
+    //paddingVertical: 10,
+    paddingVertical: "3%",
   },
   circle: {
-    width: 200, // Diameter of the circle
-    height: 200, // Diameter of the circle
-    borderRadius: 100, // Half of the width/height to make it a perfect circle
-    backgroundColor: "#ffcc00", // Placeholder color
+    //width: 200, // Diameter of the circle
+    //height: 200, // Diameter of the circle
+    width: scaleArea(250),
+    height: scaleArea(250),
+    borderRadius: scaleArea(250) / 2, // Half of the width/height to make it a perfect circle
+    backgroundColor: Colors.yellow, // Placeholder color
   },
   logoText: {
-    fontSize: 30,
+    fontSize: fontStyles.large.fontSize,
     color: Colors.yellow,
     textTransform: "uppercase",
   },

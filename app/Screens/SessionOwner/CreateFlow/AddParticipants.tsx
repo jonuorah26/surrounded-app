@@ -17,6 +17,9 @@ import FlagIndicator from "@/app/Components/FlagIndicator";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import ContinueButton from "@/app/Components/ContinueButton";
+import { Switch } from "react-native-switch";
+import { StackNavigation } from "../../_layout";
+import { scaleHeight } from "@/app/Constants/Dimensions";
 
 function AddParticipants() {
   const [checked, setChecked] = useState<"checked" | "unchecked">("unchecked");
@@ -25,8 +28,9 @@ function AddParticipants() {
     min: undefined | string;
     max: undefined | string;
   }>({ min: undefined, max: undefined });
-  const { navigate } =
-    useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const { navigate } = useNavigation<StackNavigation>();
+
+  const [maxOn, setMaxOn] = useState(false);
 
   const handleCheck = () => {
     if (checked === "checked") {
@@ -56,19 +60,28 @@ function AddParticipants() {
   const handleContinue = () => {
     if (!values.min) {
       alert("Please enter a minimum participant count");
-    } else if (!values.max) {
-      alert(
-        'Please enter a maximum participant count or check "Same as Minimum"'
-      );
-    } else if (parseInt(values.max) < parseInt(values.min)) {
-      alert("Minimum participant count cannot be greater than the maximum");
-    } else {
+      return;
+    } else if (maxOn) {
+      if (!values.max) {
+        alert(
+          'Please enter a maximum participant count with the "Maximum" option enabled'
+        );
+        return;
+      } else if (parseInt(values.max) < parseInt(values.min)) {
+        alert("Maximum participant count cannot be less than the minimum");
+        return;
+      }
+    }
+
+    if (maxOn && values.max && parseInt(values.max) === parseInt(values.min)) {
       navigate("Threshold");
+    } else {
+      navigate("AllowParticipantsDuringSession");
     }
   };
 
   return (
-    <View style={generic.container}>
+    <View style={[generic.container]}>
       <FlagIndicator color={Colors.red} />
       <View style={{ flex: 1, zIndex: 2, elevation: 2 }}>
         <KeyboardAwareScrollView
@@ -92,35 +105,73 @@ function AddParticipants() {
               />
             </View>
             <View style={styles.section}>
-              <Text style={styles.title}>Maximum Participants Allowed</Text>
-              <TextInput
-                mode="outlined"
-                keyboardType="number-pad"
-                style={styles.textInput}
-                outlineStyle={{
-                  ...styles.InputBorder,
-                  borderColor: maxInputDisabled
-                    ? Colors.disabledGray
-                    : Colors.yellow,
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
-                disabled={maxInputDisabled}
-                value={values.max}
-                onChangeText={(e) => handleTextInput(e, "max")}
-              />
-              <Checkbox.Item
-                label="Same as Minimum"
-                status={checked}
-                color={Colors.yellow}
-                mode={"android"}
-                labelVariant="bodyLarge"
-                labelStyle={{
-                  color:
-                    checked === "checked" ? Colors.yellow : Colors.disabledGray,
-                  fontWeight: "600",
-                }}
-                position="leading"
-                onPress={handleCheck}
-              />
+              >
+                <Text style={[styles.title, styles.title2]}>
+                  Set Maximum Participants Allowed
+                </Text>
+                <View style={{ width: "30%", marginRight: 25 }}>
+                  <Switch
+                    value={maxOn}
+                    onValueChange={setMaxOn}
+                    activeText={"YES"}
+                    inActiveText={"NO"}
+                    circleSize={35}
+                    barHeight={40}
+                    circleBorderWidth={0}
+                    backgroundActive={Colors.yellow}
+                    backgroundInactive={Colors.disabledGray}
+                    circleActiveColor={Colors.white}
+                    circleInActiveColor={Colors.white}
+                    changeValueImmediately={true}
+                    // innerCircleStyle={{ marginLeft: 20 }}
+                    // outerCircleStyle={{ width: 110 }}
+                    switchWidthMultiplier={2.2}
+                    // inactiveTextStyle={{ marginRight: -16, left: 8 }}
+                    // activeTextStyle={{ marginLeft: -20, right: 8 }}
+                    renderActiveText={false}
+                    renderInActiveText={false}
+                  />
+                </View>
+              </View>
+              {maxOn && (
+                <>
+                  <TextInput
+                    mode="outlined"
+                    keyboardType="number-pad"
+                    style={styles.textInput}
+                    outlineStyle={{
+                      ...styles.InputBorder,
+                      borderColor: maxInputDisabled
+                        ? Colors.disabledGray
+                        : Colors.yellow,
+                    }}
+                    disabled={maxInputDisabled}
+                    value={values.max}
+                    onChangeText={(e) => handleTextInput(e, "max")}
+                  />
+                  <Checkbox.Item
+                    label="Same as Minimum"
+                    status={checked}
+                    color={Colors.yellow}
+                    mode={"android"}
+                    labelVariant="bodyLarge"
+                    labelStyle={{
+                      color:
+                        checked === "checked"
+                          ? Colors.yellow
+                          : Colors.disabledGray,
+                      fontWeight: "600",
+                    }}
+                    position="leading"
+                    onPress={handleCheck}
+                  />
+                </>
+              )}
             </View>
           </View>
           <ContinueButton onPress={handleContinue} />
@@ -132,7 +183,7 @@ function AddParticipants() {
 
 const styles = StyleSheet.create({
   container: {
-    gap: 50,
+    gap: "5%",
   },
   scrollContainer: {
     flex: 1,
@@ -141,7 +192,12 @@ const styles = StyleSheet.create({
   title: {
     ...generic.title,
     alignSelf: "flex-start",
-    margin: 25,
+    //margin: 25,
+    margin: "8%",
+  },
+  title2: {
+    width: "70%",
+    paddingLeft: 40,
   },
   section: {
     flex: -1,

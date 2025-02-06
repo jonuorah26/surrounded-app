@@ -6,10 +6,10 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "expo-router";
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
+import { StackNavigation } from "../../_layout";
 
 function ChooseFlagSystem() {
-  const { navigate } =
-    useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const { navigate } = useNavigation<StackNavigation>();
 
   const handlePress = (id: string) => {
     if (id === "red-flag") {
@@ -45,19 +45,14 @@ const styles = StyleSheet.create({
   },
   title: {
     ...generic.title,
-    bottom: 40,
+    //bottom: 40,
+    bottom: "110%",
   },
   redButton: {
     backgroundColor: Colors.red,
   },
   greenButton: {
     backgroundColor: Colors.green,
-  },
-  containerButtons: {
-    bottom: 40,
-  },
-  logo: {
-    bottom: 100,
   },
 });
 

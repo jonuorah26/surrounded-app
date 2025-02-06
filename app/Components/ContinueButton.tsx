@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
   button: {
     alignSelf: "flex-end",
     position: "absolute",
-    top: 700,
-    right: 10,
+    top: "89%",
+    right: "1%",
   },
   buttonText: {},
 });
