@@ -14,8 +14,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { fontStyles } from "../Constants/GenericStyles";
 import { Alert, TouchableOpacity } from "react-native";
 import ModeratorScreen from "./SessionOwner/ModeratorScreen";
+import ModeratorDrawerNavigator from "./SessionOwner/DrawerNavigator";
+import CreateFlowNavigationScreens from "./SessionOwner/CreateFlow/NavigationScreens";
 
-const Stack = createNativeStackNavigator();
+export const Stack = createNativeStackNavigator();
 export type StackNavigation = NativeStackNavigationProp<ParamListBase>;
 
 export function RootStack() {
@@ -28,57 +30,16 @@ export function RootStack() {
         headerTintColor: Colors.yellow,
       }}
     >
-      <Stack.Screen name="ModeratorScreen" component={ModeratorScreen} />
+      <Stack.Screen
+        name="ModeratorScreen"
+        component={ModeratorDrawerNavigator}
+      />
       <Stack.Screen
         name="Start"
         component={StartScreen}
         options={{ gestureEnabled: false, headerBackVisible: false }}
       />
-      <Stack.Screen name="ChooseFlagSystem" component={ChooseFlagSystem} />
-      <Stack.Screen name="AddParticipants" component={AddParticipants} />
-      <Stack.Screen
-        name={"AllowParticipantsDuringSession"}
-        component={AllowParticipantsDuringSession}
-      />
-      <Stack.Screen name="Threshold" component={ThresholdScreen} />
-      <Stack.Screen
-        name="SessionKeyGenerated"
-        component={SessionKeyGeneratedScreen}
-        options={{
-          headerLeft: () => {
-            const router = useNavigation<StackNavigation>();
-
-            const handleExit = () => {
-              Alert.alert(
-                "Alert",
-                "Exiting will end the session. Are you sure you want to leave?",
-                [
-                  {
-                    text: "Yes",
-                    onPress: () => router.navigate("Start"),
-                    style: "destructive",
-                  },
-                  {
-                    text: "No",
-                    style: "cancel",
-                  },
-                ]
-              );
-            };
-
-            return (
-              <TouchableOpacity onPress={handleExit}>
-                <MaterialIcons
-                  name="exit-to-app"
-                  size={fontStyles.large.fontSize + 2}
-                  color={Colors.yellow}
-                />
-              </TouchableOpacity>
-            );
-          },
-          gestureEnabled: false,
-        }}
-      />
+      <Stack.Screen name="CreateFlow" component={CreateFlowNavigationScreens} />
     </Stack.Navigator>
   );
 }

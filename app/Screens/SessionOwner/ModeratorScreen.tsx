@@ -12,16 +12,26 @@ import { Ionicons } from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import React from "react";
 import { View, StyleSheet, Pressable, SafeAreaView, Text } from "react-native";
-import { Avatar } from "react-native-paper";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Feather from "@expo/vector-icons/Feather";
+import Entypo from "@expo/vector-icons/Entypo";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
 //import { Pressable } from "react-native-gesture-handler";
 
+type DrawerNavProps = DrawerNavigationProp<any>;
 function ModeratorScreen() {
-  const handlePress = () => {};
+  const { openDrawer } = useNavigation<DrawerNavProps>();
 
+  const handlePress = () => {
+    openDrawer();
+  };
+  const insets = useSafeAreaInsets();
   return (
     <View style={[generic.container, { justifyContent: "flex-start" }]}>
-      <SafeAreaView style={{ flex: 1, gap: scaleHeight(30) }}>
-        <View style={{ flex: 1 }} /*Flag, hamburger button, Threshold  */>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ flex: 3 }} /*Flag, hamburger button, Threshold  */>
           <View style={styles.flagAndHamburgerRow}>
             <FlagIndicator
               color={Colors.red}
@@ -49,13 +59,14 @@ function ModeratorScreen() {
           </View>
         </View>
         <View /* "Who's in Seat" and Flag raise count */
-          style={{ flexDirection: "row", flex: 2 }}
+          style={{ flexDirection: "row", flex: 5 }}
         >
           <View
             style={{
-              flex: 1.1,
+              flex: 1.2,
               alignSelf: "flex-start",
-              bottom: scaleHeight(65),
+              bottom: scaleHeight(100),
+              left: scaleWidth(10),
               paddingLeft: scaleWidth(10),
             }}
           >
@@ -63,7 +74,11 @@ function ModeratorScreen() {
               <Text
                 style={[
                   styles.whosInSeatText,
-                  { paddingBottom: scaleWidth(10) },
+                  {
+                    paddingBottom: scaleWidth(10),
+                    marginLeft: scaleWidth(5),
+                    width: "150%",
+                  },
                 ]}
               >
                 Who's in The Seat?
@@ -76,7 +91,14 @@ function ModeratorScreen() {
               <Text style={styles.whosInSeatText}>Arthur28</Text>
             </View>
           </View>
-          <View style={{ flex: 3, alignSelf: "flex-start" }}>
+          <View
+            style={{
+              flex: 5,
+              alignSelf: "flex-start",
+              alignItems: "center",
+              right: scaleWidth(45),
+            }}
+          >
             <View style={styles.fractionContainer}>
               <View style={{ top: -scaleHeight(20) }}>
                 <Text style={styles.number}>08</Text>
@@ -85,12 +107,79 @@ function ModeratorScreen() {
                 <Text style={[styles.number]}>/</Text>
               </View>
               <View style={{ top: scaleHeight(20) }}>
-                <Text style={styles.number}>25</Text>
+                <Text style={styles.number}>30</Text>
               </View>
+            </View>
+            <View style={{}}>
+              <Text
+                style={{
+                  fontSize: fontStyles.large.fontSize,
+                  color: Colors.culturedWhite,
+                }}
+              >
+                Flags Raised
+              </Text>
             </View>
           </View>
         </View>
-        <View style={{ flex: 1 }} /* control buttons */></View>
+        <View
+          style={{
+            flex: 1,
+          }} /* control buttons */
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              bottom: insets.bottom || scaleHeight(70),
+              //bottom: scaleHeight(20),
+            }}
+          >
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <Pressable
+                style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+              >
+                <View style={styles.controlButtons}>
+                  <FontAwesome5
+                    name="redo"
+                    size={scaleArea(50)}
+                    color={Colors.black}
+                  />
+                </View>
+              </Pressable>
+              <Text style={styles.controlButtonLabel}>Reset Flags</Text>
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <Pressable
+                style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+              >
+                <View style={styles.controlButtons}>
+                  <Feather
+                    name="pause"
+                    size={scaleArea(50)}
+                    color={Colors.black}
+                  />
+                </View>
+              </Pressable>
+
+              <Text style={styles.controlButtonLabel}>Pause</Text>
+            </View>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <Pressable
+                style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+              >
+                <View style={styles.controlButtons}>
+                  <Entypo
+                    name="flag"
+                    size={scaleArea(50)}
+                    color={Colors.black}
+                  />
+                </View>
+              </Pressable>
+
+              <Text style={styles.controlButtonLabel}>Toggle Participants</Text>
+            </View>
+          </View>
+        </View>
       </SafeAreaView>
     </View>
   );
@@ -124,15 +213,16 @@ const styles = StyleSheet.create({
   number: {
     fontWeight: fontStyles.large.fontWeight,
     //fontSize: scaleFont(55),
-    fontSize: scaleArea(200) * 0.28,
+    fontSize: scaleArea(200) * 0.32,
+    //fontSize: (scaleArea(200) * 0.45) / Math.sqrt(12 / 2),
   },
   fractionContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#F3F3F3",
-    width: scaleArea(200), // Ensure square dimensions
-    height: scaleArea(200),
-    borderRadius: scaleArea(100), // Half of width/height for a perfect circle
+    backgroundColor: Colors.culturedWhite,
+    width: scaleArea(250), // Ensure square dimensions
+    height: scaleArea(250),
+    borderRadius: scaleArea(125), // Half of width/height for a perfect circle
     //padding: scaleHeight(20), // Ensures spacing within the circle
     alignItems: "center",
     shadowColor: "#000", // Shadow color
@@ -144,6 +234,27 @@ const styles = StyleSheet.create({
 
   whosInSeatText: {
     ...fontStyles.xsmall,
-    textAlign: "left",
+    textAlign: "center",
+    width: "100%",
+  },
+  controlButtons: {
+    backgroundColor: Colors.yellow,
+    borderRadius: 50, // Softer corners
+    shadowColor: Colors.black, // Add a subtle shadow
+    shadowOffset: { width: 0, height: 4 }, // Shadow below the button
+    shadowOpacity: 0.2, // Subtle shadow
+    shadowRadius: 6,
+    elevation: 5,
+    width: scaleArea(85),
+    height: scaleArea(85),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  controlButtonLabel: {
+    fontSize: fontStyles.small.fontSize,
+    color: Colors.culturedWhite,
+    alignSelf: "center",
+    width: "90%",
+    textAlign: "center",
   },
 });
