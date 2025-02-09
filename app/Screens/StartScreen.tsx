@@ -15,8 +15,9 @@ export default function Start() {
   const handlePress = (id: string) => {
     if (id === "create-session") {
       // navigate("/Screens/(SessionOwner)/(CreateFlow)/ChooseFlagSystem");
-      navigate("CreateFlow");
+      navigate("ChooseFlagSystem");
     } else {
+      navigate("EnterCode");
     }
   };
 

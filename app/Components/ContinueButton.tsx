@@ -1,17 +1,31 @@
 import React from "react";
 import Button from "./Button";
-import { StyleSheet } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 
 type Props = {
   onPress: () => void;
+  useDefaultStyles?: boolean;
+  style?: ViewStyle;
+  text?: string;
 };
 
-function ContinueButton({ onPress }: Props) {
+function ContinueButton({
+  onPress,
+  useDefaultStyles = true,
+  style = {},
+  text = "Continue",
+}: Props) {
+  var styling: ViewStyle = { ...style };
+
+  if (useDefaultStyles) {
+    styling = { ...styles.button, ...styling };
+  }
+
   return (
     <Button
-      text="Continue"
+      text={text}
       onPress={onPress}
-      styles={{ button: styles.button, buttonText: styles.buttonText }}
+      styles={{ button: styling, buttonText: styles.buttonText }}
       sizeVariant="medium"
     />
   );
