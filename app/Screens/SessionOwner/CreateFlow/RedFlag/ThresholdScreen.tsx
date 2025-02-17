@@ -11,7 +11,7 @@ import { View, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { RadioButton, Text, TextInput } from "react-native-paper";
 
-type RadioValue = "majority" | "custom" | "";
+type RadioValue = "majority" | "custom" | "all" | "";
 
 function ThresholdScreen() {
   const [value, setValue] = useState<RadioValue>("");
@@ -47,7 +47,7 @@ function ThresholdScreen() {
   return (
     <View style={[generic.container]}>
       <View style={{ flex: 1 }}>
-        <FlagIndicator color={Colors.red} />
+        <FlagIndicator color={Colors.red} useRounded={false} />
       </View>
       <View style={{ flex: 20, zIndex: 2, elevation: 2 }}>
         <KeyboardAwareScrollView
@@ -71,6 +71,15 @@ function ThresholdScreen() {
                   <RadioButton.Item
                     label="Majority of Participants"
                     value="majority"
+                    color={Colors.yellow}
+                    labelStyle={styles.label}
+                    style={styles.radioItem}
+                    mode="android"
+                    position="leading"
+                  />
+                  <RadioButton.Item
+                    label="All Participants"
+                    value="all"
                     color={Colors.yellow}
                     labelStyle={styles.label}
                     style={styles.radioItem}
@@ -149,7 +158,7 @@ const styles = StyleSheet.create({
   radioContainer: {
     alignItems: "center",
     //gap: 20,
-    gap: scaleHeight(30),
+    gap: scaleHeight(5),
   },
   textInput: {
     //width: 100,

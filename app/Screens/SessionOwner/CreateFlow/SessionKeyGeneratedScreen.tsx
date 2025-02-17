@@ -14,7 +14,7 @@ function SessionKeyGeneratedScreen() {
   return (
     <View style={generic.container}>
       <View style={{ flex: 8 }}>
-        <FlagIndicator color={Colors.red} />
+        <FlagIndicator color={Colors.red} useRounded={false} />
       </View>
       <View style={[styles.content, { flex: 30 }]}>
         <View style={[styles.codeSection, { flex: 2 }]}>

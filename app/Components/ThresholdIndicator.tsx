@@ -3,6 +3,7 @@ import { StyleSheet, View, Text } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { scaleArea, scaleHeight, scaleWidth } from "../Constants/Dimensions";
 import { fontStyles } from "../Constants/GenericStyles";
+import { AutoSizeText, ResizeTextMode } from "react-native-auto-size-text";
 
 type Props = {
   color: string;
@@ -10,19 +11,26 @@ type Props = {
 function ThresholdIndicator({ color }: Props) {
   return (
     <View style={{ ...styles.stickyBox, backgroundColor: color }}>
-      <Text style={styles.text}>Threshold: 13</Text>
+      <AutoSizeText
+        style={styles.text}
+        mode={ResizeTextMode.max_lines}
+        numberOfLines={2}
+        fontSize={fontStyles.medium.fontSize}
+      >
+        Threshold: 134
+      </AutoSizeText>
     </View>
   );
 }
 
 export default ThresholdIndicator;
-const stickyBoxArea = scaleWidth(210) * scaleHeight(90);
+const stickyBoxArea = scaleArea(210) * scaleArea(90);
 const styles = StyleSheet.create({
   stickyBox: {
-    width: scaleWidth(210),
-    height: scaleHeight(90),
-    borderTopLeftRadius: stickyBoxArea / 2,
-    borderBottomLeftRadius: stickyBoxArea / 2,
+    width: scaleArea(220),
+    height: scaleArea(90),
+    borderTopRightRadius: stickyBoxArea / 2,
+    borderBottomRightRadius: stickyBoxArea / 2,
     zIndex: 1,
     elevation: 1,
     shadowColor: Colors.black, // Add a subtle shadow
@@ -34,6 +42,7 @@ const styles = StyleSheet.create({
   },
   text: {
     ...fontStyles.medium,
-    paddingLeft: "11%",
+    paddingLeft: scaleArea(10),
+    paddingRight: scaleArea(10),
   },
 });

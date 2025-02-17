@@ -82,7 +82,7 @@ function AddParticipants() {
 
   return (
     <View style={[generic.container]}>
-      <FlagIndicator color={Colors.red} />
+      <FlagIndicator color={Colors.red} useRounded={false} />
       <View style={{ flex: 1, zIndex: 2, elevation: 2 }}>
         <KeyboardAwareScrollView
           contentContainerStyle={styles.scrollContainer}

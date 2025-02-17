@@ -10,7 +10,7 @@ import {
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, Pressable, SafeAreaView, Text } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Feather from "@expo/vector-icons/Feather";
@@ -18,11 +18,24 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
+import { AutoSizeText, ResizeTextMode } from "react-native-auto-size-text";
 //import { Pressable } from "react-native-gesture-handler";
 
 type DrawerNavProps = DrawerNavigationProp<any>;
 function ModeratorScreen() {
   const { openDrawer } = useNavigation<DrawerNavProps>();
+  const [flagsRaised, setFlagsRaised] = useState(8);
+  const [totalParticipants, setTotalParticipants] = useState(30);
+
+  const getFontSize = () => {
+    const baseSize = scaleArea(200) * 0.32;
+
+    const raisedStr = flagsRaised.toString().padStart(2, "0");
+    const totalStr = totalParticipants.toString().padStart(2, "0");
+
+    const maxLen = Math.max(raisedStr.length, totalStr.length);
+    return baseSize / Math.max(1, maxLen * 0.4); // Adjust divisor for fine-tuning
+  };
 
   const handlePress = () => {
     openDrawer();
@@ -32,12 +45,23 @@ function ModeratorScreen() {
     <View style={[generic.container, { justifyContent: "flex-start" }]}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 3 }} /*Flag, hamburger button, Threshold  */>
-          <View style={styles.flagAndHamburgerRow}>
+          <View
+            style={{
+              flex: -1,
+              alignSelf: "flex-end",
+              marginTop: -scaleHeight(55),
+            }}
+          >
             <FlagIndicator
               color={Colors.red}
+              useRounded={false}
               absolute={false}
-              roundedBorderSide="right"
             />
+          </View>
+          <View style={styles.flagAndHamburgerRow}>
+            <View style={{ flex: -1, alignSelf: "flex-end" }}>
+              <ThresholdIndicator color={Colors.yellow} />
+            </View>
             <View style={styles.hamburger}>
               <Pressable
                 style={({ pressed }) => [
@@ -54,12 +78,13 @@ function ModeratorScreen() {
               </Pressable>
             </View>
           </View>
-          <View style={{ flex: -1, alignSelf: "flex-end" }}>
-            <ThresholdIndicator color={Colors.yellow} />
-          </View>
         </View>
         <View /* "Who's in Seat" and Flag raise count */
-          style={{ flexDirection: "row", flex: 5 }}
+          style={{
+            flexDirection: "row",
+            flex: 5,
+            //bottom: insets.bottom ? 0 : 10,
+          }}
         >
           <View
             style={{
@@ -88,7 +113,14 @@ function ModeratorScreen() {
                 size={scaleArea(50)}
                 color="black"
               />
-              <Text style={styles.whosInSeatText}>Arthur28</Text>
+              <AutoSizeText
+                style={styles.whosInSeatText}
+                mode={ResizeTextMode.max_lines}
+                numberOfLines={2}
+                fontSize={fontStyles.xsmall.fontSize}
+              >
+                Arthur Renfield98
+              </AutoSizeText>
             </View>
           </View>
           <View
@@ -101,13 +133,19 @@ function ModeratorScreen() {
           >
             <View style={styles.fractionContainer}>
               <View style={{ top: -scaleHeight(20) }}>
-                <Text style={styles.number}>08</Text>
+                <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                  {flagsRaised.toString().padStart(2, "0")}
+                </Text>
               </View>
               <View style={{ transform: [{ rotate: "20deg" }] }}>
-                <Text style={[styles.number]}>/</Text>
+                <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                  /
+                </Text>
               </View>
               <View style={{ top: scaleHeight(20) }}>
-                <Text style={styles.number}>30</Text>
+                <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                  {totalParticipants.toString().padStart(2, "0")}
+                </Text>
               </View>
             </View>
             <View style={{}}>
@@ -189,8 +227,9 @@ export default ModeratorScreen;
 
 const styles = StyleSheet.create({
   hamburger: {
-    alignSelf: "flex-start",
+    //alignSelf: "flex-start",
     marginRight: scaleWidth(24),
+    marginTop: scaleHeight(20),
   },
   hamburgerButton: {
     flex: -1,
@@ -214,6 +253,7 @@ const styles = StyleSheet.create({
     fontWeight: fontStyles.large.fontWeight,
     //fontSize: scaleFont(55),
     fontSize: scaleArea(200) * 0.32,
+
     //fontSize: (scaleArea(200) * 0.45) / Math.sqrt(12 / 2),
   },
   fractionContainer: {

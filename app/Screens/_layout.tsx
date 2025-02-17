@@ -27,17 +27,17 @@ export function RootStack() {
     >
       {JoinFlowScreens()}
       <Stack.Screen
-        name="Start"
-        component={StartScreen}
-        options={{ gestureEnabled: false, headerBackVisible: false }}
-      />
-      {CreateFlowScreens()}
-
-      <Stack.Screen
         name="ModeratorScreen"
         key="ModeratorScreen"
         component={ModeratorDrawerNavigator}
       />
+      <Stack.Screen
+        name="Start"
+        component={StartScreen}
+        options={{ gestureEnabled: false, headerBackVisible: false }}
+      />
+
+      {CreateFlowScreens()}
     </Stack.Navigator>
   );
 }

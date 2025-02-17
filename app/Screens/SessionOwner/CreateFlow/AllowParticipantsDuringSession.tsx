@@ -15,7 +15,7 @@ function AllowParticipantsDuringSession() {
   };
   return (
     <View style={generic.container}>
-      <FlagIndicator color={Colors.red} />
+      <FlagIndicator color={Colors.red} useRounded={false} />
 
       <View>
         <Text style={styles.title}>
