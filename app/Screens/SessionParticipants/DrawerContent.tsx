@@ -7,16 +7,7 @@ import {
 import { Colors } from "@/app/Constants/Colors";
 import { fontStyles } from "@/app/Constants/GenericStyles";
 import { scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
-
-const Divider = () => (
-  <View
-    style={{
-      width: scaleWidth(290),
-      height: scaleHeight(1.5),
-      backgroundColor: Colors.disabledGray,
-    }}
-  ></View>
-);
+import Divider from "@/app/Components/Divider";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
   return (

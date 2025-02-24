@@ -3,7 +3,7 @@ import { Colors } from "@/app/Constants/Colors";
 import { scaleArea, scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
 import { generic } from "@/app/Constants/GenericStyles";
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -13,10 +13,16 @@ import {
 } from "react-native";
 import { TextInput } from "react-native-paper";
 import { StackNavigation } from "../../_layout";
+import { useUserTypeContext } from "@/app/Context/UserTypeContext";
 
 function EnterCodeScreen() {
   const [code, setCode] = useState("");
   const { navigate } = useNavigation<StackNavigation>();
+  const { userType } = useUserTypeContext();
+
+  // useEffect(() => {
+  //   console.log("userType:", userType);
+  // }, []);
 
   const handleContinue = () => {
     if (!code) {

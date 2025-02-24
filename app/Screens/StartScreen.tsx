@@ -1,22 +1,20 @@
-import { StyleSheet, View, GestureResponderEvent } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, View } from "react-native";
 import Button from "../Components/Button";
 import PlaceholderLogo from "../Components/PlaceholderLogo";
-import { useRouter } from "expo-router";
-import { fontStyles, generic } from "../Constants/GenericStyles";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Colors } from "../Constants/Colors";
+import { generic } from "../Constants/GenericStyles";
+import { useNavigation } from "@react-navigation/native";
 import { StackNavigation } from "./_layout";
+import { useUserTypeContext } from "../Context/UserTypeContext";
 
 export default function Start() {
-  //const { push, navigate } = useRouter();
   const { navigate } = useNavigation<StackNavigation>();
+  const {setUserType} = useUserTypeContext();
   const handlePress = (id: string) => {
     if (id === "create-session") {
-      // navigate("/Screens/(SessionOwner)/(CreateFlow)/ChooseFlagSystem");
+      setUserType("moderator");
       navigate("ChooseFlagSystem");
     } else {
+      setUserType("participant");
       navigate("EnterCode");
     }
   };

@@ -1,17 +1,19 @@
 import FlagIndicator from "@/app/Components/FlagIndicator";
 import ThresholdIndicator from "@/app/Components/ThresholdIndicator";
 import { Colors } from "@/app/Constants/Colors";
-import {
-  scaleArea,
-  scaleFont,
-  scaleHeight,
-  scaleWidth,
-} from "@/app/Constants/Dimensions";
+import { scaleArea, scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import React, { useState } from "react";
-import { View, StyleSheet, Pressable, SafeAreaView, Text } from "react-native";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  SafeAreaView,
+  Text,
+  Dimensions,
+} from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -19,6 +21,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { AutoSizeText, ResizeTextMode } from "react-native-auto-size-text";
+import Popover from "react-native-popover-view";
+import { Placement } from "react-native-popover-view/dist/Types";
+import OpacityPressable from "@/app/Components/OpacityPressable";
+import Divider from "@/app/Components/Divider";
 //import { Pressable } from "react-native-gesture-handler";
 
 type DrawerNavProps = DrawerNavigationProp<any>;
@@ -26,6 +32,30 @@ function ModeratorScreen() {
   const { openDrawer } = useNavigation<DrawerNavProps>();
   const [flagsRaised, setFlagsRaised] = useState(8);
   const [totalParticipants, setTotalParticipants] = useState(30);
+  const avatarIconRef = useRef<View>(null);
+  const whosInSeatRef = useRef<Text>(null);
+  const [targetY, setTargetY] = useState(0);
+
+  // useLayoutEffect(() => {
+  //   // avatarIconRef.current?.measureInWindow((x, y) => {
+  //   //   console.log("avatar view y co-ordinate:", y);
+  //   //   setTargetY(y);
+  //   // });
+
+  //   whosInSeatRef.current?.measureInWindow((x, y) => {
+  //     console.log("who's in seat view view y co-ordinate:", y);
+  //     setTargetY(y);
+  //   });
+  // }, [whosInSeatRef.current]);
+
+  // const measurePosition = () => {
+  //   if (avatarIconRef.current) {
+  //     avatarIconRef.current.measureInWindow((x, y) => {
+  //       //setTargetY(y);
+  //     });
+  //     avatarIconRef.current
+  //   }
+  // };
 
   const getFontSize = () => {
     const baseSize = scaleArea(200) * 0.32;
@@ -108,19 +138,55 @@ function ModeratorScreen() {
               >
                 Who's in The Seat?
               </Text>
-              <Ionicons
-                name="person-outline"
-                size={scaleArea(50)}
-                color="black"
-              />
-              <AutoSizeText
-                style={styles.whosInSeatText}
-                mode={ResizeTextMode.max_lines}
-                numberOfLines={2}
-                fontSize={fontStyles.xsmall.fontSize}
+              <Popover
+                from={(sourceRef, showPopover) => (
+                  <Pressable
+                    onLongPress={showPopover}
+                    hitSlop={scaleArea(60)}
+                    style={{ width: "120%" }}
+                  >
+                    <View
+                      style={{
+                        alignItems: "center",
+                      }}
+                    >
+                      <Ionicons
+                        name="person-outline"
+                        size={scaleArea(50)}
+                        color="black"
+                      />
+                      <AutoSizeText
+                        style={[styles.whosInSeatText]}
+                        mode={ResizeTextMode.max_lines}
+                        numberOfLines={2}
+                        fontSize={fontStyles.xsmall.fontSize}
+                      >
+                        Arthur Renfield 98
+                      </AutoSizeText>
+                    </View>
+                  </Pressable>
+                )}
+                placement={Placement.RIGHT}
+                arrowSize={{ height: 0, width: 0 }}
+                popoverStyle={{
+                  backgroundColor: Colors.yellow,
+                  marginLeft: -scaleWidth(20),
+                }}
+                displayArea={{
+                  x: 0,
+                  y: -scaleHeight(538),
+                  width: Dimensions.get("screen").width,
+                  height: Dimensions.get("screen").height,
+                }}
               >
-                Arthur Renfield98
-              </AutoSizeText>
+                <View style={{ paddingHorizontal: scaleArea(8) }}>
+                  <OpacityPressable onPress={() => console.log("Removed")}>
+                    <Text style={{ paddingVertical: scaleArea(12) }}>
+                      Remove from seat
+                    </Text>
+                  </OpacityPressable>
+                </View>
+              </Popover>
             </View>
           </View>
           <View
@@ -202,18 +268,44 @@ function ModeratorScreen() {
               <Text style={styles.controlButtonLabel}>Pause</Text>
             </View>
             <View style={{ flex: 1, alignItems: "center" }}>
-              <Pressable
-                style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+              <Popover
+                from={(sourceRef, showPopover) => (
+                  <Pressable
+                    style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+                    onLongPress={showPopover}
+                    hitSlop={scaleArea(50)}
+                  >
+                    <View style={styles.controlButtons}>
+                      <Entypo
+                        name="flag"
+                        size={scaleArea(50)}
+                        color={Colors.black}
+                      />
+                    </View>
+                  </Pressable>
+                )}
+                offset={scaleHeight(115 - insets.bottom * 0.2)}
+                arrowSize={{ height: 0, width: 0 }}
+                popoverStyle={{ backgroundColor: Colors.yellow }}
               >
-                <View style={styles.controlButtons}>
-                  <Entypo
-                    name="flag"
-                    size={scaleArea(50)}
-                    color={Colors.black}
-                  />
+                <View style={{ paddingHorizontal: scaleArea(8) }}>
+                  <OpacityPressable
+                    onPress={() => console.log("Enable Participants")}
+                  >
+                    <Text style={{ paddingVertical: scaleArea(12) }}>
+                      Enable Participants
+                    </Text>
+                  </OpacityPressable>
+                  <Divider width={145} />
+                  <OpacityPressable
+                    onPress={() => console.log("Disable Participants")}
+                  >
+                    <Text style={{ paddingVertical: scaleArea(12) }}>
+                      Disable Participants
+                    </Text>
+                  </OpacityPressable>
                 </View>
-              </Pressable>
-
+              </Popover>
               <Text style={styles.controlButtonLabel}>Toggle Participants</Text>
             </View>
           </View>

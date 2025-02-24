@@ -25,19 +25,18 @@ export function RootStack() {
         headerTintColor: Colors.yellow,
       }}
     >
+      <Stack.Screen
+        name="Start"
+        component={StartScreen}
+        options={{ gestureEnabled: false, headerBackVisible: false }}
+      />
+      {CreateFlowScreens()}
       {JoinFlowScreens()}
       <Stack.Screen
         name="ModeratorScreen"
         key="ModeratorScreen"
         component={ModeratorDrawerNavigator}
       />
-      <Stack.Screen
-        name="Start"
-        component={StartScreen}
-        options={{ gestureEnabled: false, headerBackVisible: false }}
-      />
-
-      {CreateFlowScreens()}
     </Stack.Navigator>
   );
 }

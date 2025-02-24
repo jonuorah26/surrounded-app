@@ -1,15 +1,19 @@
 import Button from "@/app/Components/Button";
 import { Colors } from "@/app/Constants/Colors";
-import { fontStyles, generic } from "@/app/Constants/GenericStyles";
-import { ParamListBase } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { generic } from "@/app/Constants/GenericStyles";
 import { useNavigation } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { StackNavigation } from "../../_layout";
+import { useUserTypeContext } from "@/app/Context/UserTypeContext";
 
 function ChooseFlagSystem() {
   const { navigate } = useNavigation<StackNavigation>();
+  const { userType } = useUserTypeContext();
+
+  // useEffect(() => {
+  //   console.log("userType:", userType);
+  // }, []);
 
   const handlePress = (id: string) => {
     if (id === "red-flag") {
