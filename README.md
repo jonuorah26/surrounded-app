@@ -1,4 +1,5 @@
 Surrounded App
+----------------
 
 Surrounded is a real-time debate moderation app inspired by Jubilee’s Surrounded segment. It allows a moderator to create a session where participants can raise flags (Red or Green) to influence the flow of discussion. The app features:
 
