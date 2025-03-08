@@ -1,6 +1,6 @@
 import { Colors } from "@/app/Constants/Colors";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,13 @@ import ContinueButton from "@/app/Components/ContinueButton";
 import { Switch } from "react-native-switch";
 import { StackNavigation } from "../../_layout";
 import { scaleHeight } from "@/app/Constants/Dimensions";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/app/Store/Store";
+import {
+  updateMaxParticipants,
+  updateMaxSameAsMinOption,
+  updateMinParticipants,
+} from "@/app/Store/ModeratorReducer";
 
 function AddParticipants() {
   const [checked, setChecked] = useState<"checked" | "unchecked">("unchecked");
@@ -29,8 +36,12 @@ function AddParticipants() {
     max: undefined | string;
   }>({ min: undefined, max: undefined });
   const { navigate } = useNavigation<StackNavigation>();
-
+  const dispatch = useDispatch<AppDispatch>();
   const [maxOn, setMaxOn] = useState(false);
+
+  // const flagType = useSelector(
+  //   (state: RootState) => state.moderator.flagSystem
+  // );
 
   const handleCheck = () => {
     if (checked === "checked") {
@@ -71,6 +82,12 @@ function AddParticipants() {
         alert("Maximum participant count cannot be less than the minimum");
         return;
       }
+    }
+
+    dispatch(updateMinParticipants(parseInt(values.min)));
+    if (values.max) {
+      dispatch(updateMaxSameAsMinOption(maxOn));
+      dispatch(updateMaxParticipants(parseInt(values.max)));
     }
 
     if (maxOn && values.max && parseInt(values.max) === parseInt(values.min)) {

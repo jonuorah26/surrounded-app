@@ -3,23 +3,30 @@ import FlagIndicator from "@/app/Components/FlagIndicator";
 import { Colors } from "@/app/Constants/Colors";
 import { scaleHeight, scaleWidth, SH } from "@/app/Constants/Dimensions";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
-import { ParamListBase } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { StackNavigation } from "@/app/Screens/_layout";
+import {
+  updateCustomVoteOutThreshold,
+  updateVoteOutThresholdType,
+  VoteOutThresholdType,
+} from "@/app/Store/ModeratorReducer";
+import { AppDispatch, RootState } from "@/app/Store/Store";
 import { useNavigation } from "expo-router";
-import React, { lazy, useState } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { RadioButton, Text, TextInput } from "react-native-paper";
-
-type RadioValue = "majority" | "custom" | "all" | "";
+import { useDispatch, useSelector } from "react-redux";
 
 function ThresholdScreen() {
-  const [value, setValue] = useState<RadioValue>("");
+  const [value, setValue] = useState<VoteOutThresholdType>("");
   const [custom, setCustom] = useState<string | undefined>();
-  const { navigate } =
-    useNavigation<NativeStackNavigationProp<ParamListBase>>();
+  const { navigate } = useNavigation<StackNavigation>();
+  const dispatch = useDispatch<AppDispatch>();
+  const minParticipants = useSelector(
+    (state: RootState) => state.moderator.minParticipants
+  );
 
-  const handleValueChange = (newValue: RadioValue) => {
+  const handleValueChange = (newValue: VoteOutThresholdType) => {
     setValue(newValue);
 
     if (newValue === "majority") {
@@ -38,8 +45,15 @@ function ThresholdScreen() {
       } else if (parseInt(custom) === 0) {
         alert('"Custom" value cannot be less than 1');
         return;
+      } else if (parseInt(custom) > minParticipants - 1) {
+        alert(
+          '"Custom" value must be less than the minimum number of participants minus 1\n\n(You may change this later IF more participants join passed the minimum)'
+        );
+        return;
       }
+      dispatch(updateCustomVoteOutThreshold(parseInt(custom)));
     }
+    dispatch(updateVoteOutThresholdType(value));
 
     navigate("SessionKeyGenerated");
   };
@@ -63,7 +77,7 @@ function ThresholdScreen() {
             <View style={{ flex: 2 }}>
               <RadioButton.Group
                 onValueChange={(newValue) =>
-                  handleValueChange(newValue as RadioValue)
+                  handleValueChange(newValue as VoteOutThresholdType)
                 }
                 value={value}
               >
