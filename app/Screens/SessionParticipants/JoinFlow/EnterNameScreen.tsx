@@ -16,6 +16,7 @@ import { StackNavigation } from "../../_layout";
 import { AppDispatch } from "@/app/Store/Store";
 import { useDispatch } from "react-redux";
 import { updateParticipantName } from "@/app/Store/ParticipantReducer";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 function EnterNameScreen() {
   const [name, setName] = useState("");
@@ -29,7 +30,7 @@ function EnterNameScreen() {
     }
 
     dispatch(updateParticipantName(name));
-    //navigate("EnterName");
+    navigate(NAVIGATION_LABELS.ParticipantScreen);
   };
 
   return (

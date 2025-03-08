@@ -27,6 +27,7 @@ import {
   updateMaxSameAsMinOption,
   updateMinParticipants,
 } from "@/app/Store/ModeratorReducer";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 function AddParticipants() {
   const [checked, setChecked] = useState<"checked" | "unchecked">("unchecked");
@@ -91,9 +92,9 @@ function AddParticipants() {
     }
 
     if (maxOn && values.max && parseInt(values.max) === parseInt(values.min)) {
-      navigate("Threshold");
+      navigate(NAVIGATION_LABELS.Threshold);
     } else {
-      navigate("AllowParticipantsDuringSession");
+      navigate(NAVIGATION_LABELS.AllowParticipantsDuringSession);
     }
   };
 

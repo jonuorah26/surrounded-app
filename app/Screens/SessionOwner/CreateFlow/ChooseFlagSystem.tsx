@@ -9,6 +9,7 @@ import { useUserTypeContext } from "@/app/Context/UserTypeContext";
 import { AppDispatch } from "@/app/Store/Store";
 import { useDispatch } from "react-redux";
 import { updateFlagSystem } from "@/app/Store/ModeratorReducer";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 function ChooseFlagSystem() {
   const { navigate } = useNavigation<StackNavigation>();
@@ -21,7 +22,7 @@ function ChooseFlagSystem() {
       dispatch(updateFlagSystem("green"));
       return;
     }
-    navigate("AddParticipants");
+    navigate(NAVIGATION_LABELS.AddParticipants);
   };
 
   return (

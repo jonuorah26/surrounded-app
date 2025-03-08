@@ -6,13 +6,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import { scaleWidth } from "@/app/Constants/Dimensions";
 import ParticipantScreen from "./ParticipantScreen";
 import DrawerContent from "./DrawerContent";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 const Drawer = createDrawerNavigator();
 
 export default function ParticipantDrawerNavigator() {
   return (
     <Drawer.Navigator
-      initialRouteName="Participant"
+      initialRouteName={NAVIGATION_LABELS.Participant}
       drawerContent={(props) => <DrawerContent {...props} />} // Optional custom drawer
       screenOptions={{
         headerShown: false, // Hide header if you don't want it
@@ -22,7 +23,7 @@ export default function ParticipantDrawerNavigator() {
         drawerPosition: "right",
       }}
     >
-      <Drawer.Screen name="Participant" component={ParticipantScreen} />
+      <Drawer.Screen name={NAVIGATION_LABELS.Participant} component={ParticipantScreen} />
       {/* <Drawer.Screen name="Settings" component={SettingsScreen} /> */}
     </Drawer.Navigator>
   );

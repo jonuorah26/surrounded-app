@@ -16,7 +16,8 @@ import { StackNavigation } from "../../_layout";
 import { useUserTypeContext } from "@/app/Context/UserTypeContext";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/Store/Store";
-import { updateSessionCode } from "@/app/Store/ModeratorReducer";
+import { updatePartyCode } from "@/app/Store/ModeratorReducer";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 function EnterCodeScreen() {
   const [code, setCode] = useState("");
@@ -25,12 +26,12 @@ function EnterCodeScreen() {
 
   const handleContinue = () => {
     if (!code) {
-      alert("Please enter a session code");
+      alert("Please enter the party code");
       return;
     }
 
-    dispatch(updateSessionCode(code));
-    navigate("EnterName");
+    dispatch(updatePartyCode(code));
+    navigate(NAVIGATION_LABELS.EnterName);
   };
 
   return (

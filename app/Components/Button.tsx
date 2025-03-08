@@ -21,6 +21,10 @@ const sizes: {
     button: ViewStyle;
     text: TextStyle;
   };
+  small: {
+    button: ViewStyle;
+    text: TextStyle;
+  };
 } = {
   large: {
     button: {
@@ -40,9 +44,18 @@ const sizes: {
       ...fontStyles.small,
     },
   },
+  small: {
+    button: {
+      paddingHorizontal: 7,
+      paddingVertical: 10,
+    },
+    text: {
+      ...fontStyles.xsmall,
+    },
+  },
 };
 
-type SizeVariant = "large" | "medium";
+type SizeVariant = "large" | "medium" | "small";
 
 type Props = {
   text: string;
