@@ -7,10 +7,16 @@ import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { StackNavigation } from "../../_layout";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/app/Store/Store";
+import { updateAllowParticipantsDuringSessionOption } from "@/app/Store/ModeratorReducer";
 
 function AllowParticipantsDuringSession() {
   const { navigate } = useNavigation<StackNavigation>();
-  const handleContinue = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleContinue = (option: boolean) => {
+    dispatch(updateAllowParticipantsDuringSessionOption(option));
     navigate("Threshold");
   };
   return (
@@ -22,8 +28,8 @@ function AllowParticipantsDuringSession() {
           Allow More Particiapnts During Session?
         </Text>
         <View>
-          <Button text="No" onPress={handleContinue} />
-          <Button text="Yes" onPress={handleContinue} />
+          <Button text="No" onPress={() => handleContinue(false)} />
+          <Button text="Yes" onPress={() => handleContinue(true)} />
         </View>
       </View>
     </View>

@@ -4,13 +4,33 @@ import { Colors } from "@/app/Constants/Colors";
 import { SW } from "@/app/Constants/Dimensions";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
 import useBlinkingElipses from "@/app/Hooks/useBlinkingElipses";
+import {
+  updateParticipantCount,
+  updateSessionCode,
+} from "@/app/Store/ModeratorReducer";
+import { AppDispatch } from "@/app/Store/Store";
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useDispatch } from "react-redux";
 
 function SessionKeyGeneratedScreen() {
   const elipses = useBlinkingElipses(1000);
   const [proceedDisabled, setProceedDisabled] = useState(true);
+  const [participantsCount, setParticipantsCount] = useState(0);
+  const [sessionCode, setSessionCode] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    const mockCode = "4W56HW87";
+    setSessionCode(mockCode);
+    dispatch(updateSessionCode(mockCode));
+  }, []);
+
+  const handleProceed = () => {
+    dispatch(updateParticipantCount(participantsCount));
+  };
+
   return (
     <View style={generic.container}>
       <View style={{ flex: 8 }}>
@@ -29,7 +49,7 @@ function SessionKeyGeneratedScreen() {
             }}
           >
             <View style={styles.codeContainer} /*white code container*/>
-              <Text style={styles.codeText}>{"4W56HW87"}</Text>
+              <Text style={styles.codeText}>{sessionCode}</Text>
               <TouchableOpacity onPress={() => {}} style={styles.copyButton}>
                 <MaterialIcons
                   name="content-copy"
@@ -70,7 +90,7 @@ function SessionKeyGeneratedScreen() {
       <View style={{ flex: 5, justifyContent: "flex-start" }}>
         <Button
           text="Proceed To Room"
-          onPress={() => {}}
+          onPress={handleProceed}
           sizeVariant="medium"
           styles={{
             button: {

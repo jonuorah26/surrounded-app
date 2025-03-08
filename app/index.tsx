@@ -5,6 +5,8 @@ import { View, StyleSheet } from "react-native";
 import { DefaultTheme, PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { UserTypeProvider } from "./Context/UserTypeContext";
+import { Provider } from "react-redux";
+import { store } from "./Store/Store";
 
 const theme = {
   ...DefaultTheme,
@@ -24,15 +26,17 @@ const theme = {
 
 export default function Index() {
   return (
-    <UserTypeProvider>
-      <View style={styles.container}>
-        <SafeAreaProvider>
-          <NavigationIndependentTree>
-            <RootStack />
-          </NavigationIndependentTree>
-        </SafeAreaProvider>
-      </View>
-    </UserTypeProvider>
+    <Provider store={store}>
+      <UserTypeProvider>
+        <View style={styles.container}>
+          <SafeAreaProvider>
+            <NavigationIndependentTree>
+              <RootStack />
+            </NavigationIndependentTree>
+          </SafeAreaProvider>
+        </View>
+      </UserTypeProvider>
+    </Provider>
   );
 }
 

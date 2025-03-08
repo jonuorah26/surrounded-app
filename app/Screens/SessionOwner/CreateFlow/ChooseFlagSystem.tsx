@@ -6,20 +6,22 @@ import React, { useEffect } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { StackNavigation } from "../../_layout";
 import { useUserTypeContext } from "@/app/Context/UserTypeContext";
+import { AppDispatch } from "@/app/Store/Store";
+import { useDispatch } from "react-redux";
+import { updateFlagSystem } from "@/app/Store/ModeratorReducer";
 
 function ChooseFlagSystem() {
   const { navigate } = useNavigation<StackNavigation>();
-  const { userType } = useUserTypeContext();
-
-  // useEffect(() => {
-  //   console.log("userType:", userType);
-  // }, []);
+  const dispatch = useDispatch<AppDispatch>();
 
   const handlePress = (id: string) => {
     if (id === "red-flag") {
-      navigate("AddParticipants");
+      dispatch(updateFlagSystem("red"));
     } else {
+      dispatch(updateFlagSystem("green"));
+      return;
     }
+    navigate("AddParticipants");
   };
 
   return (
