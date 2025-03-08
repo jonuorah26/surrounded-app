@@ -11,6 +11,7 @@ import { ParamListBase } from "@react-navigation/native";
 import ModeratorDrawerNavigator from "./SessionOwner/DrawerNavigator";
 import JoinFlowScreens from "./SessionParticipants/JoinFlow/Navigation";
 import CreateFlowScreens from "./SessionOwner/CreateFlow/NavigationScreens";
+import ParticipantDrawerNavigator from "./SessionParticipants/DrawerNavigator";
 
 const Stack = createNativeStackNavigator();
 export type StackNavigation = NativeStackNavigationProp<ParamListBase>;
@@ -32,6 +33,11 @@ export function RootStack() {
       />
       {CreateFlowScreens()}
       {JoinFlowScreens()}
+      <Stack.Screen
+        key="ParticipantScreen"
+        name="ParticipantScreen"
+        component={ParticipantDrawerNavigator}
+      />
       <Stack.Screen
         name="ModeratorScreen"
         key="ModeratorScreen"

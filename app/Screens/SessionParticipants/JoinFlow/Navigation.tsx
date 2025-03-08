@@ -8,11 +8,6 @@ import ParticipantDrawerNavigator from "../DrawerNavigator";
 const Stack = createNativeStackNavigator();
 
 const JoinFlowScreens = () => [
-  <Stack.Screen
-    key="ParticipantScreen"
-    name="ParticipantScreen"
-    component={ParticipantDrawerNavigator}
-  />,
   <Stack.Screen key="EnterCode" name="EnterCode" component={EnterCodeScreen} />,
   <Stack.Screen key="EnterName" name="EnterName" component={EnterNameScreen} />,
 ];
