@@ -13,10 +13,14 @@ import {
 } from "react-native";
 import { TextInput } from "react-native-paper";
 import { StackNavigation } from "../../_layout";
+import { AppDispatch } from "@/app/Store/Store";
+import { useDispatch } from "react-redux";
+import { updateParticipantName } from "@/app/Store/ParticipantReducer";
 
 function EnterNameScreen() {
   const [name, setName] = useState("");
   const { navigate } = useNavigation<StackNavigation>();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleContinue = () => {
     if (!name) {
@@ -24,6 +28,7 @@ function EnterNameScreen() {
       return;
     }
 
+    dispatch(updateParticipantName(name));
     //navigate("EnterName");
   };
 

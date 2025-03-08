@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type FlagSystemOption = "red" | "green" | "";
+export type FlagSystemOption = "red" | "green" | "";
 export type VoteOutThresholdType = "majority" | "all" | "custom" | "";
 
 type ModeratorData = {
@@ -13,7 +13,7 @@ type ModeratorData = {
   allowParticipantsDuringSession: boolean;
 
   voteOutThresholdType: VoteOutThresholdType;
-  customVoteOutThreshold: number;
+  customVoteOutThreshold: number | null;
   sessionCode: string;
 };
 
@@ -27,7 +27,7 @@ const initialState: ModeratorData = {
   allowParticipantsDuringSession: false,
   sessionCode: "",
   voteOutThresholdType: "",
-  customVoteOutThreshold: 0,
+  customVoteOutThreshold: null,
 };
 
 const moderatorSlice = createSlice({
@@ -36,6 +36,9 @@ const moderatorSlice = createSlice({
   reducers: {
     updateFlagSystem: (state, action: PayloadAction<FlagSystemOption>) => {
       state.flagSystem = action.payload;
+    },
+    updateFlagsRaisedCount: (state, action: PayloadAction<number>) => {
+      state.flagsRaisedCount = action.payload;
     },
     updateMinParticipants: (state, action: PayloadAction<number>) => {
       state.minParticipants = action.payload;
@@ -64,7 +67,10 @@ const moderatorSlice = createSlice({
     updateSessionCode: (state, action: PayloadAction<string>) => {
       state.sessionCode = action.payload;
     },
-    updateCustomVoteOutThreshold: (state, action: PayloadAction<number>) => {
+    updateCustomVoteOutThreshold: (
+      state,
+      action: PayloadAction<number | null>
+    ) => {
       state.customVoteOutThreshold = action.payload;
     },
   },

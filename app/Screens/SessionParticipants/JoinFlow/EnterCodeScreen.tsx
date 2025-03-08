@@ -14,15 +14,14 @@ import {
 import { TextInput } from "react-native-paper";
 import { StackNavigation } from "../../_layout";
 import { useUserTypeContext } from "@/app/Context/UserTypeContext";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/app/Store/Store";
+import { updateSessionCode } from "@/app/Store/ModeratorReducer";
 
 function EnterCodeScreen() {
   const [code, setCode] = useState("");
   const { navigate } = useNavigation<StackNavigation>();
-  const { userType } = useUserTypeContext();
-
-  // useEffect(() => {
-  //   console.log("userType:", userType);
-  // }, []);
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleContinue = () => {
     if (!code) {
@@ -30,6 +29,7 @@ function EnterCodeScreen() {
       return;
     }
 
+    dispatch(updateSessionCode(code));
     navigate("EnterName");
   };
 
