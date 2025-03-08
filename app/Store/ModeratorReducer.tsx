@@ -64,7 +64,7 @@ const moderatorSlice = createSlice({
     ) => {
       state.voteOutThresholdType = action.payload;
     },
-    updateSessionCode: (state, action: PayloadAction<string>) => {
+    updatePartyCode: (state, action: PayloadAction<string>) => {
       state.sessionCode = action.payload;
     },
     updateCustomVoteOutThreshold: (
@@ -83,7 +83,7 @@ export const {
   updateMinParticipants,
   updateAllowParticipantsDuringSessionOption,
   updateParticipantCount,
-  updateSessionCode,
+  updatePartyCode,
   updateVoteOutThresholdType,
   updateCustomVoteOutThreshold,
 } = moderatorSlice.actions;

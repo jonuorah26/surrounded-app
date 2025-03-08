@@ -3,6 +3,7 @@ import FlagIndicator from "@/app/Components/FlagIndicator";
 import { Colors } from "@/app/Constants/Colors";
 import { scaleHeight, scaleWidth, SH } from "@/app/Constants/Dimensions";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { StackNavigation } from "@/app/Screens/_layout";
 import {
   updateCustomVoteOutThreshold,
@@ -55,7 +56,7 @@ function ThresholdScreen() {
     }
     dispatch(updateVoteOutThresholdType(value));
 
-    navigate("SessionKeyGenerated");
+    navigate(NAVIGATION_LABELS.PartyCodeGenerated);
   };
 
   return (

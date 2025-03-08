@@ -6,13 +6,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import ModeratorScreen from "./ModeratorScreen";
 import DrawerContent from "./DrawerContent";
 import { scaleWidth } from "@/app/Constants/Dimensions";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 const Drawer = createDrawerNavigator();
 
 export default function ModeratorDrawerNavigator() {
   return (
     <Drawer.Navigator
-      initialRouteName="Moderator"
+      initialRouteName={NAVIGATION_LABELS.Moderator}
       drawerContent={(props) => <DrawerContent {...props} />} // Optional custom drawer
       screenOptions={{
         headerShown: false, // Hide header if you don't want it
@@ -22,7 +23,10 @@ export default function ModeratorDrawerNavigator() {
         drawerPosition: "right",
       }}
     >
-      <Drawer.Screen name="Moderator" component={ModeratorScreen} />
+      <Drawer.Screen
+        name={NAVIGATION_LABELS.Moderator}
+        component={ModeratorScreen}
+      />
       {/* <Drawer.Screen name="Settings" component={SettingsScreen} /> */}
     </Drawer.Navigator>
   );

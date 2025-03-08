@@ -10,6 +10,7 @@ import { StackNavigation } from "../../_layout";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/Store/Store";
 import { updateAllowParticipantsDuringSessionOption } from "@/app/Store/ModeratorReducer";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 function AllowParticipantsDuringSession() {
   const { navigate } = useNavigation<StackNavigation>();
@@ -17,7 +18,7 @@ function AllowParticipantsDuringSession() {
 
   const handleContinue = (option: boolean) => {
     dispatch(updateAllowParticipantsDuringSessionOption(option));
-    navigate("Threshold");
+    navigate(NAVIGATION_LABELS.Threshold);
   };
   return (
     <View style={generic.container}>

@@ -9,31 +9,36 @@ import AddParticipants from "./AddParticipants";
 import AllowParticipantsDuringSession from "./AllowParticipantsDuringSession";
 import ChooseFlagSystem from "./ChooseFlagSystem";
 import ThresholdScreen from "./RedFlag/ThresholdScreen";
-import SessionKeyGeneratedScreen from "./SessionKeyGeneratedScreen";
+import PartyCodeGeneratedScreen from "./PartyCodeGeneratedScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 const Stack = createNativeStackNavigator();
 const CreateFlowScreens = () => [
   <Stack.Screen
-    key="ChooseFlagSystem"
-    name="ChooseFlagSystem"
+    key={NAVIGATION_LABELS.ChooseFlagSystem}
+    name={NAVIGATION_LABELS.ChooseFlagSystem}
     component={ChooseFlagSystem}
   />,
   <Stack.Screen
-    key="AddParticipants"
-    name="AddParticipants"
+    key={NAVIGATION_LABELS.AddParticipants}
+    name={NAVIGATION_LABELS.AddParticipants}
     component={AddParticipants}
   />,
   <Stack.Screen
-    name={"AllowParticipantsDuringSession"}
+    name={NAVIGATION_LABELS.AllowParticipantsDuringSession}
     component={AllowParticipantsDuringSession}
-    key="AllowParticipantsDuringSession"
+    key={NAVIGATION_LABELS.AllowParticipantsDuringSession}
   />,
-  <Stack.Screen key="Threshold" name="Threshold" component={ThresholdScreen} />,
   <Stack.Screen
-    name="SessionKeyGenerated"
-    key="SessionKeyGenerated"
-    component={SessionKeyGeneratedScreen}
+    key={NAVIGATION_LABELS.Threshold}
+    name={NAVIGATION_LABELS.Threshold}
+    component={ThresholdScreen}
+  />,
+  <Stack.Screen
+    name={NAVIGATION_LABELS.PartyCodeGenerated}
+    key={NAVIGATION_LABELS.PartyCodeGenerated}
+    component={PartyCodeGeneratedScreen}
     options={{
       headerLeft: () => {
         const router = useNavigation<StackNavigation>();

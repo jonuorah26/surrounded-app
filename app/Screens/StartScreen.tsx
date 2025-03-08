@@ -5,17 +5,21 @@ import { generic } from "../Constants/GenericStyles";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigation } from "./_layout";
 import { useUserTypeContext } from "../Context/UserTypeContext";
+import { NAVIGATION_LABELS } from "../Constants/Navigation";
+
+const CREATE = "create-party";
+const JOIN = "join-party";
 
 export default function Start() {
   const { navigate } = useNavigation<StackNavigation>();
-  const {setUserType} = useUserTypeContext();
-  const handlePress = (id: string) => {
-    if (id === "create-session") {
+  const { setUserType } = useUserTypeContext();
+  const handlePress = (id: typeof JOIN | typeof CREATE) => {
+    if (id === CREATE) {
       setUserType("moderator");
-      navigate("ChooseFlagSystem");
+      navigate(NAVIGATION_LABELS.ChooseFlagSystem);
     } else {
       setUserType("participant");
-      navigate("EnterCode");
+      navigate(NAVIGATION_LABELS.EnterCode);
     }
   };
 
@@ -25,14 +29,8 @@ export default function Start() {
         <PlaceholderLogo />
       </View>
       <View style={styles.containerButtons}>
-        <Button
-          text="Create A Session"
-          onPress={() => handlePress("create-session")}
-        />
-        <Button
-          text="Join A Session"
-          onPress={() => handlePress("join-session")}
-        />
+        <Button text="Create A Party" onPress={() => handlePress(CREATE)} />
+        <Button text="Join A Party" onPress={() => handlePress(JOIN)} />
       </View>
     </View>
   );

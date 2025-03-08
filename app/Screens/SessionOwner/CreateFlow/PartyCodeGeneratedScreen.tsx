@@ -6,29 +6,34 @@ import { fontStyles, generic } from "@/app/Constants/GenericStyles";
 import useBlinkingElipses from "@/app/Hooks/useBlinkingElipses";
 import {
   updateParticipantCount,
-  updateSessionCode,
+  updatePartyCode,
 } from "@/app/Store/ModeratorReducer";
 import { AppDispatch } from "@/app/Store/Store";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useDispatch } from "react-redux";
+import { StackNavigation } from "../../_layout";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
-function SessionKeyGeneratedScreen() {
+function PartyCodeGeneratedScreen() {
   const elipses = useBlinkingElipses(1000);
-  const [proceedDisabled, setProceedDisabled] = useState(true);
+  const { navigate } = useNavigation<StackNavigation>();
+  const [proceedDisabled, setProceedDisabled] = useState(false);
   const [participantsCount, setParticipantsCount] = useState(0);
-  const [sessionCode, setSessionCode] = useState("");
+  const [partyCode, setPartyCode] = useState("");
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const mockCode = "4W56HW87";
-    setSessionCode(mockCode);
-    dispatch(updateSessionCode(mockCode));
+    setPartyCode(mockCode);
+    dispatch(updatePartyCode(mockCode));
   }, []);
 
   const handleProceed = () => {
     dispatch(updateParticipantCount(participantsCount));
+    navigate(NAVIGATION_LABELS.ModeratorScreen);
   };
 
   return (
@@ -38,9 +43,7 @@ function SessionKeyGeneratedScreen() {
       </View>
       <View style={[styles.content, { flex: 30 }]}>
         <View style={[styles.codeSection, { flex: 2 }]}>
-          <Text style={[styles.sessionCodeHeader, { flex: 1 }]}>
-            Session Code
-          </Text>
+          <Text style={[styles.partyCodeHeader, { flex: 1 }]}>Party Code</Text>
           <View
             style={{
               alignItems: "center",
@@ -49,7 +52,7 @@ function SessionKeyGeneratedScreen() {
             }}
           >
             <View style={styles.codeContainer} /*white code container*/>
-              <Text style={styles.codeText}>{sessionCode}</Text>
+              <Text style={styles.codeText}>{partyCode}</Text>
               <TouchableOpacity onPress={() => {}} style={styles.copyButton}>
                 <MaterialIcons
                   name="content-copy"
@@ -60,7 +63,7 @@ function SessionKeyGeneratedScreen() {
             <View style={{ paddingVertical: "2%" }} /*codeHelperText*/>
               <Text style={styles.codeHelperText}>
                 Tap the clipboard icon to copy the code. Share this code with
-                your participants so that they can join your session.
+                your participants so that they can join your party.
               </Text>
             </View>
           </View>
@@ -89,7 +92,7 @@ function SessionKeyGeneratedScreen() {
       </View>
       <View style={{ flex: 5, justifyContent: "flex-start" }}>
         <Button
-          text="Proceed To Room"
+          text="Enter Session"
           onPress={handleProceed}
           sizeVariant="medium"
           styles={{
@@ -105,7 +108,7 @@ function SessionKeyGeneratedScreen() {
   );
 }
 
-export default SessionKeyGeneratedScreen;
+export default PartyCodeGeneratedScreen;
 const styles = StyleSheet.create({
   content: {
     alignItems: "center",
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
     elevation: 2,
   },
-  sessionCodeHeader: {
+  partyCodeHeader: {
     ...generic.title,
     //bottom: "13%",
   },
