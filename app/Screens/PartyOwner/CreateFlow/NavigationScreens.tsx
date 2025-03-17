@@ -14,11 +14,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/Store/Store";
-import { reset } from "@/app/Store/ModeratorReducer";
-import {
-  DB_PROPERTY_LABELS,
-  modifyPartyData,
-} from "@/app/Firebase/FirestoreService";
+import { reset } from "@/app/Store/PartyReducer";
+import { modifyPartyData } from "@/app/Firebase/FirestoreService";
+import { DB_PROPERTY_LABELS } from "@/app/Constants/DbConstants";
 
 const Stack = createNativeStackNavigator();
 const CreateFlowScreens = () => [
@@ -51,7 +49,7 @@ const CreateFlowScreens = () => [
         const router = useNavigation<StackNavigation>();
         const dispatch = useDispatch<AppDispatch>();
         const { dbCollectionId } = useSelector(
-          (state: RootState) => state.moderator
+          (state: RootState) => state.party
         );
 
         const handleExit = () => {

@@ -26,7 +26,7 @@ import {
   updateMaxParticipants,
   updateMaxSameAsMinOption,
   updateMinParticipants,
-} from "@/app/Store/ModeratorReducer";
+} from "@/app/Store/PartyReducer";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 function AddParticipants() {

@@ -9,33 +9,13 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "./FirebaseConfig";
-import { useSelector } from "react-redux";
-import { RootState } from "../Store/Store";
-import { PartyData } from "../Store/ModeratorReducer";
-
-const PARTIES = "Parties";
-const PARTICIPANTS = "Participants";
-
-export const DB_PROPERTY_LABELS = {
-  flagSystem: "flagSystem",
-  flagsRaisedCount: "flagsRaisedCount",
-  minParticipants: "minParticipants",
-  maxParticipants: "maxParticipants",
-  participantCount: "participantCount",
-  maxSameAsMin: "maxSameAsMin",
-  allowParticipantsDuringSession: "allowParticipantsDuringSession",
-  voteOutThresholdType: "voteOutThresholdType",
-  customVoteOutThreshold: "customVoteOutThreshold",
-  partyCode: "partyCode",
-  isPaused: "isPaused",
-  isStarted: "isStarted",
-  isEnded: "isEnded",
-
-  participantName: "participantName",
-  isDisabled: "isDisabled",
-  isFlagRaised: "isFlagRaised",
-  isOnline: "isOnline",
-};
+import { emptyParty, PartyData } from "../Store/PartyReducer";
+import {
+  DB_PROPERTY_LABELS,
+  PARTICIPANTS,
+  PARTIES,
+} from "../Constants/DbConstants";
+import { copyMatchingProperties, generatePartyCode } from "./HelperFunctions";
 
 export const modifyPartyData = async (
   partyId: string,
@@ -96,67 +76,49 @@ export const createParty = async (moderatorData: PartyData) => {
   }
 };
 
-export const addParticipant = async (
-  participantName: string,
-  partyCode: string
-) => {
-  const partyQuery = query(
-    collection(db, PARTIES),
-    where(DB_PROPERTY_LABELS.partyCode, "==", partyCode),
-    where(DB_PROPERTY_LABELS.isEnded, "==", false)
-  );
-
-  const result = await getDocs(partyQuery);
-  if (result.empty || result.docs.length > 1) {
-    return {};
-  }
-
-  const partyDoc = result.docs[0];
-  const partyId = partyDoc.id;
-  const partyData = partyDoc.data() as PartyData;
-
-  var participantRef = doc(collection(db, PARTIES, partyId, PARTICIPANTS));
-  const participantId = `p_${participantRef.id}`;
-  participantRef = doc(db, PARTIES, partyId, PARTICIPANTS, participantId);
-
+export const findParty = async (partyCode: string) => {
   try {
-    await setDoc(participantRef, {
-      participantName,
-      isDisabled: false,
-      isFlagRaised: false,
-      isOnline: true,
-    });
-    return { partyId, participantId };
+    const partyQuery = query(
+      collection(db, PARTIES),
+      where(DB_PROPERTY_LABELS.partyCode, "==", partyCode),
+      where(DB_PROPERTY_LABELS.isEnded, "==", false)
+    );
+
+    const result = await getDocs(partyQuery);
+    if (result.empty || result.docs.length > 1) {
+      return null;
+    }
+
+    const partyDoc = result.docs[0];
+    const partyId = partyDoc.id;
+    var partyData = emptyParty;
+    partyData = copyMatchingProperties(partyDoc.data(), partyData) as PartyData;
+
+    return { partyId, partyData };
   } catch (err) {
     console.error(err);
     return null;
   }
 };
 
-const generatePartyCode = async () => {
-  var codeIsUnique = false;
-  var code = "";
-  while (!codeIsUnique) {
-    code = generateRandomCode();
-    const partyQuery = query(
-      collection(db, PARTIES),
-      where(DB_PROPERTY_LABELS.partyCode, "==", code),
-      where(DB_PROPERTY_LABELS.isEnded, "==", false)
-    );
+export const addParticipantToParty = async (
+  participantName: string,
+  partyId: string
+) => {
+  try {
+    var participantRef = doc(collection(db, PARTIES, partyId, PARTICIPANTS));
+    const participantId = `p_${participantRef.id}`;
+    participantRef = doc(db, PARTIES, partyId, PARTICIPANTS, participantId);
 
-    const result = await getDocs(partyQuery);
-    codeIsUnique = result.empty;
+    await setDoc(participantRef, {
+      participantName,
+      isDisabled: false,
+      isFlagRaised: false,
+      isOnline: true,
+    });
+    return { participantId };
+  } catch (err) {
+    console.error(err);
+    return null;
   }
-  return code;
-};
-
-const generateRandomCode = () => {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let partyCode = "";
-  for (let i = 0; i < 8; i++) {
-    partyCode += characters.charAt(
-      Math.floor(Math.random() * characters.length)
-    );
-  }
-  return partyCode;
 };

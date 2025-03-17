@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import moderatorReducer from "./ModeratorReducer";
+import partyReducer from "./PartyReducer";
 import participantReducer from "./ParticipantReducer";
 
 export const store = configureStore({
   reducer: {
-    moderator: moderatorReducer,
+    party: partyReducer,
     participant: participantReducer,
   },
 });

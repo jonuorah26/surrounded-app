@@ -8,7 +8,7 @@ import { StackNavigation } from "../../_layout";
 import { useUserTypeContext } from "@/app/Context/UserTypeContext";
 import { AppDispatch } from "@/app/Store/Store";
 import { useDispatch } from "react-redux";
-import { updateFlagSystem } from "@/app/Store/ModeratorReducer";
+import { updateFlagSystem } from "@/app/Store/PartyReducer";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 function ChooseFlagSystem() {

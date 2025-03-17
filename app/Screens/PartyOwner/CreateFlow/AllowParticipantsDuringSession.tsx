@@ -9,7 +9,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { StackNavigation } from "../../_layout";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/Store/Store";
-import { updateAllowParticipantsDuringSessionOption } from "@/app/Store/ModeratorReducer";
+import { updateAllowParticipantsDuringSessionOption } from "@/app/Store/PartyReducer";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 
 function AllowParticipantsDuringSession() {

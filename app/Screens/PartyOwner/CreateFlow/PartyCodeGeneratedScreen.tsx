@@ -7,7 +7,7 @@ import useBlinkingElipses from "@/app/Hooks/useBlinkingElipses";
 import {
   updateParticipantCount,
   updatePartyCode,
-} from "@/app/Store/ModeratorReducer";
+} from "@/app/Store/PartyReducer";
 import { AppDispatch, RootState } from "@/app/Store/Store";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -23,7 +23,7 @@ function PartyCodeGeneratedScreen() {
   const { navigate } = useNavigation<StackNavigation>();
   const [proceedDisabled, setProceedDisabled] = useState(true);
   const { partyCode, minParticipants, participantCount } = useSelector(
-    (state: RootState) => state.moderator.moderatorData
+    (state: RootState) => state.party.partyData
   );
   const dispatch = useDispatch<AppDispatch>();
 

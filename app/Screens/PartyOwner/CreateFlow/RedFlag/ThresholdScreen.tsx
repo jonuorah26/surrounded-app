@@ -14,7 +14,7 @@ import {
   updatePartyCode,
   updateVoteOutThresholdType,
   VoteOutThresholdType,
-} from "@/app/Store/ModeratorReducer";
+} from "@/app/Store/PartyReducer";
 import { AppDispatch, RootState } from "@/app/Store/Store";
 import { useNavigation } from "expo-router";
 import React, { useState } from "react";
@@ -29,10 +29,8 @@ function ThresholdScreen() {
   const [loading, setLoading] = useState(false);
   const { navigate } = useNavigation<StackNavigation>();
   const dispatch = useDispatch<AppDispatch>();
-  const moderatorData = useSelector(
-    (state: RootState) => state.moderator.moderatorData
-  );
-  const minParticipants = moderatorData.minParticipants;
+  const partyData = useSelector((state: RootState) => state.party.partyData);
+  const minParticipants = partyData.minParticipants;
 
   const handleValueChange = (newValue: VoteOutThresholdType) => {
     setValue(newValue);
@@ -65,7 +63,7 @@ function ThresholdScreen() {
 
     setLoading(true);
     const data: PartyData = {
-      ...moderatorData,
+      ...partyData,
       customVoteOutThreshold: custom ? parseInt(custom) : null,
       voteOutThresholdType: value,
     };

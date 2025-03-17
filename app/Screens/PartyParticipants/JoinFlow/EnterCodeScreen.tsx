@@ -13,25 +13,37 @@ import {
 } from "react-native";
 import { TextInput } from "react-native-paper";
 import { StackNavigation } from "../../_layout";
-import { useUserTypeContext } from "@/app/Context/UserTypeContext";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/Store/Store";
-import { updatePartyCode } from "@/app/Store/ModeratorReducer";
+import {
+  updateDbCollectionId,
+  updateParty,
+  updatePartyCode,
+} from "@/app/Store/PartyReducer";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
+import { findParty } from "@/app/Firebase/FirestoreService";
 
 function EnterCodeScreen() {
   const [code, setCode] = useState("");
   const { navigate } = useNavigation<StackNavigation>();
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!code) {
       alert("Please enter the party code");
       return;
     }
-
-    dispatch(updatePartyCode(code));
-    navigate(NAVIGATION_LABELS.EnterName);
+    try {
+      const result = await findParty(code);
+      if (result) {
+        dispatch(updatePartyCode(code));
+        dispatch(updateParty(result.partyData));
+        dispatch(updateDbCollectionId(result.partyId));
+        navigate(NAVIGATION_LABELS.EnterName);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
