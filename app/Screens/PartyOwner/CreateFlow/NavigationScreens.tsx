@@ -12,6 +12,13 @@ import ThresholdScreen from "./RedFlag/ThresholdScreen";
 import PartyCodeGeneratedScreen from "./PartyCodeGeneratedScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/app/Store/Store";
+import { reset } from "@/app/Store/ModeratorReducer";
+import {
+  DB_PROPERTY_LABELS,
+  modifyPartyData,
+} from "@/app/Firebase/FirestoreService";
 
 const Stack = createNativeStackNavigator();
 const CreateFlowScreens = () => [
@@ -42,6 +49,10 @@ const CreateFlowScreens = () => [
     options={{
       headerLeft: () => {
         const router = useNavigation<StackNavigation>();
+        const dispatch = useDispatch<AppDispatch>();
+        const { dbCollectionId } = useSelector(
+          (state: RootState) => state.moderator
+        );
 
         const handleExit = () => {
           Alert.alert(
@@ -50,7 +61,17 @@ const CreateFlowScreens = () => [
             [
               {
                 text: "Yes",
-                onPress: () => router.navigate("Start"),
+                onPress: () => {
+                  modifyPartyData(
+                    dbCollectionId,
+                    {
+                      [DB_PROPERTY_LABELS.isEnded]: true,
+                    },
+                    false
+                  );
+                  router.navigate("Start");
+                  dispatch(reset());
+                },
                 style: "destructive",
               },
               {

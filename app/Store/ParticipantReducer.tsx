@@ -8,22 +8,32 @@ type ParticipantData = {
   voteOutThresholdType: VoteOutThresholdType;
   customVoteOutThreshold: number | null;
   sessionCode: string;
-  participantName: string;
 
+  participantName: string;
   isDisabled: boolean;
   isFlagRaised: boolean;
+  isOnline: boolean;
 };
 
-const initialState: ParticipantData = {
-  flagSystem: "",
-  flagsRaisedCount: 0,
-  participantCount: 0,
-  voteOutThresholdType: "",
-  customVoteOutThreshold: null,
-  sessionCode: "",
-  participantName: "",
-  isDisabled: false,
-  isFlagRaised: false,
+type ParticipantState = {
+  participantData: ParticipantData;
+  dbCollectionId: string;
+};
+
+const initialState: ParticipantState = {
+  participantData: {
+    flagSystem: "",
+    flagsRaisedCount: 0,
+    participantCount: 0,
+    voteOutThresholdType: "",
+    customVoteOutThreshold: null,
+    sessionCode: "",
+    participantName: "",
+    isDisabled: false,
+    isFlagRaised: false,
+    isOnline: true,
+  },
+  dbCollectionId: "",
 };
 
 const participantSlice = createSlice({
@@ -31,37 +41,43 @@ const participantSlice = createSlice({
   initialState,
   reducers: {
     updateFlagSystem: (state, action: PayloadAction<FlagSystemOption>) => {
-      state.flagSystem = action.payload;
+      state.participantData.flagSystem = action.payload;
     },
     updateFlagsRaisedCount: (state, action: PayloadAction<number>) => {
-      state.flagsRaisedCount = action.payload;
+      state.participantData.flagsRaisedCount = action.payload;
     },
     updateParticipantCount: (state, action: PayloadAction<number>) => {
-      state.participantCount = action.payload;
+      state.participantData.participantCount = action.payload;
     },
     updateVoteOutThresholdType: (
       state,
       action: PayloadAction<VoteOutThresholdType>
     ) => {
-      state.voteOutThresholdType = action.payload;
+      state.participantData.voteOutThresholdType = action.payload;
     },
     updateSessionCode: (state, action: PayloadAction<string>) => {
-      state.sessionCode = action.payload;
+      state.participantData.sessionCode = action.payload;
     },
     updateParticipantName: (state, action: PayloadAction<string>) => {
-      state.participantName = action.payload;
+      state.participantData.participantName = action.payload;
     },
     updateCustomVoteOutThreshold: (
       state,
       action: PayloadAction<number | null>
     ) => {
-      state.customVoteOutThreshold = action.payload;
+      state.participantData.customVoteOutThreshold = action.payload;
     },
     updateIsDisabled: (state, action: PayloadAction<boolean>) => {
-      state.isDisabled = action.payload;
+      state.participantData.isDisabled = action.payload;
     },
     updateIsFlagRaised: (state, action: PayloadAction<boolean>) => {
-      state.isFlagRaised = action.payload;
+      state.participantData.isFlagRaised = action.payload;
+    },
+    updateDbCollectionId: (state, action: PayloadAction<string>) => {
+      state.dbCollectionId = action.payload;
+    },
+    reset: (state) => {
+      return initialState;
     },
   },
 });
@@ -76,6 +92,8 @@ export const {
   updateSessionCode,
   updateVoteOutThresholdType,
   updateParticipantName,
+  updateDbCollectionId,
+  reset,
 } = participantSlice.actions;
 
 export default participantSlice.reducer;

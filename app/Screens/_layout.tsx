@@ -8,10 +8,10 @@ import { Colors } from "../Constants/Colors";
 
 import { ParamListBase } from "@react-navigation/native";
 
-import ModeratorDrawerNavigator from "./SessionOwner/DrawerNavigator";
-import JoinFlowScreens from "./SessionParticipants/JoinFlow/Navigation";
-import CreateFlowScreens from "./SessionOwner/CreateFlow/NavigationScreens";
-import ParticipantDrawerNavigator from "./SessionParticipants/DrawerNavigator";
+import ModeratorDrawerNavigator from "./PartyOwner/DrawerNavigator";
+import JoinFlowScreens from "./PartyParticipants/JoinFlow/Navigation";
+import CreateFlowScreens from "./PartyOwner/CreateFlow/NavigationScreens";
+import ParticipantDrawerNavigator from "./PartyParticipants/DrawerNavigator";
 import { NAVIGATION_LABELS } from "../Constants/Navigation";
 
 const Stack = createNativeStackNavigator();

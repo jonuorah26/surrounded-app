@@ -6,6 +6,7 @@ export const Colors = {
   black: "black",
   green: "green",
   disabledGray: "rgba(0, 0, 0, 0.38)",
+  disablingOverlay: "rgba(0, 0, 0, 0.8)",
   culturedWhite: "#F3F3F3",
   buzzerRed: "#D50000",
 };

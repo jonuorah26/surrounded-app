@@ -8,31 +8,27 @@ import {
   updateParticipantCount,
   updatePartyCode,
 } from "@/app/Store/ModeratorReducer";
-import { AppDispatch } from "@/app/Store/Store";
+import { AppDispatch, RootState } from "@/app/Store/Store";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { StackNavigation } from "../../_layout";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
+import { createParty } from "@/app/Firebase/FirestoreService";
 
 function PartyCodeGeneratedScreen() {
   const elipses = useBlinkingElipses(1000);
   const { navigate } = useNavigation<StackNavigation>();
-  const [proceedDisabled, setProceedDisabled] = useState(false);
-  const [participantsCount, setParticipantsCount] = useState(0);
-  const [partyCode, setPartyCode] = useState("");
+  const [proceedDisabled, setProceedDisabled] = useState(true);
+  const { partyCode, minParticipants, participantCount } = useSelector(
+    (state: RootState) => state.moderator.moderatorData
+  );
   const dispatch = useDispatch<AppDispatch>();
 
-  useEffect(() => {
-    const mockCode = "4W56HW87";
-    setPartyCode(mockCode);
-    dispatch(updatePartyCode(mockCode));
-  }, []);
-
   const handleProceed = () => {
-    dispatch(updateParticipantCount(participantsCount));
+    dispatch(updateParticipantCount(participantCount));
     navigate(NAVIGATION_LABELS.ModeratorScreen);
   };
 
@@ -81,7 +77,7 @@ function PartyCodeGeneratedScreen() {
             </Text>
           </View>
           <View style={{ flex: -1 }}>
-            <Text style={styles.participantsJoinedNum}>24</Text>
+            <Text style={styles.participantsJoinedNum}>{participantCount}</Text>
           </View>
           <View style={{ flex: -1 }}>
             <Text style={styles.participantsJoinedText}>

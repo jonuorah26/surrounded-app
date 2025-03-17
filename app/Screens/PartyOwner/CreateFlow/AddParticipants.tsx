@@ -86,8 +86,8 @@ function AddParticipants() {
     }
 
     dispatch(updateMinParticipants(parseInt(values.min)));
-    if (values.max) {
-      dispatch(updateMaxSameAsMinOption(maxOn));
+    if (maxOn && values.max) {
+      dispatch(updateMaxSameAsMinOption(checked === "checked"));
       dispatch(updateMaxParticipants(parseInt(values.max)));
     }
 
@@ -146,11 +146,7 @@ function AddParticipants() {
                     circleActiveColor={Colors.white}
                     circleInActiveColor={Colors.white}
                     changeValueImmediately={true}
-                    // innerCircleStyle={{ marginLeft: 20 }}
-                    // outerCircleStyle={{ width: 110 }}
                     switchWidthMultiplier={2.2}
-                    // inactiveTextStyle={{ marginRight: -16, left: 8 }}
-                    // activeTextStyle={{ marginLeft: -20, right: 8 }}
                     renderActiveText={false}
                     renderInActiveText={false}
                   />
