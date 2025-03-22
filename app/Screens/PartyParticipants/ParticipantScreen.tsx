@@ -28,46 +28,91 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { AutoSizeText, ResizeTextMode } from "react-native-auto-size-text";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/app/Store/Store";
+import InterruptOverlay from "@/app/Components/Participant/InterruptOverlay";
+import { updateFlag } from "@/app/Store/ParticipantReducer";
+import Toast from "@/app/Components/Toast";
+import { modifyFlag } from "@/app/Firebase/FirestoreService";
+import LoadingOverlay from "@/app/Components/LoadingOverlay";
+import { usePartyListener } from "@/app/Hooks/usePartyListener";
+import { AppError } from "@/app/Firebase/Types";
 
 type DrawerNavProps = DrawerNavigationProp<any>;
 
 function ParticipantScreen() {
+  usePartyListener();
   const { openDrawer } = useNavigation<DrawerNavProps>();
+  const [toastMessage, setToastMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const insets = useSafeAreaInsets();
-  const [flagRaised, setFlagRaised] = useState(false);
-
-  const [flagsRaised, setFlagsRaised] = useState(8);
-  const [totalParticipants, setTotalParticipants] = useState(30);
+  const {
+    partyData: { participantCount, flagsRaisedCount },
+    dbCollectionId: partyId,
+  } = useSelector((state: RootState) => state.party);
+  const {
+    participantData: {
+      participantName,
+      flag: { raised: flagRaised },
+    },
+    dbCollectionId: participantId,
+  } = useSelector((state: RootState) => state.participant);
+  const dispatch = useDispatch<AppDispatch>();
 
   const getFontSize = () => {
     const baseSize = scaleWidth(80) * 0.24;
 
-    const raisedStr = flagsRaised.toString().padStart(2, "0");
-    const totalStr = totalParticipants.toString().padStart(2, "0");
+    const raisedStr = flagsRaisedCount.toString().padStart(2, "0");
+    const totalStr = participantCount.toString().padStart(2, "0");
 
     const maxLen = Math.max(raisedStr.length, totalStr.length);
     return baseSize / Math.max(1, maxLen * 0.4); // Adjust divisor for fine-tuning
   };
 
   const X_POSITION = -scaleHeight(475) - scaleHeight(insets.bottom * 1.2);
+  const POSITION_0 = 0;
 
   const handlePress = () => {
     openDrawer();
   };
 
-  const translateY = useSharedValue(0);
+  const translateY = useSharedValue(POSITION_0);
+
+  useEffect(() => {
+    if (flagRaised && translateY.value !== X_POSITION) {
+      translateY.value = withSpring(X_POSITION);
+    } else if (!flagRaised && translateY.value !== POSITION_0) {
+      translateY.value = withSpring(POSITION_0);
+    }
+  }, [flagRaised]);
 
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
       translateY.value = event.translationY;
     })
-    .onEnd((event) => {
+    .onEnd(async (event) => {
       if (Math.abs(event.translationY) >= Math.abs(X_POSITION)) {
-        translateY.value = withSpring(X_POSITION);
-        setFlagRaised(true);
+        try {
+          setToastMessage("");
+          setLoading(true);
+          await modifyFlag(partyId, participantId, {
+            raised: true,
+            lastChangeBy: "participant",
+          });
+          dispatch(updateFlag({ raised: true, lastChangeBy: "participant" }));
+          translateY.value = withSpring(X_POSITION);
+        } catch (err) {
+          if (err instanceof AppError) {
+            setToastMessage(err.message);
+          } else {
+            setToastMessage("Error occured trying to raise flag");
+          }
+          translateY.value = withSpring(POSITION_0);
+        }
+        setLoading(false);
         return;
       }
-      translateY.value = withSpring(0); // Reset to initial position with spring animation
+      translateY.value = withSpring(POSITION_0); // Reset to initial position with spring animation
     })
     .runOnJS(true);
 
@@ -78,158 +123,166 @@ function ParticipantScreen() {
   });
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={generic.container}>
-        <SafeAreaView
-          style={{
-            flex: 1,
-          }}
-        >
-          <View
+    <>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={generic.container}>
+          <SafeAreaView
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: !insets.bottom ? scaleHeight(20) : undefined,
+              flex: 1,
             }}
           >
             <View
               style={{
-                left: scaleWidth(10),
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: !insets.bottom ? scaleHeight(20) : undefined,
               }}
             >
-              <View style={styles.fractionContainer}>
-                <View style={{ top: -scaleHeight(10) }}>
-                  <Text style={[styles.number, { fontSize: getFontSize() }]}>
-                    {flagsRaised.toString().padStart(2, "0")}
-                  </Text>
+              <View
+                style={{
+                  left: scaleWidth(10),
+                }}
+              >
+                <View style={styles.fractionContainer}>
+                  <View style={{ top: -scaleHeight(10) }}>
+                    <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                      {flagsRaisedCount.toString().padStart(2, "0")}
+                    </Text>
+                  </View>
+                  <View style={{ transform: [{ rotate: "20deg" }] }}>
+                    <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                      /
+                    </Text>
+                  </View>
+                  <View style={{ top: scaleHeight(10) }}>
+                    <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                      {participantCount.toString().padStart(2, "0")}
+                    </Text>
+                  </View>
                 </View>
-                <View style={{ transform: [{ rotate: "20deg" }] }}>
-                  <Text style={[styles.number, { fontSize: getFontSize() }]}>
-                    /
-                  </Text>
-                </View>
-                <View style={{ top: scaleHeight(10) }}>
-                  <Text style={[styles.number, { fontSize: getFontSize() }]}>
-                    {totalParticipants.toString().padStart(2, "0")}
+                <View>
+                  <Text
+                    style={{
+                      fontSize: fontStyles.xsmall.fontSize,
+                      color: Colors.culturedWhite,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Flags Raised
                   </Text>
                 </View>
               </View>
-              <View>
+              <View
+                style={{
+                  alignItems: "center",
+                  right: scaleWidth(-12),
+                  //backgroundColor: "orange",
+                  width: "35%",
+                }}
+              >
                 <Text
-                  style={{
-                    fontSize: fontStyles.xsmall.fontSize,
-                    color: Colors.culturedWhite,
-                    fontWeight: "600",
-                  }}
-                >
-                  Flags Raised
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                alignItems: "center",
-                right: scaleWidth(-12),
-                //backgroundColor: "orange",
-                width: "35%",
-              }}
-            >
-              <Text
-                style={[
-                  styles.whosInSeatText,
-                  {
-                    paddingBottom: scaleWidth(10),
-                  },
-                ]}
-              >
-                Who's in The Seat?
-              </Text>
-              <Ionicons
-                name="person-outline"
-                size={scaleWidth(40)}
-                color="black"
-                style={{ paddingRight: scaleWidth(20) }}
-              />
-
-              <AutoSizeText
-                style={styles.whosInSeatText}
-                mode={ResizeTextMode.max_lines}
-                numberOfLines={2}
-                fontSize={fontStyles.xsmall.fontSize}
-              >
-                Arthur Blood kosdooo sncs
-              </AutoSizeText>
-            </View>
-          </View>
-          <View>
-            <View
-              style={{
-                alignSelf: "flex-end",
-                top: scaleHeight(20),
-                zIndex: 2,
-                elevation: 2,
-              }}
-            >
-              <View style={styles.hamburger}>
-                <Pressable
-                  style={({ pressed }) => [
-                    { opacity: pressed ? 0.5 : 1 },
-                    styles.hamburgerButton,
+                  style={[
+                    styles.whosInSeatText,
+                    {
+                      paddingBottom: scaleWidth(10),
+                    },
                   ]}
-                  onPress={handlePress}
                 >
-                  <FontAwesome6
-                    name="bars"
-                    size={fontStyles.large.fontSize}
-                    color={Colors.yellow}
-                  />
-                </Pressable>
+                  Who's in The Seat?
+                </Text>
+                <Ionicons
+                  name="person-outline"
+                  size={scaleWidth(40)}
+                  color="black"
+                  style={{ paddingRight: scaleWidth(20) }}
+                />
+
+                <AutoSizeText
+                  style={styles.whosInSeatText}
+                  mode={ResizeTextMode.max_lines}
+                  numberOfLines={2}
+                  fontSize={fontStyles.xsmall.fontSize}
+                >
+                  {participantName}
+                </AutoSizeText>
               </View>
             </View>
-          </View>
-          <View>
-            <View
-              style={{
-                left: scaleWidth(30),
-                bottom: scaleWidth(130),
-              }}
-            >
-              <Entypo
-                name="cross"
-                size={scaleWidth(350)}
-                color={flagRaised ? Colors.buzzerRed : Colors.disabledGray}
-              />
+            <View>
+              <View
+                style={{
+                  alignSelf: "flex-end",
+                  top: scaleHeight(20),
+                  zIndex: 2,
+                  elevation: 2,
+                }}
+              >
+                <View style={styles.hamburger}>
+                  <Pressable
+                    style={({ pressed }) => [
+                      { opacity: pressed ? 0.5 : 1 },
+                      styles.hamburgerButton,
+                    ]}
+                    onPress={handlePress}
+                  >
+                    <FontAwesome6
+                      name="bars"
+                      size={fontStyles.large.fontSize}
+                      color={Colors.yellow}
+                    />
+                  </Pressable>
+                </View>
+              </View>
             </View>
-            <View
-              style={{
-                alignSelf: "center",
-                bottom: insets.bottom
-                  ? -scaleHeight(insets.bottom * 4.2)
-                  : -scaleHeight(10),
-                left: scaleWidth(10),
-                pointerEvents: flagRaised ? "none" : "auto",
-              }}
-              onLayout={(e) => {
-                console.log(
-                  insets.bottom ? "X: " : "SE: ",
-                  e.nativeEvent.layout.y
-                );
-              }}
-            >
-              <GestureDetector gesture={panGesture}>
-                <Animated.View style={[animatedStyle]}>
-                  <Entypo
-                    name="flag"
-                    size={scaleWidth(160)}
-                    color={Colors.red}
-                  />
-                </Animated.View>
-              </GestureDetector>
+            <View>
+              <View
+                style={{
+                  left: scaleWidth(30),
+                  bottom: scaleWidth(130),
+                }}
+              >
+                <Entypo
+                  name="cross"
+                  size={scaleWidth(350)}
+                  color={flagRaised ? Colors.buzzerRed : Colors.disabledGray}
+                />
+              </View>
+              <View
+                style={{
+                  alignSelf: "center",
+                  bottom: insets.bottom
+                    ? -scaleHeight(insets.bottom * 4.2)
+                    : -scaleHeight(10),
+                  left: scaleWidth(10),
+                  pointerEvents: flagRaised ? "none" : "auto",
+                }}
+                onLayout={(e) => {
+                  console.log(
+                    insets.bottom ? "X: " : "SE: ",
+                    e.nativeEvent.layout.y
+                  );
+                }}
+              >
+                <GestureDetector gesture={panGesture}>
+                  <Animated.View style={[animatedStyle]}>
+                    <Entypo
+                      name="flag"
+                      size={scaleWidth(160)}
+                      color={Colors.red}
+                    />
+                  </Animated.View>
+                </GestureDetector>
+              </View>
             </View>
-          </View>
-        </SafeAreaView>
-      </View>
-    </GestureHandlerRootView>
+          </SafeAreaView>
+        </View>
+      </GestureHandlerRootView>
+
+      <Toast message={toastMessage} />
+      {loading && (
+        <LoadingOverlay loadingText="Flag raised. Letting moderator know..." />
+      )}
+      <InterruptOverlay />
+    </>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Alert } from "react-native";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
@@ -8,8 +8,18 @@ import { Colors } from "@/app/Constants/Colors";
 import { fontStyles } from "@/app/Constants/GenericStyles";
 import { scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
 import Divider from "../../Components/Divider";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/app/Store/Store";
+import { endParty } from "@/app/Firebase/FirestoreService";
+import { reset } from "@/app/Store/PartyReducer";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
+  const dbCollectionId = useSelector(
+    (state: RootState) => state.party.dbCollectionId
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       <View style={{ paddingBottom: scaleHeight(54) }}>
@@ -72,7 +82,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
               alignSelf: "center",
             }}
           >
-            Edit Session Capacity
+            Edit Party Capacity
           </Text>
         </Pressable>
       </View>
@@ -82,7 +92,31 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           marginVertical: scaleHeight(24),
         }}
       >
-        <Pressable onPress={() => /*props.navigation.navigate("Settings")*/ {}}>
+        <Pressable
+          onPress={() => {
+            Alert.alert("Alert", "Are you sure you want to end the party?", [
+              {
+                text: "Yes",
+                onPress: () => {
+                  endParty(dbCollectionId, false);
+
+                  //reset entire state
+                  dispatch(reset());
+
+                  props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: NAVIGATION_LABELS.Start }],
+                  });
+                },
+                style: "destructive",
+              },
+              {
+                text: "No",
+                style: "cancel",
+              },
+            ]);
+          }}
+        >
           <Text
             style={{
               fontSize: fontStyles.medium.fontSize,
@@ -90,7 +124,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
               alignSelf: "center",
             }}
           >
-            End Session
+            End Party
           </Text>
         </Pressable>
       </View>

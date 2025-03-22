@@ -23,7 +23,10 @@ export default function ParticipantDrawerNavigator() {
         drawerPosition: "right",
       }}
     >
-      <Drawer.Screen name={NAVIGATION_LABELS.Participant} component={ParticipantScreen} />
+      <Drawer.Screen
+        name={NAVIGATION_LABELS.Participant}
+        component={ParticipantScreen}
+      />
       {/* <Drawer.Screen name="Settings" component={SettingsScreen} /> */}
     </Drawer.Navigator>
   );

@@ -93,9 +93,6 @@ const partySlice = createSlice({
     startParty: (state) => {
       state.partyData.isStarted = true;
     },
-    endParty: (state) => {
-      state.partyData.isEnded = true;
-    },
     updateIsPaused: (state, action: PayloadAction<boolean>) => {
       state.partyData.isPaused = action.payload;
     },
@@ -107,6 +104,12 @@ const partySlice = createSlice({
     },
     updateParty: (state, action: PayloadAction<PartyData>) => {
       state.partyData = action.payload;
+    },
+    updatePartyProperties: (
+      state,
+      action: PayloadAction<Partial<PartyData>>
+    ) => {
+      state.partyData = { ...state.partyData, ...action.payload };
     },
   },
 });
@@ -123,11 +126,11 @@ export const {
   updateCustomVoteOutThreshold,
   updateFlagsRaisedCount,
   updateIsPaused,
-  endParty,
   startParty,
   reset,
   updateDbCollectionId,
   updateParty,
+  updatePartyProperties,
 } = partySlice.actions;
 
 export default partySlice.reducer;

@@ -9,7 +9,7 @@ type Props = {
   loadingText?: string;
 };
 
-export default function LoadingOverlay({ loadingText = "loading.." }: Props) {
+export default function LoadingOverlay({ loadingText }: Props) {
   return (
     <View
       style={[styles.container, { backgroundColor: Colors.disablingOverlay }]}
@@ -20,7 +20,11 @@ export default function LoadingOverlay({ loadingText = "loading.." }: Props) {
           color={Colors.yellow}
           size={scaleArea(200)}
         />
-        <Text style={{ ...fontStyles.large }}>{loadingText}</Text>
+        {loadingText && (
+          <Text style={{ ...fontStyles.large, textAlign: "center" }}>
+            {loadingText}
+          </Text>
+        )}
       </View>
     </View>
   );

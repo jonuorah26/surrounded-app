@@ -1,0 +1,75 @@
+import React, { useEffect, useState } from "react";
+import Overlay from "../Overlay";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/app/Store/Store";
+import { StackNavigation } from "@/app/Screens/_layout";
+import { useNavigation } from "@react-navigation/native";
+import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
+import { reset as partyReset } from "@/app/Store/PartyReducer";
+import { reset as participantReset } from "@/app/Store/ParticipantReducer";
+
+const COUNTDOWN = 10;
+
+export default function InterruptOverlay() {
+  const [headerText, setHeaderText] = useState("");
+  const [subText, setSubText] = useState("");
+  const [subText2, setSubText2] = useState("");
+  const [countdown, setCountdown] = useState(COUNTDOWN);
+  const { isEnded, isPaused, isStarted } = useSelector(
+    (state: RootState) => state.party.partyData
+  );
+  const { isDisabled } = useSelector(
+    (state: RootState) => state.participant.participantData
+  );
+  const dispatch = useDispatch<AppDispatch>();
+  const { navigate } = useNavigation<StackNavigation>();
+
+  useEffect(() => {
+    if (isEnded) {
+      setHeaderText("Party Ended");
+      setSubText(
+        `The moderator has ended the session. You will be redirected now in...`
+      );
+      setSubText2(`${countdown}`);
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          --prev;
+          setSubText2(`${prev}`);
+          return prev;
+        });
+      }, 1000);
+      setTimeout(() => {
+        clearInterval(interval);
+        setCountdown(COUNTDOWN);
+        setSubText("");
+        setSubText2("");
+        dispatch(partyReset());
+        dispatch(participantReset());
+        navigate(NAVIGATION_LABELS.Start);
+      }, COUNTDOWN * 1000);
+    } else if (!isStarted) {
+      setHeaderText("Waiting on Host");
+      setSubText("Waiting on the moderator to start the session.");
+    } else if (isPaused) {
+      setHeaderText("Paused");
+      setSubText("Session paused. Please wait for moderator to unpause.");
+    } else if (isDisabled) {
+      setHeaderText("Disabled");
+      setSubText("The moderator has disabled your device.");
+    } else {
+      setHeaderText("");
+      setSubText("");
+    }
+  }, [isEnded, isStarted, isPaused, isDisabled]);
+  return (
+    <>
+      {headerText !== "" && (
+        <Overlay
+          headerText={headerText}
+          subText={subText}
+          subText2={subText2}
+        />
+      )}
+    </>
+  );
+}

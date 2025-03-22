@@ -12,11 +12,10 @@ import ThresholdScreen from "./RedFlag/ThresholdScreen";
 import PartyCodeGeneratedScreen from "./PartyCodeGeneratedScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
+import { endParty } from "@/app/Firebase/FirestoreService";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/Store/Store";
 import { reset } from "@/app/Store/PartyReducer";
-import { modifyPartyData } from "@/app/Firebase/FirestoreService";
-import { DB_PROPERTY_LABELS } from "@/app/Constants/DbConstants";
 
 const Stack = createNativeStackNavigator();
 const CreateFlowScreens = () => [
@@ -47,28 +46,25 @@ const CreateFlowScreens = () => [
     options={{
       headerLeft: () => {
         const router = useNavigation<StackNavigation>();
-        const dispatch = useDispatch<AppDispatch>();
-        const { dbCollectionId } = useSelector(
-          (state: RootState) => state.party
+        const dbCollectionId = useSelector(
+          (state: RootState) => state.party.dbCollectionId
         );
+        const dispatch = useDispatch<AppDispatch>();
 
         const handleExit = () => {
           Alert.alert(
             "Alert",
-            "Exiting will end the session. Are you sure you want to leave?",
+            "Exiting will end the party. Are you sure you want to leave?",
             [
               {
                 text: "Yes",
                 onPress: () => {
-                  modifyPartyData(
-                    dbCollectionId,
-                    {
-                      [DB_PROPERTY_LABELS.isEnded]: true,
-                    },
-                    false
-                  );
-                  router.navigate("Start");
+                  endParty(dbCollectionId, false);
                   dispatch(reset());
+                  router.reset({
+                    index: 0,
+                    routes: [{ name: NAVIGATION_LABELS.Start }],
+                  });
                 },
                 style: "destructive",
               },

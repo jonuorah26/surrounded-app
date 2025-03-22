@@ -1,10 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FlagSystemOption, VoteOutThresholdType } from "./PartyReducer";
 
-type ParticipantData = {
+export type Flag = {
+  raised: boolean;
+  lastChangeBy: "moderator" | "participant";
+};
+export type ParticipantData = {
   participantName: string;
   isDisabled: boolean;
-  isFlagRaised: boolean;
+  flag: Flag;
   isOnline: boolean;
 };
 
@@ -17,7 +21,10 @@ const initialState: ParticipantState = {
   participantData: {
     participantName: "",
     isDisabled: false,
-    isFlagRaised: false,
+    flag: {
+      raised: false,
+      lastChangeBy: "moderator",
+    },
     isOnline: true,
   },
   dbCollectionId: "",
@@ -33,8 +40,8 @@ const participantSlice = createSlice({
     updateIsDisabled: (state, action: PayloadAction<boolean>) => {
       state.participantData.isDisabled = action.payload;
     },
-    updateIsFlagRaised: (state, action: PayloadAction<boolean>) => {
-      state.participantData.isFlagRaised = action.payload;
+    updateFlag: (state, action: PayloadAction<Flag>) => {
+      state.participantData.flag = action.payload;
     },
     updateDbCollectionId: (state, action: PayloadAction<string>) => {
       state.dbCollectionId = action.payload;
@@ -47,7 +54,7 @@ const participantSlice = createSlice({
 
 export const {
   updateIsDisabled,
-  updateIsFlagRaised,
+  updateFlag,
   updateParticipantName,
   updateDbCollectionId,
   reset,

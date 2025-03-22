@@ -1,6 +1,10 @@
 export const PARTIES = "Parties";
 export const PARTICIPANTS = "Participants";
 
+export const DB_PROPERTY_LABELS_NOT_IN_REDUX = {
+  createdAt: "createdAt",
+};
+
 export const DB_PROPERTY_LABELS = {
   flagSystem: "flagSystem",
   flagsRaisedCount: "flagsRaisedCount",
@@ -18,6 +22,8 @@ export const DB_PROPERTY_LABELS = {
 
   participantName: "participantName",
   isDisabled: "isDisabled",
-  isFlagRaised: "isFlagRaised",
+  flag: "flag",
+  raised: "raised",
+  lastChangeBy: "lastChangeBy",
   isOnline: "isOnline",
 };
