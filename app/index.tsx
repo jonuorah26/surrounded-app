@@ -7,6 +7,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { UserTypeProvider } from "./Context/UserTypeContext";
 import { Provider } from "react-redux";
 import { store } from "./Store/Store";
+import { LoadingToastProvider } from "./Context/LoadingToastContext";
+import { Colors } from "./Constants/Colors";
 
 const theme = {
   ...DefaultTheme,
@@ -28,13 +30,15 @@ export default function Index() {
   return (
     <Provider store={store}>
       <UserTypeProvider>
-        <View style={styles.container}>
-          <SafeAreaProvider>
-            <NavigationIndependentTree>
-              <RootStack />
-            </NavigationIndependentTree>
-          </SafeAreaProvider>
-        </View>
+        <LoadingToastProvider>
+          <View style={styles.container}>
+            <SafeAreaProvider>
+              <NavigationIndependentTree>
+                <RootStack />
+              </NavigationIndependentTree>
+            </SafeAreaProvider>
+          </View>
+        </LoadingToastProvider>
       </UserTypeProvider>
     </Provider>
   );

@@ -25,11 +25,11 @@ import LoadingOverlay from "@/app/Components/LoadingOverlay";
 import { addParticipantToParty } from "@/app/Firebase/FirestoreService";
 import { updateParticipantCount } from "@/app/Store/PartyReducer";
 import { AppError } from "@/app/Firebase/Types";
+import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 
 function EnterNameScreen() {
   const [name, setName] = useState("");
-  const [toastMessage, setToastMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { setLoadingText, setToastMessage } = useLoadingToast();
   const { navigate, reset: navReset } = useNavigation<StackNavigation>();
   const dispatch = useDispatch<AppDispatch>();
   const partyId = useSelector((state: RootState) => state.party.dbCollectionId);
@@ -41,7 +41,7 @@ function EnterNameScreen() {
     }
 
     try {
-      setLoading(true);
+      setLoadingText("Joining Party...");
       setToastMessage("");
       const result = await addParticipantToParty(name, partyId);
 
@@ -60,54 +60,50 @@ function EnterNameScreen() {
         setToastMessage("Error ocurred. Failed to join party.");
       }
     }
-    setLoading(false);
+    setLoadingText("");
   };
 
   return (
-    <>
-      {loading && <LoadingOverlay loadingText="Joining Party..." />}
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.container}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "flex-end",
-              gap: scaleHeight(50),
-            }}
-          >
-            <View style={{}}>
-              <Text style={styles.title}>Enter A Name To Use</Text>
-            </View>
-            <View style={{}}>
-              <TextInput
-                mode="outlined"
-                keyboardType="ascii-capable"
-                style={styles.textInput}
-                outlineStyle={styles.InputBorder}
-                autoCorrect={false}
-                value={name}
-                onChangeText={(e) => setName(e)}
-              />
-            </View>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.container}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "flex-end",
+            gap: scaleHeight(50),
+          }}
+        >
+          <View style={{}}>
+            <Text style={styles.title}>Enter A Name To Use</Text>
           </View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "flex-end",
-              bottom: scaleHeight(25),
-            }}
-          >
-            <ContinueButton
-              text="Enter Session"
-              onPress={handleContinue}
-              useDefaultStyles={false}
-              style={{ alignSelf: "flex-end" }}
+          <View style={{}}>
+            <TextInput
+              mode="outlined"
+              keyboardType="ascii-capable"
+              style={styles.textInput}
+              outlineStyle={styles.InputBorder}
+              autoCorrect={false}
+              value={name}
+              onChangeText={(e) => setName(e)}
             />
           </View>
         </View>
-      </TouchableWithoutFeedback>
-      <Toast message={toastMessage} />
-    </>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "flex-end",
+            bottom: scaleHeight(25),
+          }}
+        >
+          <ContinueButton
+            text="Enter Session"
+            onPress={handleContinue}
+            useDefaultStyles={false}
+            style={{ alignSelf: "flex-end" }}
+          />
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

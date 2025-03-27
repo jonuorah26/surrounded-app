@@ -13,6 +13,9 @@ import JoinFlowScreens from "./PartyParticipants/JoinFlow/Navigation";
 import CreateFlowScreens from "./PartyOwner/CreateFlow/NavigationScreens";
 import ParticipantDrawerNavigator from "./PartyParticipants/DrawerNavigator";
 import { NAVIGATION_LABELS } from "../Constants/Navigation";
+import { useState } from "react";
+import Toast from "../Components/Toast";
+import LoadingOverlay from "../Components/LoadingOverlay";
 
 const Stack = createNativeStackNavigator();
 export type StackNavigation = NativeStackNavigationProp<ParamListBase>;
@@ -45,9 +48,9 @@ export function RootStack() {
       <Stack.Screen
         name={NAVIGATION_LABELS.ModeratorScreen}
         key={NAVIGATION_LABELS.ModeratorScreen}
-        component={ModeratorDrawerNavigator}
         //TODO: uncomment below 'options' later. Just commented out for ease of testing
         //options={{ gestureEnabled: false, headerBackVisible: false }}
+        component={ModeratorDrawerNavigator}
       />
     </Stack.Navigator>
   );

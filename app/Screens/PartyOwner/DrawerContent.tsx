@@ -13,12 +13,48 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/Store/Store";
 import { endParty } from "@/app/Firebase/FirestoreService";
 import { reset } from "@/app/Store/PartyReducer";
+import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
   const dbCollectionId = useSelector(
     (state: RootState) => state.party.dbCollectionId
   );
   const dispatch = useDispatch<AppDispatch>();
+  const {
+    navigation: { reset: navReset },
+  } = props;
+  const { setLoadingText, setToastMessage } = useLoadingToast();
+
+  const handleEndParty = () => {
+    Alert.alert("Alert", "Are you sure you want to end the party?", [
+      {
+        text: "Yes",
+        onPress: async () => {
+          try {
+            setLoadingText("Ending Party...");
+            setToastMessage("");
+            await endParty(dbCollectionId);
+            //reset entire state
+            dispatch(reset());
+            navReset({
+              index: 0,
+              routes: [{ name: NAVIGATION_LABELS.Start }],
+            });
+          } catch (err) {
+            setToastMessage(
+              "Error occured attempting to end party. Please try again."
+            );
+          }
+          setLoadingText("");
+        },
+        style: "destructive",
+      },
+      {
+        text: "No",
+        style: "cancel",
+      },
+    ]);
+  };
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
@@ -92,31 +128,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           marginVertical: scaleHeight(24),
         }}
       >
-        <Pressable
-          onPress={() => {
-            Alert.alert("Alert", "Are you sure you want to end the party?", [
-              {
-                text: "Yes",
-                onPress: () => {
-                  endParty(dbCollectionId, false);
-
-                  //reset entire state
-                  dispatch(reset());
-
-                  props.navigation.reset({
-                    index: 0,
-                    routes: [{ name: NAVIGATION_LABELS.Start }],
-                  });
-                },
-                style: "destructive",
-              },
-              {
-                text: "No",
-                style: "cancel",
-              },
-            ]);
-          }}
-        >
+        <Pressable onPress={handleEndParty}>
           <Text
             style={{
               fontSize: fontStyles.medium.fontSize,

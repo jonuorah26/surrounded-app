@@ -9,9 +9,14 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "./FirebaseConfig";
-import { emptyParty, PartyData } from "../Store/PartyReducer";
+import {
+  emptyParty,
+  ParticipantInSeat,
+  PartyData,
+} from "../Store/PartyReducer";
 import {
   DB_PROPERTY_LABELS,
   PARTICIPANTS,
@@ -80,6 +85,16 @@ export const endParty = async (partyId: string, wait = true) => {
   }
 };
 
+export const modifyPause = async (partyId: string, pause: boolean) => {
+  try {
+    var partyRef = doc(db, PARTIES, partyId);
+
+    await updateDoc(partyRef, { isPaused: pause } as Partial<PartyData>);
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const startParty = async (partyId: string) => {
   try {
     var partyRef = doc(db, PARTIES, partyId);
@@ -128,7 +143,7 @@ export const startParty = async (partyId: string) => {
 //   }
 // };
 
-export const createParty = async (moderatorData: PartyData) => {
+export const createParty = async (partyData: PartyData) => {
   const partyCode = await generatePartyCode();
   var partyRef = doc(collection(db, PARTIES));
   const partyId = `party_${partyRef.id}`;
@@ -136,14 +151,14 @@ export const createParty = async (moderatorData: PartyData) => {
 
   try {
     await setDoc(partyRef, {
-      ...moderatorData,
+      ...partyData,
       partyCode,
       createdAt: new Date(),
     });
 
     return { partyId, partyCode };
   } catch (err) {
-    return null;
+    throw err;
   }
 };
 
@@ -157,7 +172,7 @@ export const findParty = async (partyCode: string) => {
 
     const result = await getDocs(partyQuery);
     if (result.empty || result.docs.length > 1) {
-      return null;
+      throw new AppError("Could not find party");
     }
 
     const partyDoc = result.docs[0];
@@ -166,6 +181,50 @@ export const findParty = async (partyCode: string) => {
     partyData = copyMatchingProperties(partyDoc.data(), partyData) as PartyData;
 
     return { partyId, partyData };
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const leaveParty = async (partyId: string, participantId: string) => {
+  try {
+    const partyRef = doc(db, PARTIES, partyId);
+
+    await runTransaction(db, async (transaction) => {
+      const partyDoc = await transaction.get(partyRef);
+      if (!partyDoc.exists()) {
+        throw new AppError("Party does not exist");
+      }
+      const partyData = partyDoc.data() as PartyData;
+      if (partyData.isEnded) {
+        throw new AppError("Party no longer exists");
+      }
+      const participantRef = doc(
+        db,
+        PARTIES,
+        partyId,
+        PARTICIPANTS,
+        participantId
+      );
+
+      const participantDoc = await transaction.get(participantRef);
+      if (!participantDoc.exists) {
+        throw new AppError("Participant does not exist in party");
+      }
+      const participantData = participantDoc.data() as ParticipantData;
+
+      transaction.delete(participantRef);
+
+      const updatedData: Partial<PartyData> = {
+        participantCount: partyData.participantCount - 1,
+      };
+
+      if (participantData.flag.raised) {
+        updatedData.flagsRaisedCount = partyData.flagsRaisedCount - 1;
+      }
+
+      transaction.update(partyRef, updatedData);
+    });
   } catch (err) {
     throw err;
   }
@@ -223,6 +282,109 @@ export const addParticipantToParty = async (
         participantId,
         participantCount: newParticipantCount,
       };
+    });
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const resetFlags = async (partyId: string) => {
+  const partyRef = doc(db, PARTIES, partyId);
+  const participantsRef = collection(db, PARTIES, partyId, PARTICIPANTS);
+
+  try {
+    const participantsSnapshot = await getDocs(participantsRef);
+
+    if (participantsSnapshot.empty) {
+      throw new AppError("No participants to reset flags for.");
+    }
+
+    const participants = participantsSnapshot.docs;
+
+    let batch = writeBatch(db);
+    let batchCount = 0;
+
+    // Update all participants' isFlagRaised field
+    for (const participantDoc of participants) {
+      batch.update(participantDoc.ref, {
+        flag: { raised: false, lastChangeBy: "moderator" },
+      } as Partial<ParticipantData>);
+      batchCount++;
+
+      // Commit batch if it reaches 500 operations
+      if (batchCount === 500) {
+        await batch.commit();
+        batch = writeBatch(db);
+        batchCount = 0;
+      }
+    }
+
+    // Commit the last batch if there are remaining updates
+    if (batchCount > 0) {
+      await batch.commit();
+    }
+
+    // Reset the flag count in the party document
+    await updateDoc(partyRef, { flagsRaisedCount: 0 } as Partial<PartyData>);
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const enterSeat = async (
+  partyId: string,
+  participant: ParticipantInSeat
+) => {
+  try {
+    const partyRef = doc(db, PARTIES, partyId);
+
+    await runTransaction(db, async (transaction) => {
+      const partyDoc = await transaction.get(partyRef);
+      if (!partyDoc.exists()) {
+        throw new AppError("Party does not exist");
+      }
+      const partyData = partyDoc.data() as PartyData;
+      if (partyData.isEnded) {
+        throw new AppError("Party does no longer exists");
+      }
+      if (partyData.participantInSeat) {
+        if (partyData.participantInSeat.id === participant.id) {
+          throw new AppError("You are already in the seat.");
+        } else {
+          throw new AppError("Someone is already in the seat.");
+        }
+      }
+
+      //const participantRef = doc(db, PARTIES, partyId, PARTICIPANTS, participantId);
+      transaction.update(partyRef, {
+        participantInSeat: participant,
+      } as Partial<PartyData>);
+    });
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const RemoveFromSeat = async (partyId: string) => {
+  try {
+    const partyRef = doc(db, PARTIES, partyId);
+
+    await runTransaction(db, async (transaction) => {
+      const partyDoc = await transaction.get(partyRef);
+      if (!partyDoc.exists()) {
+        throw new AppError("Party does not exist");
+      }
+      const partyData = partyDoc.data() as PartyData;
+      if (partyData.isEnded) {
+        throw new AppError("Party does no longer exists");
+      }
+      if (!partyData.participantInSeat) {
+        throw new AppError("No one in the seat.");
+      }
+
+      transaction.update(partyRef, {
+        participantInSeat: null,
+      } as Partial<PartyData>);
     });
   } catch (err) {
     throw err;

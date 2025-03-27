@@ -2,6 +2,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type FlagSystemOption = "red" | "green" | "";
 export type VoteOutThresholdType = "majority" | "all" | "custom" | "";
+export type ParticipantInSeat = {
+  name: string;
+  id: string;
+};
 
 export type PartyData = {
   flagSystem: FlagSystemOption;
@@ -19,6 +23,8 @@ export type PartyData = {
   isPaused: boolean;
   isStarted: boolean;
   isEnded: boolean;
+
+  participantInSeat: ParticipantInSeat | null;
 };
 
 type PartyState = {
@@ -40,6 +46,7 @@ export const emptyParty: PartyData = {
   isPaused: false,
   isStarted: false,
   isEnded: false,
+  participantInSeat: null,
 };
 
 const initialState: PartyState = {
@@ -111,6 +118,12 @@ const partySlice = createSlice({
     ) => {
       state.partyData = { ...state.partyData, ...action.payload };
     },
+    updateParticipantInSeat: (
+      state,
+      action: PayloadAction<ParticipantInSeat>
+    ) => {
+      state.partyData.participantInSeat = action.payload;
+    },
   },
 });
 
@@ -131,6 +144,7 @@ export const {
   updateDbCollectionId,
   updateParty,
   updatePartyProperties,
+  updateParticipantInSeat,
 } = partySlice.actions;
 
 export default partySlice.reducer;

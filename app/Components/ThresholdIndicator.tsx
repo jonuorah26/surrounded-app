@@ -4,13 +4,12 @@ import { Colors } from "../Constants/Colors";
 import { scaleArea, scaleHeight, scaleWidth } from "../Constants/Dimensions";
 import { fontStyles } from "../Constants/GenericStyles";
 import { AutoSizeText, ResizeTextMode } from "react-native-auto-size-text";
-import { useThreshold } from "../Hooks/useThreshold";
 
 type Props = {
   color: string;
+  threshold: number;
 };
-function ThresholdIndicator({ color }: Props) {
-  const { threshold, thresholdReached } = useThreshold();
+function ThresholdIndicator({ color, threshold }: Props) {
   return (
     <View style={{ ...styles.stickyBox, backgroundColor: color }}>
       <AutoSizeText

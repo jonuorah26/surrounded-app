@@ -5,6 +5,7 @@ import { Colors } from "@/app/Constants/Colors";
 import { scaleHeight, scaleWidth, SH } from "@/app/Constants/Dimensions";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
+import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import { createParty } from "@/app/Firebase/FirestoreService";
 import { StackNavigation } from "@/app/Screens/_layout";
 import {
@@ -26,7 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 function ThresholdScreen() {
   const [value, setValue] = useState<VoteOutThresholdType>("");
   const [custom, setCustom] = useState<string | null>();
-  const [loading, setLoading] = useState(false);
+  const { setLoadingText, setToastMessage } = useLoadingToast();
   const { navigate } = useNavigation<StackNavigation>();
   const dispatch = useDispatch<AppDispatch>();
   const partyData = useSelector((state: RootState) => state.party.partyData);
@@ -40,7 +41,7 @@ function ThresholdScreen() {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (value === "") {
       alert("Please select an option.");
       return;
@@ -61,104 +62,100 @@ function ThresholdScreen() {
     }
     dispatch(updateVoteOutThresholdType(value));
 
-    setLoading(true);
-    const data: PartyData = {
-      ...partyData,
-      customVoteOutThreshold: custom ? parseInt(custom) : null,
-      voteOutThresholdType: value,
-    };
-    createParty(data).then((result) => {
-      if (result) {
-        setLoading(false);
-        dispatch(updatePartyCode(result.partyCode));
-        dispatch(updateDbCollectionId(result.partyId));
-        navigate(NAVIGATION_LABELS.PartyCodeGenerated);
-      } else {
-        setLoading(false);
-        console.log("Error creating party");
-      }
-    });
+    try {
+      setLoadingText("Creating Party...");
+      const data: PartyData = {
+        ...partyData,
+        customVoteOutThreshold: custom ? parseInt(custom) : null,
+        voteOutThresholdType: value,
+      };
+      const result = await createParty(data);
+
+      dispatch(updatePartyCode(result.partyCode));
+      dispatch(updateDbCollectionId(result.partyId));
+      navigate(NAVIGATION_LABELS.PartyCodeGenerated);
+    } catch (err) {
+      setToastMessage("Error occured. Failed to create party.");
+    }
+    setLoadingText("");
   };
 
   return (
-    <>
-      {loading && <LoadingOverlay loadingText="Creating Party..." />}
-      <View style={[generic.container]}>
-        <View style={{ flex: 1 }}>
-          <FlagIndicator color={Colors.red} useRounded={false} />
-        </View>
-        <View style={{ flex: 20, zIndex: 2, elevation: 2 }}>
-          <KeyboardAwareScrollView
-            contentContainerStyle={styles.scrollContainer}
-            enableOnAndroid={true} // Smooth behavior on Android
-            keyboardShouldPersistTaps="handled" // Allows taps even when the keyboard is open
-            extraScrollHeight={20} // Ensures extra spacing for inputs near the keyboard
-          >
-            <View style={[styles.container, { flex: 1 }]}>
-              <View style={{ flex: 1, justifyContent: "center" }}>
-                <Text style={styles.title}>Vote Out Threshold</Text>
-              </View>
-              <View style={{ flex: 2 }}>
-                <RadioButton.Group
-                  onValueChange={(newValue) =>
-                    handleValueChange(newValue as VoteOutThresholdType)
-                  }
-                  value={value}
-                >
-                  <View style={styles.radioContainer}>
-                    <RadioButton.Item
-                      label="Majority of Participants"
-                      value="majority"
-                      color={Colors.yellow}
-                      labelStyle={styles.label}
-                      style={styles.radioItem}
-                      mode="android"
-                      position="leading"
-                    />
-                    <RadioButton.Item
-                      label="All Participants"
-                      value="all"
-                      color={Colors.yellow}
-                      labelStyle={styles.label}
-                      style={styles.radioItem}
-                      mode="android"
-                      position="leading"
-                    />
-                    <View>
-                      <RadioButton.Item
-                        label="Custom"
-                        value="custom"
-                        color={Colors.yellow}
-                        style={styles.radioItem}
-                        labelStyle={styles.label}
-                        mode="android"
-                        position="leading"
-                      />
-                      <TextInput
-                        mode="outlined"
-                        keyboardType="number-pad"
-                        style={styles.textInput}
-                        outlineStyle={{
-                          ...styles.InputBorder,
-                          borderColor:
-                            value === "custom"
-                              ? Colors.yellow
-                              : Colors.disabledGray,
-                        }}
-                        disabled={value !== "custom"}
-                        value={custom ?? undefined}
-                        onChangeText={(text) => setCustom(text)}
-                      />
-                    </View>
-                  </View>
-                </RadioButton.Group>
-              </View>
-            </View>
-            <ContinueButton onPress={handleContinue} text="Create Party" />
-          </KeyboardAwareScrollView>
-        </View>
+    <View style={[generic.container]}>
+      <View style={{ flex: 1 }}>
+        <FlagIndicator color={Colors.red} useRounded={false} />
       </View>
-    </>
+      <View style={{ flex: 20, zIndex: 2, elevation: 2 }}>
+        <KeyboardAwareScrollView
+          contentContainerStyle={styles.scrollContainer}
+          enableOnAndroid={true} // Smooth behavior on Android
+          keyboardShouldPersistTaps="handled" // Allows taps even when the keyboard is open
+          extraScrollHeight={20} // Ensures extra spacing for inputs near the keyboard
+        >
+          <View style={[styles.container, { flex: 1 }]}>
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <Text style={styles.title}>Vote Out Threshold</Text>
+            </View>
+            <View style={{ flex: 2 }}>
+              <RadioButton.Group
+                onValueChange={(newValue) =>
+                  handleValueChange(newValue as VoteOutThresholdType)
+                }
+                value={value}
+              >
+                <View style={styles.radioContainer}>
+                  <RadioButton.Item
+                    label="Majority of Participants"
+                    value="majority"
+                    color={Colors.yellow}
+                    labelStyle={styles.label}
+                    style={styles.radioItem}
+                    mode="android"
+                    position="leading"
+                  />
+                  <RadioButton.Item
+                    label="All Participants"
+                    value="all"
+                    color={Colors.yellow}
+                    labelStyle={styles.label}
+                    style={styles.radioItem}
+                    mode="android"
+                    position="leading"
+                  />
+                  <View>
+                    <RadioButton.Item
+                      label="Custom"
+                      value="custom"
+                      color={Colors.yellow}
+                      style={styles.radioItem}
+                      labelStyle={styles.label}
+                      mode="android"
+                      position="leading"
+                    />
+                    <TextInput
+                      mode="outlined"
+                      keyboardType="number-pad"
+                      style={styles.textInput}
+                      outlineStyle={{
+                        ...styles.InputBorder,
+                        borderColor:
+                          value === "custom"
+                            ? Colors.yellow
+                            : Colors.disabledGray,
+                      }}
+                      disabled={value !== "custom"}
+                      value={custom ?? undefined}
+                      onChangeText={(text) => setCustom(text)}
+                    />
+                  </View>
+                </View>
+              </RadioButton.Group>
+            </View>
+          </View>
+          <ContinueButton onPress={handleContinue} text="Create Party" />
+        </KeyboardAwareScrollView>
+      </View>
+    </View>
   );
 }
 

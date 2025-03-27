@@ -30,18 +30,31 @@ import { RootState } from "@/app/Store/Store";
 import { usePartyListener } from "@/app/Hooks/usePartyListener";
 import Toast from "@/app/Components/Toast";
 import LoadingOverlay from "@/app/Components/LoadingOverlay";
+import { useModeratorControls } from "@/app/Hooks/useModeratorControls";
+import { AppError } from "@/app/Firebase/Types";
+import { useThreshold } from "@/app/Hooks";
+import { DrawerNavProps } from "@/app/Types";
+import { RemoveFromSeat } from "@/app/Firebase/FirestoreService";
+import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 //import { Pressable } from "react-native-gesture-handler";
 
-type DrawerNavProps = DrawerNavigationProp<any>;
 function ModeratorScreen() {
   usePartyListener();
-  const [loadingText, setLoadingText] = useState("");
-  const [toastMsg, setToastMsg] = useState("");
+  const { threshold, thresholdReached } = useThreshold();
+  const { setControl, controlLoadingText, controlToast } =
+    useModeratorControls();
+  const { setLoadingText, setToastMessage } = useLoadingToast();
   const { openDrawer } = useNavigation<DrawerNavProps>();
-  const { participantCount, flagsRaisedCount } = useSelector(
-    (state: RootState) => state.party.partyData
-  );
-
+  const {
+    partyData: {
+      participantCount,
+      flagsRaisedCount,
+      isPaused,
+      participantInSeat,
+    },
+    dbCollectionId: partyId,
+  } = useSelector((state: RootState) => state.party);
+  const insets = useSafeAreaInsets();
   const getFontSize = () => {
     const baseSize = scaleArea(200) * 0.32;
 
@@ -55,7 +68,33 @@ function ModeratorScreen() {
   const handlePress = () => {
     openDrawer();
   };
-  const insets = useSafeAreaInsets();
+
+  const handlePause = () => {
+    if (!isPaused) {
+      setControl("pause");
+    } else {
+      setControl("unpause");
+    }
+  };
+
+  const handleRemoveFromSeat = async () => {
+    try {
+      setLoadingText("Removing from seat...");
+      setToastMessage("");
+      await RemoveFromSeat(partyId);
+      setToastMessage("Participant removed from seat!");
+    } catch (err) {
+      if (err instanceof AppError) {
+        setToastMessage(err.message);
+      } else {
+        setToastMessage(
+          "Error occured attempting to remove participant. Please try again."
+        );
+      }
+    }
+    setLoadingText("");
+  };
+
   return (
     <>
       <View style={[generic.container, { justifyContent: "flex-start" }]}>
@@ -76,7 +115,10 @@ function ModeratorScreen() {
             </View>
             <View style={styles.flagAndHamburgerRow}>
               <View style={{ flex: -1, alignSelf: "flex-end" }}>
-                <ThresholdIndicator color={Colors.yellow} />
+                <ThresholdIndicator
+                  color={Colors.yellow}
+                  threshold={threshold ?? 0}
+                />
               </View>
               <View style={styles.hamburger}>
                 <Pressable
@@ -124,55 +166,66 @@ function ModeratorScreen() {
                 >
                   Who's in The Seat?
                 </Text>
-                <Popover
-                  from={(sourceRef, showPopover) => (
-                    <Pressable
-                      onLongPress={showPopover}
-                      hitSlop={scaleArea(60)}
-                      style={{ width: "120%" }}
-                    >
-                      <View
-                        style={{
-                          alignItems: "center",
-                        }}
+                {participantInSeat ? (
+                  <Popover
+                    from={(sourceRef, showPopover) => (
+                      <Pressable
+                        onLongPress={showPopover}
+                        hitSlop={scaleArea(60)}
+                        style={{ width: "120%" }}
                       >
-                        <Ionicons
-                          name="person-outline"
-                          size={scaleArea(50)}
-                          color="black"
-                        />
-                        <AutoSizeText
-                          style={[styles.whosInSeatText]}
-                          mode={ResizeTextMode.max_lines}
-                          numberOfLines={2}
-                          fontSize={fontStyles.xsmall.fontSize}
+                        <View
+                          style={{
+                            alignItems: "center",
+                          }}
                         >
-                          Arthur Renfield 98
-                        </AutoSizeText>
-                      </View>
-                    </Pressable>
-                  )}
-                  placement={Placement.RIGHT}
-                  arrowSize={{ height: 0, width: 0 }}
-                  popoverStyle={{
-                    backgroundColor: Colors.yellow,
-                    marginLeft: -scaleWidth(20),
-                  }}
-                  displayArea={{
-                    x: 0,
-                    y: -scaleHeight(538),
-                    width: Dimensions.get("screen").width,
-                    height: Dimensions.get("screen").height,
-                  }}
-                >
-                  <View style={{ paddingHorizontal: scaleArea(8) }}>
-                    <OpacityPressable onPress={() => console.log("Removed")}>
-                      <Text style={{ paddingVertical: scaleArea(12) }}>
-                        Remove from seat
-                      </Text>
-                    </OpacityPressable>
-                  </View>
-                </Popover>
+                          <Ionicons
+                            name="person-outline"
+                            size={scaleArea(50)}
+                            color="black"
+                          />
+                          <AutoSizeText
+                            style={[styles.whosInSeatText]}
+                            mode={ResizeTextMode.max_lines}
+                            numberOfLines={2}
+                            fontSize={fontStyles.xsmall.fontSize}
+                          >
+                            {participantInSeat.name}
+                          </AutoSizeText>
+                        </View>
+                      </Pressable>
+                    )}
+                    placement={Placement.RIGHT}
+                    arrowSize={{ height: 0, width: 0 }}
+                    popoverStyle={{
+                      backgroundColor: Colors.yellow,
+                      marginLeft: -scaleWidth(20),
+                    }}
+                    displayArea={{
+                      x: 0,
+                      y: -scaleHeight(538),
+                      width: Dimensions.get("screen").width,
+                      height: Dimensions.get("screen").height,
+                    }}
+                  >
+                    <View style={{ paddingHorizontal: scaleArea(8) }}>
+                      <OpacityPressable onPress={handleRemoveFromSeat}>
+                        <Text style={{ paddingVertical: scaleArea(12) }}>
+                          Remove from seat
+                        </Text>
+                      </OpacityPressable>
+                    </View>
+                  </Popover>
+                ) : (
+                  <Text
+                    style={[
+                      generic.title,
+                      { ...fontStyles.xsmall, textAlign: "center" },
+                    ]}
+                  >
+                    Empty
+                  </Text>
+                )}
               </View>
             </View>
             <View
@@ -183,9 +236,18 @@ function ModeratorScreen() {
                 right: scaleWidth(45),
               }}
             >
-              <View style={styles.fractionContainer}>
+              <View
+                style={[
+                  styles.fractionContainer,
+                  {
+                    backgroundColor: thresholdReached
+                      ? Colors.buzzerRed
+                      : Colors.culturedWhite,
+                  },
+                ]}
+              >
                 <View style={{ top: -scaleHeight(20) }}>
-                  <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                  <Text style={[styles.number]}>
                     {flagsRaisedCount.toString().padStart(2, "0")}
                   </Text>
                 </View>
@@ -227,6 +289,8 @@ function ModeratorScreen() {
               <View style={{ flex: 1, alignItems: "center" }}>
                 <Pressable
                   style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+                  onLongPress={() => setControl("reset")}
+                  hitSlop={scaleArea(50)}
                 >
                   <View style={styles.controlButtons}>
                     <FontAwesome5
@@ -241,59 +305,20 @@ function ModeratorScreen() {
               <View style={{ flex: 1, alignItems: "center" }}>
                 <Pressable
                   style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+                  onLongPress={handlePause}
+                  hitSlop={scaleArea(50)}
                 >
                   <View style={styles.controlButtons}>
                     <Feather
-                      name="pause"
+                      name={isPaused ? "play" : "pause"}
                       size={scaleArea(50)}
                       color={Colors.black}
                     />
                   </View>
                 </Pressable>
 
-                <Text style={styles.controlButtonLabel}>Pause</Text>
-              </View>
-              <View style={{ flex: 1, alignItems: "center" }}>
-                <Popover
-                  from={(sourceRef, showPopover) => (
-                    <Pressable
-                      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
-                      onLongPress={showPopover}
-                      hitSlop={scaleArea(50)}
-                    >
-                      <View style={styles.controlButtons}>
-                        <Entypo
-                          name="flag"
-                          size={scaleArea(50)}
-                          color={Colors.black}
-                        />
-                      </View>
-                    </Pressable>
-                  )}
-                  offset={scaleHeight(115 - insets.bottom * 0.2)}
-                  arrowSize={{ height: 0, width: 0 }}
-                  popoverStyle={{ backgroundColor: Colors.yellow }}
-                >
-                  <View style={{ paddingHorizontal: scaleArea(8) }}>
-                    <OpacityPressable
-                      onPress={() => console.log("Enable Participants")}
-                    >
-                      <Text style={{ paddingVertical: scaleArea(12) }}>
-                        Enable Participants
-                      </Text>
-                    </OpacityPressable>
-                    <Divider width={145} />
-                    <OpacityPressable
-                      onPress={() => console.log("Disable Participants")}
-                    >
-                      <Text style={{ paddingVertical: scaleArea(12) }}>
-                        Disable Participants
-                      </Text>
-                    </OpacityPressable>
-                  </View>
-                </Popover>
                 <Text style={styles.controlButtonLabel}>
-                  Toggle Participants
+                  {isPaused ? "Unpause Participants" : "Pause Participants"}
                 </Text>
               </View>
             </View>
@@ -301,8 +326,10 @@ function ModeratorScreen() {
         </SafeAreaView>
       </View>
       <>
-        {loadingText && <LoadingOverlay loadingText={loadingText} />}
-        <Toast message={toastMsg} />
+        {controlLoadingText && (
+          <LoadingOverlay loadingText={controlLoadingText} />
+        )}
+        <Toast message={controlToast} />
       </>
     </>
   );
@@ -344,7 +371,7 @@ const styles = StyleSheet.create({
   fractionContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: Colors.culturedWhite,
+    //backgroundColor: Colors.culturedWhite,
     width: scaleArea(250), // Ensure square dimensions
     height: scaleArea(250),
     borderRadius: scaleArea(125), // Half of width/height for a perfect circle
@@ -379,7 +406,7 @@ const styles = StyleSheet.create({
     fontSize: fontStyles.small.fontSize,
     color: Colors.culturedWhite,
     alignSelf: "center",
-    width: "90%",
+    width: "80%",
     textAlign: "center",
   },
 });

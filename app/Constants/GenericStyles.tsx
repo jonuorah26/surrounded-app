@@ -46,3 +46,6 @@ export const generic = StyleSheet.create({
     alignSelf: "center",
   },
 });
+
+export const OVERLAY_Z_INDEX = 10;
+export const OVERLAY_INTERRUPT_Z_INDEX = OVERLAY_Z_INDEX + 5;

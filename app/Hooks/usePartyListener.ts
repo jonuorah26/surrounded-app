@@ -8,6 +8,7 @@ import {
   DB_PROPERTY_LABELS_NOT_IN_REDUX,
   PARTIES,
 } from "../Constants/DbConstants";
+import { isEqual } from "./useParticipantListener";
 
 export const usePartyListener = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -33,7 +34,7 @@ export const usePartyListener = () => {
 
           const key = objKey as keyof PartyData;
 
-          if (previousDataRef.current[key] !== newData[key]) {
+          if (!isEqual(previousDataRef.current[key], newData[key])) {
             // console.log(`Property '${key}' changed:`, {
             //   oldValue: previousDataRef.current[key],
             //   newValue: newData[key],

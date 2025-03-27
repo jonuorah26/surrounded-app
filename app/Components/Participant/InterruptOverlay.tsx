@@ -7,10 +7,11 @@ import { useNavigation } from "@react-navigation/native";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { reset as partyReset } from "@/app/Store/PartyReducer";
 import { reset as participantReset } from "@/app/Store/ParticipantReducer";
+import { OVERLAY_INTERRUPT_Z_INDEX } from "@/app/Constants/GenericStyles";
 
 const COUNTDOWN = 10;
 
-export default function InterruptOverlay() {
+export function InterruptOverlay() {
   const [headerText, setHeaderText] = useState("");
   const [subText, setSubText] = useState("");
   const [subText2, setSubText2] = useState("");
@@ -68,6 +69,7 @@ export default function InterruptOverlay() {
           headerText={headerText}
           subText={subText}
           subText2={subText2}
+          overlayLevel={OVERLAY_INTERRUPT_Z_INDEX}
         />
       )}
     </>

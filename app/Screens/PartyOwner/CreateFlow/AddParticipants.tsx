@@ -73,6 +73,9 @@ function AddParticipants() {
     if (!values.min) {
       alert("Please enter a minimum participant count");
       return;
+    } else if (parseInt(values.min) < 2) {
+      alert("Minimum participant count must be at least 2");
+      return;
     } else if (maxOn) {
       if (!values.max) {
         alert(

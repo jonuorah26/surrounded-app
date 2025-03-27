@@ -1,12 +1,10 @@
 import { Colors } from "@/app/Constants/Colors";
+import { scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
 import {
-  scaleArea,
-  scaleFont,
-  scaleHeight,
-  scaleWidth,
-  SH,
-} from "@/app/Constants/Dimensions";
-import { fontStyles, generic } from "@/app/Constants/GenericStyles";
+  fontStyles,
+  generic,
+  OVERLAY_Z_INDEX,
+} from "@/app/Constants/GenericStyles";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
@@ -30,24 +28,28 @@ import Animated, {
 import { AutoSizeText, ResizeTextMode } from "react-native-auto-size-text";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/Store/Store";
-import InterruptOverlay from "@/app/Components/Participant/InterruptOverlay";
 import { updateFlag } from "@/app/Store/ParticipantReducer";
-import Toast from "@/app/Components/Toast";
 import { modifyFlag } from "@/app/Firebase/FirestoreService";
-import LoadingOverlay from "@/app/Components/LoadingOverlay";
-import { usePartyListener } from "@/app/Hooks/usePartyListener";
 import { AppError } from "@/app/Firebase/Types";
-
-type DrawerNavProps = DrawerNavigationProp<any>;
+import { useLoadingToast } from "@/app/Context/LoadingToastContext";
+import {
+  useParticipantListener,
+  usePartyListener,
+  useThreshold,
+} from "@/app/Hooks";
+import { InterruptOverlay } from "@/app/Components";
+import { DrawerNavProps } from "@/app/Types";
+import InSeatOverlay from "@/app/Components/Participant/InSeatOverlay";
 
 function ParticipantScreen() {
   usePartyListener();
+  useParticipantListener();
+  const { thresholdReached } = useThreshold();
   const { openDrawer } = useNavigation<DrawerNavProps>();
-  const [toastMessage, setToastMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { setLoadingText, setToastMessage } = useLoadingToast();
   const insets = useSafeAreaInsets();
   const {
-    partyData: { participantCount, flagsRaisedCount },
+    partyData: { participantCount, flagsRaisedCount, participantInSeat },
     dbCollectionId: partyId,
   } = useSelector((state: RootState) => state.party);
   const {
@@ -58,6 +60,7 @@ function ParticipantScreen() {
     dbCollectionId: participantId,
   } = useSelector((state: RootState) => state.participant);
   const dispatch = useDispatch<AppDispatch>();
+  const isInSeat = participantId === participantInSeat?.id;
 
   const getFontSize = () => {
     const baseSize = scaleWidth(80) * 0.24;
@@ -94,12 +97,12 @@ function ParticipantScreen() {
       if (Math.abs(event.translationY) >= Math.abs(X_POSITION)) {
         try {
           setToastMessage("");
-          setLoading(true);
+          setLoadingText("Flag raised! Letting moderator know.");
           await modifyFlag(partyId, participantId, {
             raised: true,
             lastChangeBy: "participant",
           });
-          dispatch(updateFlag({ raised: true, lastChangeBy: "participant" }));
+          //dispatch(updateFlag({ raised: true, lastChangeBy: "participant" }));
           translateY.value = withSpring(X_POSITION);
         } catch (err) {
           if (err instanceof AppError) {
@@ -109,7 +112,7 @@ function ParticipantScreen() {
           }
           translateY.value = withSpring(POSITION_0);
         }
-        setLoading(false);
+        setLoadingText("");
         return;
       }
       translateY.value = withSpring(POSITION_0); // Reset to initial position with spring animation
@@ -126,9 +129,13 @@ function ParticipantScreen() {
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <View style={generic.container}>
-          <SafeAreaView
+          <View
             style={{
               flex: 1,
+              top: insets.top,
+              bottom: insets.bottom,
+              left: insets.left,
+              right: insets.right,
             }}
           >
             <View
@@ -141,9 +148,20 @@ function ParticipantScreen() {
               <View
                 style={{
                   left: scaleWidth(10),
+                  zIndex: isInSeat ? OVERLAY_Z_INDEX + 1 : 0,
                 }}
+                key="view-key"
               >
-                <View style={styles.fractionContainer}>
+                <View
+                  style={[
+                    styles.fractionContainer,
+                    {
+                      backgroundColor: thresholdReached
+                        ? Colors.buzzerRed
+                        : Colors.culturedWhite,
+                    },
+                  ]}
+                >
                   <View style={{ top: -scaleHeight(10) }}>
                     <Text style={[styles.number, { fontSize: getFontSize() }]}>
                       {flagsRaisedCount.toString().padStart(2, "0")}
@@ -190,21 +208,38 @@ function ParticipantScreen() {
                 >
                   Who's in The Seat?
                 </Text>
-                <Ionicons
-                  name="person-outline"
-                  size={scaleWidth(40)}
-                  color="black"
-                  style={{ paddingRight: scaleWidth(20) }}
-                />
+                {participantInSeat ? (
+                  <>
+                    <Ionicons
+                      name="person-outline"
+                      size={scaleWidth(40)}
+                      color="black"
+                      style={{ paddingRight: scaleWidth(20) }}
+                    />
 
-                <AutoSizeText
-                  style={styles.whosInSeatText}
-                  mode={ResizeTextMode.max_lines}
-                  numberOfLines={2}
-                  fontSize={fontStyles.xsmall.fontSize}
-                >
-                  {participantName}
-                </AutoSizeText>
+                    <AutoSizeText
+                      style={styles.whosInSeatText}
+                      mode={ResizeTextMode.max_lines}
+                      numberOfLines={2}
+                      fontSize={fontStyles.xsmall.fontSize}
+                    >
+                      {participantInSeat.name}
+                    </AutoSizeText>
+                  </>
+                ) : (
+                  <Text
+                    style={[
+                      generic.title,
+                      {
+                        ...fontStyles.xsmall,
+                        textAlign: "center",
+                        right: scaleWidth(10),
+                      },
+                    ]}
+                  >
+                    Empty
+                  </Text>
+                )}
               </View>
             </View>
             <View>
@@ -273,15 +308,13 @@ function ParticipantScreen() {
                 </GestureDetector>
               </View>
             </View>
-          </SafeAreaView>
+          </View>
         </View>
       </GestureHandlerRootView>
-
-      <Toast message={toastMessage} />
-      {loading && (
-        <LoadingOverlay loadingText="Flag raised. Letting moderator know..." />
-      )}
-      <InterruptOverlay />
+      <>
+        <InSeatOverlay />
+        <InterruptOverlay />
+      </>
     </>
   );
 }

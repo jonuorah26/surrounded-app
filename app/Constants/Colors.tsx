@@ -7,6 +7,7 @@ export const Colors = {
   green: "green",
   disabledGray: "rgba(0, 0, 0, 0.38)",
   disablingOverlay: "rgba(0, 0, 0, 0.8)",
+  inSeatOverlay: "rgba(0, 0, 0, 0.95)",
   culturedWhite: "#F3F3F3",
   buzzerRed: "#D50000",
 };

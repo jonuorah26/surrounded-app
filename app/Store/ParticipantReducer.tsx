@@ -46,6 +46,12 @@ const participantSlice = createSlice({
     updateDbCollectionId: (state, action: PayloadAction<string>) => {
       state.dbCollectionId = action.payload;
     },
+    updateParticipantProperties: (
+      state,
+      action: PayloadAction<Partial<ParticipantData>>
+    ) => {
+      state.participantData = { ...state.participantData, ...action.payload };
+    },
     reset: (state) => {
       return initialState;
     },
@@ -58,6 +64,7 @@ export const {
   updateParticipantName,
   updateDbCollectionId,
   reset,
+  updateParticipantProperties,
 } = participantSlice.actions;
 
 export default participantSlice.reducer;

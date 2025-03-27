@@ -24,11 +24,12 @@ import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { findParty } from "@/app/Firebase/FirestoreService";
 import LoadingOverlay from "@/app/Components/LoadingOverlay";
 import Toast from "@/app/Components/Toast";
+import { useLoadingToast } from "@/app/Context/LoadingToastContext";
+import { AppError } from "@/app/Firebase/Types";
 
 function EnterCodeScreen() {
   const [code, setCode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+  const { setLoadingText, setToastMessage } = useLoadingToast();
   const { navigate } = useNavigation<StackNavigation>();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -38,70 +39,65 @@ function EnterCodeScreen() {
       return;
     }
     try {
-      setLoading(true);
+      setLoadingText("Finding Party...");
       setToastMessage("");
       const result = await findParty(code);
-      if (result) {
-        dispatch(updatePartyCode(code));
-        dispatch(updateParty(result.partyData));
-        dispatch(updateDbCollectionId(result.partyId));
-        navigate(NAVIGATION_LABELS.EnterName);
-        setLoading(false);
-      } else {
-        setToastMessage("Could not find party.");
-        setLoading(false);
-      }
+
+      dispatch(updatePartyCode(code));
+      dispatch(updateParty(result.partyData));
+      dispatch(updateDbCollectionId(result.partyId));
+      navigate(NAVIGATION_LABELS.EnterName);
     } catch (err) {
-      setToastMessage("Error occured searching for party.");
-      setLoading(false);
+      if (err instanceof AppError) {
+        setToastMessage(err.message);
+      } else {
+        setToastMessage("Error occured searching for party.");
+      }
     }
+    setLoadingText("");
   };
 
   return (
-    <>
-      {loading && <LoadingOverlay loadingText="Finding Party..." />}
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.container}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "flex-end",
-              gap: scaleHeight(50),
-            }}
-          >
-            <View style={{}}>
-              <Text style={styles.title}>Enter Session Code</Text>
-            </View>
-            <View style={{}}>
-              <TextInput
-                mode="outlined"
-                keyboardType="default"
-                style={styles.textInput}
-                outlineStyle={styles.InputBorder}
-                autoCapitalize="characters"
-                autoCorrect={false}
-                value={code}
-                onChangeText={(e) => setCode(e)}
-              />
-            </View>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.container}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "flex-end",
+            gap: scaleHeight(50),
+          }}
+        >
+          <View style={{}}>
+            <Text style={styles.title}>Enter Session Code</Text>
           </View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "flex-end",
-              bottom: scaleHeight(25),
-            }}
-          >
-            <ContinueButton
-              onPress={handleContinue}
-              useDefaultStyles={false}
-              style={{ alignSelf: "flex-end" }}
+          <View style={{}}>
+            <TextInput
+              mode="outlined"
+              keyboardType="default"
+              style={styles.textInput}
+              outlineStyle={styles.InputBorder}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              value={code}
+              onChangeText={(e) => setCode(e)}
             />
           </View>
         </View>
-      </TouchableWithoutFeedback>
-      <Toast message={toastMessage} />
-    </>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "flex-end",
+            bottom: scaleHeight(25),
+          }}
+        >
+          <ContinueButton
+            onPress={handleContinue}
+            useDefaultStyles={false}
+            style={{ alignSelf: "flex-end" }}
+          />
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

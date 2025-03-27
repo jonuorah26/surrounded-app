@@ -2,7 +2,7 @@ import Button from "@/app/Components/Button";
 import { Colors } from "@/app/Constants/Colors";
 import { generic } from "@/app/Constants/GenericStyles";
 import { useNavigation } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { StackNavigation } from "../../_layout";
 import { useUserTypeContext } from "@/app/Context/UserTypeContext";

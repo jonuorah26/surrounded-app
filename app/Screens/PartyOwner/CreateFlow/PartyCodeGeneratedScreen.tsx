@@ -1,18 +1,12 @@
 import Button from "@/app/Components/Button";
 import FlagIndicator from "@/app/Components/FlagIndicator";
 import { Colors } from "@/app/Constants/Colors";
-import { SW } from "@/app/Constants/Dimensions";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
 import useBlinkingElipses from "@/app/Hooks/useBlinkingElipses";
-import {
-  reset,
-  updateParticipantCount,
-  updatePartyCode,
-} from "@/app/Store/PartyReducer";
 import { AppDispatch, RootState } from "@/app/Store/Store";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { StackNavigation } from "../../_layout";
@@ -20,13 +14,11 @@ import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { usePartyListener } from "@/app/Hooks/usePartyListener";
 import { startParty } from "@/app/Firebase/FirestoreService";
 import { startParty as reduxStartParty } from "@/app/Store/PartyReducer";
-import LoadingOverlay from "@/app/Components/LoadingOverlay";
-import Toast from "@/app/Components/Toast";
+import { useLoadingToast } from "@/app/Context/LoadingToastContext";
+import * as Clipboard from "expo-clipboard";
 
 function PartyCodeGeneratedScreen() {
   usePartyListener();
-  const [toastMessage, setToastMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const elipses = useBlinkingElipses(1000);
   const { navigate, reset: navReset } = useNavigation<StackNavigation>();
   const {
@@ -35,11 +27,13 @@ function PartyCodeGeneratedScreen() {
   } = useSelector((state: RootState) => state.party);
   const proceedDisabled = participantCount < minParticipants;
   const dispatch = useDispatch<AppDispatch>();
+  const { setLoadingText, setToastMessage } = useLoadingToast();
 
   const handleProceed = async () => {
     try {
-      setLoading(true);
+      setLoadingText("Starting...");
       setToastMessage("");
+
       await startParty(dbCollectionId);
       dispatch(reduxStartParty());
       navReset({
@@ -47,90 +41,95 @@ function PartyCodeGeneratedScreen() {
         routes: [{ name: NAVIGATION_LABELS.ModeratorScreen }],
       });
     } catch (err) {
-      setToastMessage("Failed to start party.");
+      setToastMessage("Error occured. Failed to start party.");
     }
-    setLoading(false);
+    setLoadingText("");
+  };
+
+  const handleCopyCode = async () => {
+    try {
+      //setLoadingText("Copying code...");
+      setToastMessage("");
+      await Clipboard.setStringAsync(partyCode);
+      //setLoadingText("");
+      setToastMessage("Party code copied!");
+    } catch (err) {
+      setToastMessage("Error occured copying code. Please try again.");
+    }
   };
 
   return (
-    <>
-      <View style={generic.container}>
-        <View style={{ flex: 8 }}>
-          <FlagIndicator color={Colors.red} useRounded={false} />
-        </View>
-        <View style={[styles.content, { flex: 30 }]}>
-          <View style={[styles.codeSection, { flex: 2 }]}>
-            <Text style={[styles.partyCodeHeader, { flex: 1 }]}>
-              Party Code
-            </Text>
-            <View
-              style={{
-                alignItems: "center",
-                width: "100%",
-                flex: 4,
-              }}
-            >
-              <View style={styles.codeContainer} /*white code container*/>
-                <Text style={styles.codeText}>{partyCode}</Text>
-                <TouchableOpacity onPress={() => {}} style={styles.copyButton}>
-                  <MaterialIcons
-                    name="content-copy"
-                    size={fontStyles.large.fontSize + 5}
-                  />
-                </TouchableOpacity>
-              </View>
-              <View style={{ paddingVertical: "2%" }} /*codeHelperText*/>
-                <Text style={styles.codeHelperText}>
-                  Tap the clipboard icon to copy the code. Share this code with
-                  your participants so that they can join your party.
-                </Text>
-              </View>
-            </View>
-          </View>
-
+    <View style={generic.container}>
+      <View style={{ flex: 8 }}>
+        <FlagIndicator color={Colors.red} useRounded={false} />
+      </View>
+      <View style={[styles.content, { flex: 30 }]}>
+        <View style={[styles.codeSection, { flex: 2 }]}>
+          <Text style={[styles.partyCodeHeader, { flex: 1 }]}>Party Code</Text>
           <View
-            style={[
-              styles.participantsSection,
-              { flex: 2, justifyContent: "center" },
-            ]}
+            style={{
+              alignItems: "center",
+              width: "100%",
+              flex: 4,
+            }}
           >
-            <View style={{ flex: -1, marginBottom: "3.5%" }}>
-              <Text style={styles.waitingForParticipantsText}>
-                Waiting For Participants{elipses}
-              </Text>
+            <View style={styles.codeContainer} /*white code container*/>
+              <Text style={styles.codeText}>{partyCode}</Text>
+              <TouchableOpacity
+                onPress={handleCopyCode}
+                style={styles.copyButton}
+              >
+                <MaterialIcons
+                  name="content-copy"
+                  size={fontStyles.large.fontSize + 5}
+                />
+              </TouchableOpacity>
             </View>
-            <View style={{ flex: -1 }}>
-              <Text style={styles.participantsJoinedNum}>
-                {participantCount}
-              </Text>
-            </View>
-            <View style={{ flex: -1 }}>
-              <Text style={styles.participantsJoinedText}>
-                Participants Joined
+            <View style={{ paddingVertical: "2%" }} /*codeHelperText*/>
+              <Text style={styles.codeHelperText}>
+                Tap the clipboard icon to copy the code. Share this code with
+                your participants so that they can join your party.
               </Text>
             </View>
           </View>
         </View>
-        <View style={{ flex: 5, justifyContent: "flex-start" }}>
-          <Button
-            text="Enter Session"
-            onPress={handleProceed}
-            sizeVariant="medium"
-            styles={{
-              button: {
-                ...styles.proceedButton,
-                opacity: proceedDisabled ? 0.5 : 1,
-              },
-            }}
-            disabled={proceedDisabled}
-          />
+
+        <View
+          style={[
+            styles.participantsSection,
+            { flex: 2, justifyContent: "center" },
+          ]}
+        >
+          <View style={{ flex: -1, marginBottom: "3.5%" }}>
+            <Text style={styles.waitingForParticipantsText}>
+              Waiting For Participants{elipses}
+            </Text>
+          </View>
+          <View style={{ flex: -1 }}>
+            <Text style={styles.participantsJoinedNum}>{participantCount}</Text>
+          </View>
+          <View style={{ flex: -1 }}>
+            <Text style={styles.participantsJoinedText}>
+              Participants Joined
+            </Text>
+          </View>
         </View>
       </View>
-      <>
-        {loading && <LoadingOverlay loadingText="Starting..." />}
-        <Toast message={toastMessage} />
-      </>
-    </>
+      <View style={{ flex: 5, justifyContent: "flex-start" }}>
+        <Button
+          text="Enter Session"
+          onPress={handleProceed}
+          sizeVariant="medium"
+          styles={{
+            button: {
+              ...styles.proceedButton,
+              opacity: proceedDisabled ? 0.5 : 1,
+            },
+          }}
+          disabled={proceedDisabled}
+        />
+      </View>
+    </View>
   );
 }
 

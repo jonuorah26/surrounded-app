@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { fontStyles } from "../Constants/GenericStyles";
+import { scaleArea } from "../Constants/Dimensions";
 
 const sizes: {
   large: {
@@ -59,7 +60,8 @@ type SizeVariant = "large" | "medium" | "small";
 
 type Props = {
   text: string;
-  onPress: () => void;
+  onPress?: () => void;
+  onLongPress?: () => void;
   color?: string;
   styles?: { button?: StyleProp<ViewStyle>; buttonText?: StyleProp<TextStyle> };
   sizeVariant?: SizeVariant;
@@ -69,6 +71,7 @@ type Props = {
 function Button({
   text,
   onPress,
+  onLongPress,
   sizeVariant = "large",
   styles: customStyles = { button: {}, buttonText: {} },
   disabled = false,
@@ -84,6 +87,8 @@ function Button({
       ]}
       //activeOpacity={0.7}
       onPress={onPress}
+      onLongPress={onLongPress}
+      hitSlop={scaleArea(60)}
       disabled={disabled}
     >
       <Text

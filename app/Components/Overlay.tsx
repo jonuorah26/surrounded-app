@@ -3,18 +3,34 @@ import React from "react";
 import { Colors } from "../Constants/Colors";
 import { ActivityIndicator } from "react-native-paper";
 import { scaleArea, scaleHeight, scaleWidth } from "../Constants/Dimensions";
-import { fontStyles } from "../Constants/GenericStyles";
+import { fontStyles, OVERLAY_Z_INDEX } from "../Constants/GenericStyles";
 
 type Props = {
   headerText: string;
   subText?: string;
   subText2?: string;
+  overlayColor?: string;
+  overlayLevel?: number;
 };
 
-export default function Overlay({ headerText, subText, subText2 }: Props) {
+export default function Overlay({
+  headerText,
+  subText,
+  subText2,
+  overlayColor = Colors.disablingOverlay,
+  overlayLevel = OVERLAY_Z_INDEX,
+}: Props) {
   return (
     <View
-      style={[styles.container, { backgroundColor: Colors.disablingOverlay }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: overlayColor,
+          zIndex: overlayLevel,
+          elevation: overlayLevel,
+        },
+      ]}
+      key="overlay-view"
     >
       <View style={{ alignItems: "center", gap: scaleHeight(50) }}>
         <Text
@@ -57,7 +73,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     left: 0,
-    zIndex: 10,
     justifyContent: "center",
   },
 });

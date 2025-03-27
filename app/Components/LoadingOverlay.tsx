@@ -3,7 +3,7 @@ import React from "react";
 import { Colors } from "../Constants/Colors";
 import { ActivityIndicator } from "react-native-paper";
 import { scaleArea } from "../Constants/Dimensions";
-import { fontStyles } from "../Constants/GenericStyles";
+import { fontStyles, OVERLAY_Z_INDEX } from "../Constants/GenericStyles";
 
 type Props = {
   loadingText?: string;
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     left: 0,
-    zIndex: 10,
+    zIndex: OVERLAY_Z_INDEX,
     justifyContent: "center",
   },
 });

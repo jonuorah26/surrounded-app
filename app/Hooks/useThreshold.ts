@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../Store/Store";
 import { useEffect, useState } from "react";
+import { useUserTypeContext } from "../Context/UserTypeContext";
 
 export const useThreshold = () => {
   const {
@@ -8,16 +9,21 @@ export const useThreshold = () => {
     customVoteOutThreshold,
     participantCount,
     flagsRaisedCount,
+    participantInSeat,
   } = useSelector((state: RootState) => state.party.partyData);
-  const [threshold, setThreshold] = useState(0);
+  const { dbCollectionId: participantId } = useSelector(
+    (state: RootState) => state.participant
+  );
+  const [threshold, setThreshold] = useState<number | null>(null);
   const [thresholdReached, setThresholdReached] = useState(false);
+  const { userType } = useUserTypeContext();
 
   useEffect(() => {
     var updatedThreshold = threshold;
 
     switch (voteOutThresholdType) {
       case "all":
-        updatedThreshold = participantCount;
+        updatedThreshold = participantCount - 1;
         break;
       case "custom":
         updatedThreshold = customVoteOutThreshold ?? 0;
@@ -31,11 +37,22 @@ export const useThreshold = () => {
   }, [voteOutThresholdType, customVoteOutThreshold, participantCount]);
 
   useEffect(() => {
-    if (flagsRaisedCount >= threshold) {
-      setThresholdReached(true);
-    } else {
-      setThresholdReached(false);
-    }
+    if (threshold === null) return;
+
+    setThresholdReached((prev) => {
+      if (!prev && flagsRaisedCount >= threshold) {
+        if (userType === "moderator") {
+          alert("Threshold Reached!");
+        } else {
+          if (participantId === participantInSeat?.id) {
+            alert("You have been voted out!");
+          }
+        }
+
+        return true;
+      }
+      return flagsRaisedCount >= threshold;
+    });
   }, [flagsRaisedCount, threshold]);
 
   return { threshold, thresholdReached };
