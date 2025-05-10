@@ -14,6 +14,7 @@ import { AppDispatch, RootState } from "@/app/Store/Store";
 import { endParty } from "@/app/Firebase/FirestoreService";
 import { reset } from "@/app/Store/PartyReducer";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
+import { clearLastPartyData } from "@/app/Hooks";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
   const dbCollectionId = useSelector(
@@ -21,7 +22,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
   );
   const dispatch = useDispatch<AppDispatch>();
   const {
-    navigation: { reset: navReset },
+    navigation: { reset: navReset, navigate },
   } = props;
   const { setLoadingText, setToastMessage } = useLoadingToast();
 
@@ -36,6 +37,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             await endParty(dbCollectionId);
             //reset entire state
             dispatch(reset());
+            clearLastPartyData();
             navReset({
               index: 0,
               routes: [{ name: NAVIGATION_LABELS.Start }],
@@ -74,7 +76,9 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           marginVertical: scaleHeight(24),
         }}
       >
-        <Pressable onPress={() => /*props.navigation.navigate("Settings")*/ {}}>
+        <Pressable
+          onPress={() => navigate(NAVIGATION_LABELS.Drawer_ViewParticipants)}
+        >
           <Text
             style={{
               fontSize: fontStyles.medium.fontSize,

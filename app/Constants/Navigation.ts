@@ -15,6 +15,7 @@ export const NAVIGATION_LABELS = {
   EnterName: "EnterName",
 
   //drawers
-  Participant: "Participant",
-  Moderator: "Moderator",
+  Drawer_ParticipantScreen: "Participant",
+  Drawer_ModeratorScreen: "Moderator",
+  Drawer_ViewParticipants: "ViewParticipants",
 };

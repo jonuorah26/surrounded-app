@@ -6,7 +6,7 @@ import useBlinkingElipses from "@/app/Hooks/useBlinkingElipses";
 import { AppDispatch, RootState } from "@/app/Store/Store";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { StackNavigation } from "../../_layout";
@@ -16,6 +16,7 @@ import { startParty } from "@/app/Firebase/FirestoreService";
 import { startParty as reduxStartParty } from "@/app/Store/PartyReducer";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import * as Clipboard from "expo-clipboard";
+import { saveLastPartyData } from "@/app/Hooks";
 
 function PartyCodeGeneratedScreen() {
   usePartyListener();
@@ -28,6 +29,16 @@ function PartyCodeGeneratedScreen() {
   const proceedDisabled = participantCount < minParticipants;
   const dispatch = useDispatch<AppDispatch>();
   const { setLoadingText, setToastMessage } = useLoadingToast();
+
+  useEffect(() => {
+    if (!dbCollectionId) return;
+
+    saveLastPartyData({
+      role: "moderator",
+      partyId: dbCollectionId,
+      lastPage: "partyCodeGenerated",
+    });
+  }, [dbCollectionId]);
 
   const handleProceed = async () => {
     try {

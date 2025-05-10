@@ -9,25 +9,34 @@ import { scaleWidth } from "@/app/Constants/Dimensions";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import LoadingOverlay from "@/app/Components/LoadingOverlay";
 import Toast from "@/app/Components/Toast";
+import ViewParticipantsScreen from "./DrawerScreens/ViewParticipantsScreen";
+import { Colors } from "@/app/Constants/Colors";
 
 const Drawer = createDrawerNavigator();
 
 export default function ModeratorDrawerNavigator() {
   return (
     <Drawer.Navigator
-      initialRouteName={NAVIGATION_LABELS.Moderator}
+      initialRouteName={NAVIGATION_LABELS.Drawer_ModeratorScreen}
       drawerContent={(props) => <DrawerContent {...props} />} // Optional custom drawer
       screenOptions={{
         headerShown: false, // Hide header if you don't want it
-        drawerStyle: { backgroundColor: "#222", width: scaleWidth(320) },
+        drawerStyle: {
+          backgroundColor: Colors.drawerBackgroundColor,
+          width: scaleWidth(320),
+        },
         drawerActiveTintColor: "#fff",
         drawerInactiveTintColor: "#aaa",
         drawerPosition: "right",
       }}
     >
       <Drawer.Screen
-        name={NAVIGATION_LABELS.Moderator}
+        name={NAVIGATION_LABELS.Drawer_ModeratorScreen}
         component={ModeratorScreen}
+      />
+      <Drawer.Screen
+        name={NAVIGATION_LABELS.Drawer_ViewParticipants}
+        component={ViewParticipantsScreen}
       />
       {/* <Drawer.Screen name="Settings" component={SettingsScreen} /> */}
     </Drawer.Navigator>

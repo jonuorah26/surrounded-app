@@ -16,13 +16,22 @@ import { NAVIGATION_LABELS } from "../Constants/Navigation";
 import { useState } from "react";
 import Toast from "../Components/Toast";
 import LoadingOverlay from "../Components/LoadingOverlay";
+import SplashScreen from "./SplashScreen";
+import { useOnAppLoad } from "../Hooks";
 
 const Stack = createNativeStackNavigator();
 export type StackNavigation = NativeStackNavigationProp<ParamListBase>;
 
 export function RootStack() {
+  const { initialRoute } = useOnAppLoad();
+
+  if (!initialRoute) {
+    return <SplashScreen />;
+  }
+
   return (
     <Stack.Navigator
+      initialRouteName={initialRoute}
       screenOptions={{
         headerTransparent: true,
         title: "",

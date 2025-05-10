@@ -15,7 +15,7 @@ const Drawer = createDrawerNavigator();
 export default function ParticipantDrawerNavigator() {
   return (
     <Drawer.Navigator
-      initialRouteName={NAVIGATION_LABELS.Participant}
+      initialRouteName={NAVIGATION_LABELS.Drawer_ParticipantScreen}
       drawerContent={(props) => <DrawerContent {...props} />} // Optional custom drawer
       screenOptions={{
         headerShown: false, // Hide header if you don't want it
@@ -26,7 +26,7 @@ export default function ParticipantDrawerNavigator() {
       }}
     >
       <Drawer.Screen
-        name={NAVIGATION_LABELS.Participant}
+        name={NAVIGATION_LABELS.Drawer_ParticipantScreen}
         component={ParticipantScreen}
       />
       {/* <Drawer.Screen name="Settings" component={SettingsScreen} /> */}

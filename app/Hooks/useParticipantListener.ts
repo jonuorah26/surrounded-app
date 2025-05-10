@@ -10,8 +10,13 @@ import {
 } from "../Constants/DbConstants";
 import {
   ParticipantData,
+  updateIsDeleted,
   updateParticipantProperties,
 } from "../Store/ParticipantReducer";
+import {
+  startPresenceUpdates,
+  stopPresenceUpdates,
+} from "../Firebase/RealtimePresenceService";
 
 export const useParticipantListener = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -34,6 +39,7 @@ export const useParticipantListener = () => {
       participantId
     );
 
+    startPresenceUpdates(partyId, participantId);
     const unsubscribe = onSnapshot(participantRef, (docSnap) => {
       if (docSnap.exists()) {
         const newData = docSnap.data() as ParticipantData;
@@ -54,10 +60,13 @@ export const useParticipantListener = () => {
 
         // Update ref with latest data
         previousDataRef.current = newData;
+      } else {
+        dispatch(updateIsDeleted(true));
       }
     });
 
     return () => {
+      stopPresenceUpdates();
       unsubscribe();
     }; // Cleanup listener on unmount
   }, [participantId]);

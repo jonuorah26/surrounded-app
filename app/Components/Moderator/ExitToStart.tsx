@@ -3,6 +3,7 @@ import { fontStyles } from "@/app/Constants/GenericStyles";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import { endParty } from "@/app/Firebase/FirestoreService";
+import { clearLastPartyData } from "@/app/Hooks";
 import { StackNavigation } from "@/app/Screens/_layout";
 import { reset } from "@/app/Store/PartyReducer";
 import { AppDispatch, RootState } from "@/app/Store/Store";
@@ -32,6 +33,7 @@ export const ExitToStart = () => {
               setToastMessage("");
               await endParty(dbCollectionId);
               dispatch(reset());
+              clearLastPartyData();
               router.reset({
                 index: 0,
                 routes: [{ name: NAVIGATION_LABELS.Start }],

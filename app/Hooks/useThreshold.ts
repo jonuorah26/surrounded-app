@@ -37,9 +37,11 @@ export const useThreshold = () => {
   }, [voteOutThresholdType, customVoteOutThreshold, participantCount]);
 
   useEffect(() => {
-    if (threshold === null) return;
+    if (threshold === null || threshold === 0) return;
 
     setThresholdReached((prev) => {
+      if (participantCount <= 1) return false;
+
       if (!prev && flagsRaisedCount >= threshold) {
         if (userType === "moderator") {
           alert("Threshold Reached!");
@@ -53,7 +55,7 @@ export const useThreshold = () => {
       }
       return flagsRaisedCount >= threshold;
     });
-  }, [flagsRaisedCount, threshold]);
+  }, [flagsRaisedCount, threshold, participantCount]);
 
   return { threshold, thresholdReached };
 };

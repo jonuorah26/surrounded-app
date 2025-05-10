@@ -8,6 +8,7 @@ import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { reset as partyReset } from "@/app/Store/PartyReducer";
 import { reset as participantReset } from "@/app/Store/ParticipantReducer";
 import { OVERLAY_INTERRUPT_Z_INDEX } from "@/app/Constants/GenericStyles";
+import { clearLastPartyData } from "@/app/Hooks";
 
 const COUNTDOWN = 10;
 
@@ -19,14 +20,38 @@ export function InterruptOverlay() {
   const { isEnded, isPaused, isStarted } = useSelector(
     (state: RootState) => state.party.partyData
   );
-  const { isDisabled } = useSelector(
-    (state: RootState) => state.participant.participantData
-  );
+  const {
+    participantData: { isDisabled },
+    isDeleted,
+  } = useSelector((state: RootState) => state.participant);
   const dispatch = useDispatch<AppDispatch>();
   const { navigate } = useNavigation<StackNavigation>();
 
   useEffect(() => {
-    if (isEnded) {
+    if (isDeleted) {
+      setHeaderText("You are no longer part of this party");
+      setSubText(
+        `You might have been removed by the moderator, please check with them. You will be redirected now in...`
+      );
+      setSubText2(`${countdown}`);
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          --prev;
+          setSubText2(`${prev}`);
+          return prev;
+        });
+      }, 1000);
+      setTimeout(() => {
+        clearInterval(interval);
+        setCountdown(COUNTDOWN);
+        setSubText("");
+        setSubText2("");
+        dispatch(partyReset());
+        dispatch(participantReset());
+        clearLastPartyData();
+        navigate(NAVIGATION_LABELS.Start);
+      }, COUNTDOWN * 1000);
+    } else if (isEnded) {
       setHeaderText("Party Ended");
       setSubText(
         `The moderator has ended the session. You will be redirected now in...`
@@ -46,6 +71,7 @@ export function InterruptOverlay() {
         setSubText2("");
         dispatch(partyReset());
         dispatch(participantReset());
+        clearLastPartyData();
         navigate(NAVIGATION_LABELS.Start);
       }, COUNTDOWN * 1000);
     } else if (!isStarted) {
@@ -61,7 +87,7 @@ export function InterruptOverlay() {
       setHeaderText("");
       setSubText("");
     }
-  }, [isEnded, isStarted, isPaused, isDisabled]);
+  }, [isEnded, isStarted, isPaused, isDisabled, isDeleted]);
   return (
     <>
       {headerText !== "" && (

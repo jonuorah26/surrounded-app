@@ -8,7 +8,6 @@ import { UserTypeProvider } from "./Context/UserTypeContext";
 import { Provider } from "react-redux";
 import { store } from "./Store/Store";
 import { LoadingToastProvider } from "./Context/LoadingToastContext";
-import { Colors } from "./Constants/Colors";
 
 const theme = {
   ...DefaultTheme,

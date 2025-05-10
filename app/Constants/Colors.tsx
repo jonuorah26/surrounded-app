@@ -9,7 +9,13 @@ export const Colors = {
   disablingOverlay: "rgba(0, 0, 0, 0.8)",
   inSeatOverlay: "rgba(0, 0, 0, 0.95)",
   culturedWhite: "#F3F3F3",
+  secondaryText: "#B0B0B0",
   buzzerRed: "#D50000",
+  buzzerRedWithOpacity: "rgba(213, 0, 0, 0.4)",
+  drawerBackgroundColor: "#222",
+  activeGreen: "#00C853",
+  awayYellow: "#FFB300",
+  offlineGray: "#616161",
 };
 
 /*

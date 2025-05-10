@@ -32,7 +32,7 @@ import Toast from "@/app/Components/Toast";
 import LoadingOverlay from "@/app/Components/LoadingOverlay";
 import { useModeratorControls } from "@/app/Hooks/useModeratorControls";
 import { AppError } from "@/app/Firebase/Types";
-import { useThreshold } from "@/app/Hooks";
+import { saveLastPartyData, useThreshold } from "@/app/Hooks";
 import { DrawerNavProps } from "@/app/Types";
 import { RemoveFromSeat } from "@/app/Firebase/FirestoreService";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
@@ -55,6 +55,17 @@ function ModeratorScreen() {
     dbCollectionId: partyId,
   } = useSelector((state: RootState) => state.party);
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    if (!partyId) return;
+
+    saveLastPartyData({
+      role: "moderator",
+      partyId,
+      lastPage: "moderatorControls",
+    });
+  }, [partyId]);
+
   const getFontSize = () => {
     const baseSize = scaleArea(200) * 0.32;
 

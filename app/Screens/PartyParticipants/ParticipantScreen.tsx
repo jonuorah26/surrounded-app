@@ -33,6 +33,7 @@ import { modifyFlag } from "@/app/Firebase/FirestoreService";
 import { AppError } from "@/app/Firebase/Types";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import {
+  saveLastPartyData,
   useParticipantListener,
   usePartyListener,
   useThreshold,
@@ -61,6 +62,16 @@ function ParticipantScreen() {
   } = useSelector((state: RootState) => state.participant);
   const dispatch = useDispatch<AppDispatch>();
   const isInSeat = participantId === participantInSeat?.id;
+
+  useEffect(() => {
+    if (!partyId || !participantId) return;
+    console.log("saving participant data:", participantId, partyId);
+    saveLastPartyData({
+      role: "participant",
+      partyId,
+      participantId: participantId,
+    });
+  }, [partyId, participantId]);
 
   const getFontSize = () => {
     const baseSize = scaleWidth(80) * 0.24;

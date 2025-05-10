@@ -48,7 +48,6 @@ function EnterNameScreen() {
       dispatch(updateParticipantName(name));
       dispatch(updateDbCollectionId(result.participantId));
       dispatch(updateParticipantCount(result.participantCount));
-
       navReset({
         index: 0,
         routes: [{ name: NAVIGATION_LABELS.ParticipantScreen }],

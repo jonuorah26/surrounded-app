@@ -3,6 +3,7 @@ export const PARTICIPANTS = "Participants";
 
 export const DB_PROPERTY_LABELS_NOT_IN_REDUX = {
   createdAt: "createdAt",
+  lastActive: "lastActive",
 };
 
 export const DB_PROPERTY_LABELS = {
@@ -25,5 +26,4 @@ export const DB_PROPERTY_LABELS = {
   flag: "flag",
   raised: "raised",
   lastChangeBy: "lastChangeBy",
-  isOnline: "isOnline",
 };

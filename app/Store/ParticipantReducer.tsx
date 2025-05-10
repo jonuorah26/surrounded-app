@@ -9,12 +9,21 @@ export type ParticipantData = {
   participantName: string;
   isDisabled: boolean;
   flag: Flag;
-  isOnline: boolean;
+};
+
+export const emptyParticipant: ParticipantData = {
+  participantName: "",
+  flag: {
+    raised: false,
+    lastChangeBy: "moderator",
+  },
+  isDisabled: false,
 };
 
 type ParticipantState = {
   participantData: ParticipantData;
   dbCollectionId: string;
+  isDeleted: boolean;
 };
 
 const initialState: ParticipantState = {
@@ -25,9 +34,9 @@ const initialState: ParticipantState = {
       raised: false,
       lastChangeBy: "moderator",
     },
-    isOnline: true,
   },
   dbCollectionId: "",
+  isDeleted: false,
 };
 
 const participantSlice = createSlice({
@@ -52,6 +61,12 @@ const participantSlice = createSlice({
     ) => {
       state.participantData = { ...state.participantData, ...action.payload };
     },
+    updateIsDeleted: (state, action: PayloadAction<boolean>) => {
+      state.isDeleted = action.payload;
+    },
+    updateParticipant: (state, action: PayloadAction<ParticipantData>) => {
+      state.participantData = action.payload;
+    },
     reset: (state) => {
       return initialState;
     },
@@ -65,6 +80,8 @@ export const {
   updateDbCollectionId,
   reset,
   updateParticipantProperties,
+  updateIsDeleted,
+  updateParticipant,
 } = participantSlice.actions;
 
 export default participantSlice.reducer;

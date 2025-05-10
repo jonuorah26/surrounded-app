@@ -18,6 +18,7 @@ import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import { AppError } from "@/app/Firebase/Types";
 import { useNavigation } from "@react-navigation/native";
 import { DrawerNavProps } from "@/app/Types";
+import { clearLastPartyData } from "@/app/Hooks";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
   const partyId = useSelector((state: RootState) => state.party.dbCollectionId);
@@ -43,6 +44,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             //reset entire state
             dispatch(partyReset());
             dispatch(participantReset());
+            clearLastPartyData();
             navReset({
               index: 0,
               routes: [{ name: NAVIGATION_LABELS.Start }],
@@ -68,7 +70,6 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
       setLoadingText("Entering seat...");
       setToastMessage("");
       await enterSeat(partyId, { name: participantName, id: participantId });
-      setToastMessage("You are in the seat!");
       closeDrawer();
     } catch (err) {
       if (err instanceof AppError) {
