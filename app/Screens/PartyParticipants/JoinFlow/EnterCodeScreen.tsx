@@ -16,7 +16,7 @@ import { StackNavigation } from "../../_layout";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/Store/Store";
 import {
-  updateDbCollectionId,
+  updatePartyId,
   updateParty,
   updatePartyCode,
 } from "@/app/Store/PartyReducer";
@@ -45,7 +45,7 @@ function EnterCodeScreen() {
 
       dispatch(updatePartyCode(code));
       dispatch(updateParty(result.partyData));
-      dispatch(updateDbCollectionId(result.partyId));
+      dispatch(updatePartyId(result.partyId));
       navigate(NAVIGATION_LABELS.EnterName);
     } catch (err) {
       if (err instanceof AppError) {

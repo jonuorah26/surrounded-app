@@ -162,12 +162,15 @@ export const createParty = async (partyData: PartyData) => {
   const partyCode = await generatePartyCode();
   var partyRef = doc(collection(db, PARTIES));
   const partyId = `party_${partyRef.id}`;
+
+  partyData.id = partyId;
+  partyData.partyCode = partyCode;
+
   partyRef = doc(db, PARTIES, partyId);
 
   try {
     await setDoc(partyRef, {
       ...partyData,
-      partyCode,
       createdAt: new Date(),
     });
 
@@ -348,6 +351,7 @@ export const addParticipantToParty = async (
 
       // Add new participant
       transaction.set(newParticipantRef, {
+        id: participantId,
         participantName,
         isDisabled: false,
         flag: { raised: false, lastChangeBy: "moderator" },
@@ -492,6 +496,7 @@ export const fetchParticipantsBatch = async (
       q = query(
         participantsRef,
         orderBy("participantName"),
+        orderBy("id"),
         startAfter(lastDoc),
         limit(batchSize)
       );
@@ -521,6 +526,7 @@ export const fetchParticipantsBatch = async (
       hasMore: batchCount === batchSize,
     };
   } catch (err) {
+    console.error(err);
     throw err;
   }
 };
@@ -538,6 +544,7 @@ export const addMockParticipants = async (partyId: string, count: number) => {
       newDocRef = doc(db, PARTIES, partyId, PARTICIPANTS, participantId);
 
       const participantData: ParticipantData = {
+        id: participantId,
         participantName: `Mock User ${letters[i % letters.length]}-${i + 1}`,
         isDisabled: Math.random() < 0.1, // 10% chance of disabled
         flag: { raised: false, lastChangeBy: "moderator" },

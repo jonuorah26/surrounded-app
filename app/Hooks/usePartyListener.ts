@@ -12,9 +12,8 @@ import { isEqual } from "./useParticipantListener";
 
 export const usePartyListener = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { partyData, dbCollectionId: partyId } = useSelector(
-    (state: RootState) => state.party
-  );
+  const { partyData } = useSelector((state: RootState) => state.party);
+  const partyId = partyData.id;
   const previousDataRef = useRef(partyData); // Store previous values
 
   useEffect(() => {

@@ -9,12 +9,12 @@ import { AppDispatch } from "../Store/Store";
 import { update } from "firebase/database";
 import {
   updateParty,
-  updateDbCollectionId as updatePartyId,
+  updatePartyId as updatePartyId,
 } from "../Store/PartyReducer";
 import { useUserTypeContext } from "../Context/UserTypeContext";
 import {
   updateParticipant,
-  updateDbCollectionId as updateParticipantId,
+  updateParticipantId,
 } from "../Store/ParticipantReducer";
 
 export const STORAGE_KEY = "lastSavedPartyData";
@@ -67,6 +67,11 @@ export const useOnAppLoad = () => {
   const { setUserType } = useUserTypeContext();
 
   const handleAppLoad = async () => {
+    // await saveLastPartyData({
+    //   role: "participant",
+    //   partyId: "party_vf9zKWicM7quBUT7VfhW",
+    //   participantId: "p_lmcdsT2pghsrsec6Jfvl",
+    // });
     setToastMessage("");
     try {
       debugger;

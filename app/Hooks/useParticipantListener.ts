@@ -20,11 +20,12 @@ import {
 
 export const useParticipantListener = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { participantData, dbCollectionId: participantId } = useSelector(
+  const { participantData } = useSelector(
     (state: RootState) => state.participant
   );
-  const { dbCollectionId: partyId } = useSelector(
-    (state: RootState) => state.party
+  const participantId = participantData.id;
+  const { id: partyId } = useSelector(
+    (state: RootState) => state.party.partyData
   );
   const previousDataRef = useRef(participantData); // Store previous values
 

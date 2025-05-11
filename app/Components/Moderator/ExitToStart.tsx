@@ -14,9 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 export const ExitToStart = () => {
   const router = useNavigation<StackNavigation>();
-  const dbCollectionId = useSelector(
-    (state: RootState) => state.party.dbCollectionId
-  );
+  const partyId = useSelector((state: RootState) => state.party.partyData.id);
   const dispatch = useDispatch<AppDispatch>();
   const { setLoadingText, setToastMessage } = useLoadingToast();
 
@@ -31,7 +29,7 @@ export const ExitToStart = () => {
             try {
               setLoadingText("Ending Party...");
               setToastMessage("");
-              await endParty(dbCollectionId);
+              await endParty(partyId);
               dispatch(reset());
               clearLastPartyData();
               router.reset({

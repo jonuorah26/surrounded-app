@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Overlay from "../Overlay";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/Store/Store";
@@ -11,22 +11,48 @@ import { RemoveFromSeat } from "@/app/Firebase/FirestoreService";
 import { AppError } from "@/app/Firebase/Types";
 
 export default function InSeatOverlay() {
-  const { dbCollectionId: participantId } = useSelector(
-    (state: RootState) => state.participant
+  const { id: participantId } = useSelector(
+    (state: RootState) => state.participant.participantData
   );
   const {
-    partyData: { participantInSeat },
-    dbCollectionId: partyId,
+    partyData: { participantInSeat, id: partyId },
   } = useSelector((state: RootState) => state.party);
   const showOverlay = participantId === participantInSeat?.id;
   const { setLoadingText, setToastMessage } = useLoadingToast();
-  //console.log(participantId, "===", participantInSeat?.id); //99
+
+  const lastInSeatRef = useRef({
+    id: "",
+    manuallyLeft: false,
+  });
+
+  useEffect(() => {
+    if (!participantId) return;
+
+    if (participantInSeat) {
+      lastInSeatRef.current = {
+        id: participantInSeat.id,
+        manuallyLeft: false,
+      };
+    } else {
+      if (
+        lastInSeatRef.current.id === participantId &&
+        !lastInSeatRef.current.manuallyLeft
+      ) {
+        setToastMessage("You have been removed from the seat.");
+      }
+      lastInSeatRef.current = {
+        id: "",
+        manuallyLeft: false,
+      };
+    }
+  }, [participantId, participantInSeat]);
 
   const handleRemoveFromSeat = async () => {
     try {
       setLoadingText("Leaving seat...");
       setToastMessage("");
       await RemoveFromSeat(partyId);
+      lastInSeatRef.current.manuallyLeft = true;
       setToastMessage("You have left the seat!");
     } catch (err) {
       if (err instanceof AppError) {

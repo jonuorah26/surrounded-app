@@ -23,29 +23,28 @@ function PartyCodeGeneratedScreen() {
   const elipses = useBlinkingElipses(1000);
   const { navigate, reset: navReset } = useNavigation<StackNavigation>();
   const {
-    partyData: { partyCode, minParticipants, participantCount },
-    dbCollectionId,
+    partyData: { partyCode, minParticipants, participantCount, id: partyId },
   } = useSelector((state: RootState) => state.party);
   const proceedDisabled = participantCount < minParticipants;
   const dispatch = useDispatch<AppDispatch>();
   const { setLoadingText, setToastMessage } = useLoadingToast();
 
   useEffect(() => {
-    if (!dbCollectionId) return;
+    if (!partyId) return;
 
     saveLastPartyData({
       role: "moderator",
-      partyId: dbCollectionId,
+      partyId: partyId,
       lastPage: "partyCodeGenerated",
     });
-  }, [dbCollectionId]);
+  }, [partyId]);
 
   const handleProceed = async () => {
     try {
       setLoadingText("Starting...");
       setToastMessage("");
 
-      await startParty(dbCollectionId);
+      await startParty(partyId);
       dispatch(reduxStartParty());
       navReset({
         index: 0,

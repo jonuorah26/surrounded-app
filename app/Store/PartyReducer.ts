@@ -8,6 +8,7 @@ export type ParticipantInSeat = {
 };
 
 export type PartyData = {
+  id: string;
   flagSystem: FlagSystemOption;
   flagsRaisedCount: number;
   minParticipants: number;
@@ -29,10 +30,10 @@ export type PartyData = {
 
 type PartyState = {
   partyData: PartyData;
-  dbCollectionId: string;
 };
 
 export const emptyParty: PartyData = {
+  id: "",
   flagSystem: "",
   flagsRaisedCount: 0,
   minParticipants: 0,
@@ -51,7 +52,6 @@ export const emptyParty: PartyData = {
 
 const initialState: PartyState = {
   partyData: { ...emptyParty },
-  dbCollectionId: "",
 };
 
 const partySlice = createSlice({
@@ -106,8 +106,8 @@ const partySlice = createSlice({
     reset: (state) => {
       return initialState;
     },
-    updateDbCollectionId: (state, action: PayloadAction<string>) => {
-      state.dbCollectionId = action.payload;
+    updatePartyId: (state, action: PayloadAction<string>) => {
+      state.partyData.id = action.payload;
     },
     updateParty: (state, action: PayloadAction<PartyData>) => {
       state.partyData = action.payload;
@@ -141,7 +141,7 @@ export const {
   updateIsPaused,
   startParty,
   reset,
-  updateDbCollectionId,
+  updatePartyId,
   updateParty,
   updatePartyProperties,
   updateParticipantInSeat,

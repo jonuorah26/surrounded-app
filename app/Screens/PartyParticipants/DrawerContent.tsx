@@ -21,10 +21,9 @@ import { DrawerNavProps } from "@/app/Types";
 import { clearLastPartyData } from "@/app/Hooks";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
-  const partyId = useSelector((state: RootState) => state.party.dbCollectionId);
+  const partyId = useSelector((state: RootState) => state.party.partyData.id);
   const {
-    dbCollectionId: participantId,
-    participantData: { participantName },
+    participantData: { participantName, id: participantId },
   } = useSelector((state: RootState) => state.participant);
   const dispatch = useDispatch<AppDispatch>();
   const {

@@ -51,8 +51,8 @@ function ModeratorScreen() {
       flagsRaisedCount,
       isPaused,
       participantInSeat,
+      id: partyId,
     },
-    dbCollectionId: partyId,
   } = useSelector((state: RootState) => state.party);
   const insets = useSafeAreaInsets();
 

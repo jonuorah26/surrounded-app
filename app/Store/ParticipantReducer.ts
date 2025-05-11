@@ -6,12 +6,14 @@ export type Flag = {
   lastChangeBy: "moderator" | "participant";
 };
 export type ParticipantData = {
+  id: string;
   participantName: string;
   isDisabled: boolean;
   flag: Flag;
 };
 
 export const emptyParticipant: ParticipantData = {
+  id: "",
   participantName: "",
   flag: {
     raised: false,
@@ -22,12 +24,12 @@ export const emptyParticipant: ParticipantData = {
 
 type ParticipantState = {
   participantData: ParticipantData;
-  dbCollectionId: string;
   isDeleted: boolean;
 };
 
 const initialState: ParticipantState = {
   participantData: {
+    id: "",
     participantName: "",
     isDisabled: false,
     flag: {
@@ -35,7 +37,6 @@ const initialState: ParticipantState = {
       lastChangeBy: "moderator",
     },
   },
-  dbCollectionId: "",
   isDeleted: false,
 };
 
@@ -52,8 +53,8 @@ const participantSlice = createSlice({
     updateFlag: (state, action: PayloadAction<Flag>) => {
       state.participantData.flag = action.payload;
     },
-    updateDbCollectionId: (state, action: PayloadAction<string>) => {
-      state.dbCollectionId = action.payload;
+    updateParticipantId: (state, action: PayloadAction<string>) => {
+      state.participantData.id = action.payload;
     },
     updateParticipantProperties: (
       state,
@@ -77,7 +78,7 @@ export const {
   updateIsDisabled,
   updateFlag,
   updateParticipantName,
-  updateDbCollectionId,
+  updateParticipantId,
   reset,
   updateParticipantProperties,
   updateIsDeleted,

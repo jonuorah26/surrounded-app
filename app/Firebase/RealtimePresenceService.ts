@@ -32,19 +32,10 @@ export const startPresenceUpdates = (
   partyId: string,
   participantId: string
 ) => {
-  //if (presenceInterval !== null) return; // Already running
-
   // Immediately do one update
   updateLastActive(partyId, participantId);
 
-  //   BackgroundTimer.runBackgroundTimer(() => {
-  //     //updateLastActive(partyId, participantId);
-  //     console.log("Presence update: ", Date.now());
-  //   }, 10000);
-
-  //console.log("Presence update: ", Date.now());
   presenceInterval = setInterval(() => {
-    //console.log("Presence update: ", Date.now());
     updateLastActive(partyId, participantId);
   }, 10000);
 };

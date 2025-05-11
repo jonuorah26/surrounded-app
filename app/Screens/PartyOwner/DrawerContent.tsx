@@ -17,9 +17,7 @@ import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import { clearLastPartyData } from "@/app/Hooks";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
-  const dbCollectionId = useSelector(
-    (state: RootState) => state.party.dbCollectionId
-  );
+  const partyId = useSelector((state: RootState) => state.party.partyData.id);
   const dispatch = useDispatch<AppDispatch>();
   const {
     navigation: { reset: navReset, navigate },
@@ -34,7 +32,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           try {
             setLoadingText("Ending Party...");
             setToastMessage("");
-            await endParty(dbCollectionId);
+            await endParty(partyId);
             //reset entire state
             dispatch(reset());
             clearLastPartyData();

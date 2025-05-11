@@ -11,8 +11,8 @@ export const useModeratorControls = () => {
   const [control, setControl] = useState<Controls>("");
   const [toast, setToast] = useState("");
   const [loadingText, setLoadingText] = useState("");
-  const { dbCollectionId: partyId } = useSelector(
-    (state: RootState) => state.party
+  const { id: partyId } = useSelector(
+    (state: RootState) => state.party.partyData
   );
   const dispatch = useDispatch<AppDispatch>();
 

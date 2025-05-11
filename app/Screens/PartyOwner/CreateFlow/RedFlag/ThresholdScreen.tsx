@@ -11,7 +11,7 @@ import { StackNavigation } from "@/app/Screens/_layout";
 import {
   PartyData,
   updateCustomVoteOutThreshold,
-  updateDbCollectionId,
+  updatePartyId,
   updatePartyCode,
   updateVoteOutThresholdType,
   VoteOutThresholdType,
@@ -72,7 +72,7 @@ function ThresholdScreen() {
       const result = await createParty(data);
 
       dispatch(updatePartyCode(result.partyCode));
-      dispatch(updateDbCollectionId(result.partyId));
+      dispatch(updatePartyId(result.partyId));
       navigate(NAVIGATION_LABELS.PartyCodeGenerated);
     } catch (err) {
       setToastMessage("Error occured. Failed to create party.");

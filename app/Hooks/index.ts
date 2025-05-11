@@ -5,3 +5,4 @@ export * from "./usePartyListener";
 export * from "./useThreshold";
 export * from "./useOnAppLoad";
 export * from "./useParticipantPresense";
+export * from "./useParticipantsListener";

@@ -11,8 +11,8 @@ export const useThreshold = () => {
     flagsRaisedCount,
     participantInSeat,
   } = useSelector((state: RootState) => state.party.partyData);
-  const { dbCollectionId: participantId } = useSelector(
-    (state: RootState) => state.participant
+  const { id: participantId } = useSelector(
+    (state: RootState) => state.participant.participantData
   );
   const [threshold, setThreshold] = useState<number | null>(null);
   const [thresholdReached, setThresholdReached] = useState(false);

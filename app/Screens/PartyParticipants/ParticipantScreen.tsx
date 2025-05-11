@@ -50,15 +50,19 @@ function ParticipantScreen() {
   const { setLoadingText, setToastMessage } = useLoadingToast();
   const insets = useSafeAreaInsets();
   const {
-    partyData: { participantCount, flagsRaisedCount, participantInSeat },
-    dbCollectionId: partyId,
+    partyData: {
+      participantCount,
+      flagsRaisedCount,
+      participantInSeat,
+      id: partyId,
+    },
   } = useSelector((state: RootState) => state.party);
   const {
     participantData: {
+      id: participantId,
       participantName,
       flag: { raised: flagRaised },
     },
-    dbCollectionId: participantId,
   } = useSelector((state: RootState) => state.participant);
   const dispatch = useDispatch<AppDispatch>();
   const isInSeat = participantId === participantInSeat?.id;

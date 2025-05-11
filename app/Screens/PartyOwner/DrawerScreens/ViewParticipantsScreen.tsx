@@ -8,7 +8,11 @@ import {
   fetchParticipantsBatch,
 } from "@/app/Firebase/FirestoreService";
 import { AppError } from "@/app/Firebase/Types";
-import { isEqual, useParticipantPresence } from "@/app/Hooks";
+import {
+  isEqual,
+  useParticipantPresence,
+  useParticipantsListener,
+} from "@/app/Hooks";
 import { RootState } from "@/app/Store/Store";
 import { ParticipantItem, ParticipantItemMap } from "@/app/Types";
 import { useFocusEffect } from "@react-navigation/native";
@@ -37,12 +41,17 @@ export default function ViewParticipantsScreen() {
   const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const { dbCollectionId: partyId } = useSelector(
-    (state: RootState) => state.party
+  const { id: partyId } = useSelector(
+    (state: RootState) => state.party.partyData
   );
   const { setToastMessage } = useLoadingToast();
   //   const { participantStatusMap } = useParticipantPresence();
   const { presenceCheck } = useParticipantPresence(setParticipants);
+  useParticipantsListener({
+    setParticipantItems: setParticipants,
+    lastDoc,
+    setLastDoc,
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -52,6 +61,10 @@ export default function ViewParticipantsScreen() {
       console.log("useFocusEffect: loadMoreParticipants");
       loadMoreParticipants();
 
+      // addMockParticipants(partyId, 200).then(() => {
+      //   loadMoreParticipants();
+      // });
+
       return () => {
         setParticipants(null);
         setLastDoc(null);
@@ -60,10 +73,6 @@ export default function ViewParticipantsScreen() {
         focusedRef.current = false;
         console.log("focusEffect cleanup");
       };
-
-      //   addMockParticipants(partyId, 200).then(() => {
-      //     loadMoreParticipants();
-      //   });
     }, [partyId])
   );
 
@@ -138,7 +147,7 @@ export default function ViewParticipantsScreen() {
       setLastDoc(lastVisible);
       setHasMore(hasMore);
     } catch (err) {
-      setToastMessage("Failed to load participants. Please try again.");
+      setToastMessage("Error occured loading participants. Please try again.");
     } finally {
       await presenceCheck();
       setIsLoadingMore(false);

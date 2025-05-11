@@ -16,7 +16,7 @@ import { StackNavigation } from "../../_layout";
 import { AppDispatch, RootState } from "@/app/Store/Store";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  updateDbCollectionId,
+  updateParticipantId,
   updateParticipantName,
 } from "@/app/Store/ParticipantReducer";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
@@ -32,7 +32,7 @@ function EnterNameScreen() {
   const { setLoadingText, setToastMessage } = useLoadingToast();
   const { navigate, reset: navReset } = useNavigation<StackNavigation>();
   const dispatch = useDispatch<AppDispatch>();
-  const partyId = useSelector((state: RootState) => state.party.dbCollectionId);
+  const partyId = useSelector((state: RootState) => state.party.partyData.id);
 
   const handleContinue = async () => {
     if (!name) {
@@ -46,7 +46,7 @@ function EnterNameScreen() {
       const result = await addParticipantToParty(name, partyId);
 
       dispatch(updateParticipantName(name));
-      dispatch(updateDbCollectionId(result.participantId));
+      dispatch(updateParticipantId(result.participantId));
       dispatch(updateParticipantCount(result.participantCount));
       navReset({
         index: 0,
