@@ -19,7 +19,7 @@ import {
 import { db } from "./FirebaseConfig";
 import {
   emptyParty,
-  ParticipantInSeat,
+  ParticipantSeatData,
   PartyData,
 } from "../Store/PartyReducer";
 import {
@@ -40,6 +40,7 @@ import {
   stopPresenceUpdates,
 } from "./RealtimePresenceService";
 import { ParticipantItem, ParticipantItemMap } from "../Types";
+import { UserType } from "../Context/UserTypeContext";
 
 export const modifyFlag = async (
   partyId: string,
@@ -417,7 +418,7 @@ export const resetFlags = async (partyId: string) => {
 
 export const enterSeat = async (
   partyId: string,
-  participant: ParticipantInSeat
+  participantInSeat: ParticipantSeatData
 ) => {
   try {
     const partyRef = doc(db, PARTIES, partyId);
@@ -431,8 +432,11 @@ export const enterSeat = async (
       if (partyData.isEnded) {
         throw new AppError("Party does no longer exists");
       }
-      if (partyData.participantInSeat) {
-        if (partyData.participantInSeat.id === participant.id) {
+      if (partyData.participantInSeat.seatFilled) {
+        if (
+          partyData.participantInSeat.lastInSeat?.id ===
+          participantInSeat.lastInSeat?.id
+        ) {
           throw new AppError("You are already in the seat.");
         } else {
           throw new AppError("Someone is already in the seat.");
@@ -441,7 +445,7 @@ export const enterSeat = async (
 
       //const participantRef = doc(db, PARTIES, partyId, PARTICIPANTS, participantId);
       transaction.update(partyRef, {
-        participantInSeat: participant,
+        participantInSeat: participantInSeat,
       } as Partial<PartyData>);
     });
   } catch (err) {
@@ -449,7 +453,10 @@ export const enterSeat = async (
   }
 };
 
-export const RemoveFromSeat = async (partyId: string) => {
+export const RemoveFromSeat = async (
+  partyId: string,
+  lastChangeBy: UserType
+) => {
   try {
     const partyRef = doc(db, PARTIES, partyId);
 
@@ -467,7 +474,11 @@ export const RemoveFromSeat = async (partyId: string) => {
       }
 
       transaction.update(partyRef, {
-        participantInSeat: null,
+        participantInSeat: {
+          ...partyData.participantInSeat,
+          seatFilled: false,
+          lastChangeBy,
+        },
       } as Partial<PartyData>);
     });
   } catch (err) {

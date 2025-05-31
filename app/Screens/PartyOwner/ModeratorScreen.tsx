@@ -41,8 +41,7 @@ import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 function ModeratorScreen() {
   usePartyListener();
   const { threshold, thresholdReached } = useThreshold();
-  const { setControl, controlLoadingText, controlToast } =
-    useModeratorControls();
+  const { setControl } = useModeratorControls();
   const { setLoadingText, setToastMessage } = useLoadingToast();
   const { openDrawer } = useNavigation<DrawerNavProps>();
   const {
@@ -92,7 +91,7 @@ function ModeratorScreen() {
     try {
       setLoadingText("Removing from seat...");
       setToastMessage("");
-      await RemoveFromSeat(partyId);
+      await RemoveFromSeat(partyId, "moderator");
       setToastMessage("Participant removed from seat!");
     } catch (err) {
       if (err instanceof AppError) {
@@ -177,7 +176,7 @@ function ModeratorScreen() {
                 >
                   Who's in The Seat?
                 </Text>
-                {participantInSeat ? (
+                {participantInSeat.seatFilled ? (
                   <Popover
                     from={(sourceRef, showPopover) => (
                       <Pressable
@@ -201,7 +200,7 @@ function ModeratorScreen() {
                             numberOfLines={2}
                             fontSize={fontStyles.xsmall.fontSize}
                           >
-                            {participantInSeat.name}
+                            {participantInSeat.lastInSeat?.name}
                           </AutoSizeText>
                         </View>
                       </Pressable>
@@ -336,12 +335,6 @@ function ModeratorScreen() {
           </View>
         </SafeAreaView>
       </View>
-      <>
-        {controlLoadingText && (
-          <LoadingOverlay loadingText={controlLoadingText} />
-        )}
-        <Toast message={controlToast} />
-      </>
     </>
   );
 }

@@ -17,7 +17,10 @@ export default function InSeatOverlay() {
   const {
     partyData: { participantInSeat, id: partyId },
   } = useSelector((state: RootState) => state.party);
-  const showOverlay = participantId === participantInSeat?.id;
+  // const showOverlay = participantId === participantInSeat?.id;
+  const showOverlay =
+    participantInSeat.seatFilled &&
+    participantId === participantInSeat.lastInSeat?.id;
   const { setLoadingText, setToastMessage } = useLoadingToast();
 
   const lastInSeatRef = useRef({
@@ -25,34 +28,34 @@ export default function InSeatOverlay() {
     manuallyLeft: false,
   });
 
-  useEffect(() => {
-    if (!participantId) return;
+  // useEffect(() => {
+  //   if (!participantId) return;
 
-    if (participantInSeat) {
-      lastInSeatRef.current = {
-        id: participantInSeat.id,
-        manuallyLeft: false,
-      };
-    } else {
-      if (
-        lastInSeatRef.current.id === participantId &&
-        !lastInSeatRef.current.manuallyLeft
-      ) {
-        setToastMessage("You have been removed from the seat.");
-      }
-      lastInSeatRef.current = {
-        id: "",
-        manuallyLeft: false,
-      };
-    }
-  }, [participantId, participantInSeat]);
+  //   if (participantInSeat) {
+  //     lastInSeatRef.current = {
+  //       id: participantInSeat.id,
+  //       manuallyLeft: false,
+  //     };
+  //   } else {
+  //     if (
+  //       lastInSeatRef.current.id === participantId &&
+  //       !lastInSeatRef.current.manuallyLeft
+  //     ) {
+  //       setToastMessage("You have been removed from the seat.");
+  //     }
+  //     lastInSeatRef.current = {
+  //       id: "",
+  //       manuallyLeft: false,
+  //     };
+  //   }
+  // }, [participantId, participantInSeat]);
 
   const handleRemoveFromSeat = async () => {
     try {
       setLoadingText("Leaving seat...");
       setToastMessage("");
-      await RemoveFromSeat(partyId);
-      lastInSeatRef.current.manuallyLeft = true;
+      await RemoveFromSeat(partyId, "participant");
+      //lastInSeatRef.current.manuallyLeft = true;
       setToastMessage("You have left the seat!");
     } catch (err) {
       if (err instanceof AppError) {

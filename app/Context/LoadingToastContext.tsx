@@ -25,7 +25,7 @@ export function LoadingToastProvider({
   return (
     <LoadingToastContext.Provider value={{ setToastMessage, setLoadingText }}>
       {children}
-      <Toast message={toastMsg} />
+      <Toast message={toastMsg} setMessage={setToastMessage} />
       {loadingText && <LoadingOverlay loadingText={loadingText} />}
     </LoadingToastContext.Provider>
   );

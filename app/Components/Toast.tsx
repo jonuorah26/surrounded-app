@@ -4,24 +4,18 @@ import { Colors } from "../Constants/Colors";
 
 type Props = {
   message: string;
+  setMessage: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export default function Toast({ message }: Props) {
-  const [isVisible, setIsVisible] = useState(false);
-  const show = message.length > 0;
-
-  useEffect(() => {
-    setIsVisible(show);
-  }, [show]);
-
+export default function Toast({ message, setMessage }: Props) {
   return (
     <Snackbar
-      visible={isVisible}
-      onDismiss={() => setIsVisible(false)}
+      visible={message.length > 0}
+      onDismiss={() => setMessage("")}
       action={{
         label: "Dismiss",
         labelStyle: { color: Colors.yellow },
-        onPress: () => setIsVisible(false),
+        onPress: () => setMessage(""),
       }}
     >
       {message}

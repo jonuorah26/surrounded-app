@@ -11,7 +11,10 @@ import Divider from "@/app/Components/Divider";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/Store/Store";
-import { reset as partyReset } from "@/app/Store/PartyReducer";
+import {
+  ParticipantInSeat,
+  reset as partyReset,
+} from "@/app/Store/PartyReducer";
 import { reset as participantReset } from "@/app/Store/ParticipantReducer";
 import { enterSeat, leaveParty } from "@/app/Firebase/FirestoreService";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
@@ -68,7 +71,15 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
     try {
       setLoadingText("Entering seat...");
       setToastMessage("");
-      await enterSeat(partyId, { name: participantName, id: participantId });
+      let participantInSeat: ParticipantInSeat = {
+        name: participantName,
+        id: participantId,
+      };
+      await enterSeat(partyId, {
+        seatFilled: true,
+        lastInSeat: participantInSeat,
+        lastChangeBy: "participant",
+      });
       closeDrawer();
     } catch (err) {
       if (err instanceof AppError) {

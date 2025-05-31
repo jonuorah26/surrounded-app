@@ -4,13 +4,13 @@ import { AppDispatch, RootState } from "../Store/Store";
 import { modifyPause, resetFlags } from "../Firebase/FirestoreService";
 import { updateIsPaused } from "../Store/PartyReducer";
 import { AppError } from "../Firebase/Types";
+import { useLoadingToast } from "../Context/LoadingToastContext";
 
 type Controls = "pause" | "unpause" | "reset" | "";
 
 export const useModeratorControls = () => {
   const [control, setControl] = useState<Controls>("");
-  const [toast, setToast] = useState("");
-  const [loadingText, setLoadingText] = useState("");
+  const { setToastMessage: setToast, setLoadingText } = useLoadingToast();
   const { id: partyId } = useSelector(
     (state: RootState) => state.party.partyData
   );
@@ -63,5 +63,5 @@ export const useModeratorControls = () => {
     executeControl();
   }, [control]);
 
-  return { setControl, controlToast: toast, controlLoadingText: loadingText };
+  return { setControl };
 };

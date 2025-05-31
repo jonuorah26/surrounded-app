@@ -9,12 +9,27 @@ import {
   PARTIES,
 } from "../Constants/DbConstants";
 import { isEqual } from "./useParticipantListener";
+import { useUserTypeContext } from "../Context/UserTypeContext";
+import { useLoadingToast } from "../Context/LoadingToastContext";
+import { ParticipantData } from "../Store/ParticipantReducer";
 
 export const usePartyListener = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { partyData } = useSelector((state: RootState) => state.party);
   const partyId = partyData.id;
   const previousDataRef = useRef(partyData); // Store previous values
+  const { userType } = useUserTypeContext();
+  const { setToastMessage } = useLoadingToast();
+
+  const { participantData } = useSelector(
+    (state: RootState) => state.participant
+  );
+  const participantRef = useRef<ParticipantData | null>(null);
+  useEffect(() => {
+    if (!participantData) return;
+
+    participantRef.current = participantData;
+  }, [participantData]);
 
   useEffect(() => {
     if (!partyId) return;
@@ -34,13 +49,48 @@ export const usePartyListener = () => {
           const key = objKey as keyof PartyData;
 
           if (!isEqual(previousDataRef.current[key], newData[key])) {
-            // console.log(`Property '${key}' changed:`, {
-            //   oldValue: previousDataRef.current[key],
-            //   newValue: newData[key],
-            // });
-
-            // Dispatch Redux update for changed fields
             dispatch(updatePartyProperties({ [key]: newData[key] }));
+
+            if (key === "participantInSeat") {
+              if (
+                newData.participantInSeat.lastChangeBy === "participant" &&
+                newData.participantInSeat.lastInSeat?.id !==
+                  participantRef.current?.id
+              ) {
+                if (newData.participantInSeat.seatFilled) {
+                  let name = newData.participantInSeat.lastInSeat?.name;
+                  setToastMessage(`${name} has entered the seat`);
+                } else {
+                  let name = newData.participantInSeat.lastInSeat?.name;
+                  setToastMessage(`${name} has left the seat`);
+                }
+              } else if (
+                newData.participantInSeat.lastChangeBy === "moderator" &&
+                participantRef.current?.id !== ""
+              ) {
+                if (newData.participantInSeat.seatFilled) {
+                  if (
+                    newData.participantInSeat.lastInSeat?.id ===
+                    participantRef.current?.id
+                  ) {
+                    setToastMessage(`You have been put in the seat!`);
+                  } else {
+                    let name = newData.participantInSeat.lastInSeat?.name;
+                    setToastMessage(`${name} has been put in the seat`);
+                  }
+                } else {
+                  if (
+                    newData.participantInSeat.lastInSeat?.id ===
+                    participantRef.current?.id
+                  ) {
+                    setToastMessage(`You have been removed from the seat!`);
+                  } else {
+                    let name = newData.participantInSeat.lastInSeat?.name;
+                    setToastMessage(`${name} has been removed from the seat`);
+                  }
+                }
+              }
+            }
           }
         });
 
@@ -52,7 +102,7 @@ export const usePartyListener = () => {
     return () => {
       unsubscribe();
     }; // Cleanup listener on unmount
-  }, [partyId]);
+  }, [partyId, userType]);
 
   // Keep ref updated when Redux state changes
   useEffect(() => {
