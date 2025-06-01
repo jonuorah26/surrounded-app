@@ -8,6 +8,7 @@ import { UserTypeProvider } from "./Context/UserTypeContext";
 import { Provider } from "react-redux";
 import { store } from "./Store/Store";
 import { LoadingToastProvider } from "./Context/LoadingToastContext";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const theme = {
   ...DefaultTheme,
@@ -27,19 +28,19 @@ const theme = {
 
 export default function Index() {
   return (
-    <Provider store={store}>
-      <UserTypeProvider>
-        <LoadingToastProvider>
-          <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
+      <Provider store={store}>
+        <UserTypeProvider>
+          <LoadingToastProvider>
             <SafeAreaProvider>
               <NavigationIndependentTree>
                 <RootStack />
               </NavigationIndependentTree>
             </SafeAreaProvider>
-          </View>
-        </LoadingToastProvider>
-      </UserTypeProvider>
-    </Provider>
+          </LoadingToastProvider>
+        </UserTypeProvider>
+      </Provider>
+    </GestureHandlerRootView>
   );
 }
 

@@ -36,6 +36,7 @@ export default function ModeratorDrawerNavigator() {
       />
       <Drawer.Screen
         name={NAVIGATION_LABELS.Drawer_ViewParticipants}
+        options={{ swipeEnabled: false }}
         component={ViewParticipantsScreen}
       />
       {/* <Drawer.Screen name="Settings" component={SettingsScreen} /> */}

@@ -52,13 +52,13 @@ export function RootStack() {
         name={NAVIGATION_LABELS.ParticipantScreen}
         component={ParticipantDrawerNavigator}
         //TODO: uncomment below 'options' later. Just commented out for ease of testing
-        //options={{ gestureEnabled: false, headerBackVisible: false }}
+        options={{ gestureEnabled: false, headerBackVisible: false }}
       />
       <Stack.Screen
         name={NAVIGATION_LABELS.ModeratorScreen}
         key={NAVIGATION_LABELS.ModeratorScreen}
         //TODO: uncomment below 'options' later. Just commented out for ease of testing
-        //options={{ gestureEnabled: false, headerBackVisible: false }}
+        options={{ gestureEnabled: false, headerBackVisible: false }}
         component={ModeratorDrawerNavigator}
       />
     </Stack.Navigator>

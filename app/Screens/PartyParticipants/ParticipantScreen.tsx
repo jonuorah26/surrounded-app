@@ -65,7 +65,9 @@ function ParticipantScreen() {
     },
   } = useSelector((state: RootState) => state.participant);
   const dispatch = useDispatch<AppDispatch>();
-  const isInSeat = participantId === participantInSeat?.id;
+  const isInSeat =
+    participantInSeat.seatFilled &&
+    participantId === participantInSeat.lastInSeat?.id;
 
   useEffect(() => {
     if (!partyId || !participantId) return;
@@ -142,190 +144,188 @@ function ParticipantScreen() {
 
   return (
     <>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <View style={generic.container}>
+      <View style={generic.container}>
+        <View
+          style={{
+            flex: 1,
+            top: insets.top,
+            bottom: insets.bottom,
+            left: insets.left,
+            right: insets.right,
+          }}
+        >
           <View
             style={{
-              flex: 1,
-              top: insets.top,
-              bottom: insets.bottom,
-              left: insets.left,
-              right: insets.right,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: !insets.bottom ? scaleHeight(20) : undefined,
             }}
           >
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                marginTop: !insets.bottom ? scaleHeight(20) : undefined,
+                left: scaleWidth(10),
+                zIndex: isInSeat ? OVERLAY_Z_INDEX + 1 : 0,
               }}
+              key="view-key"
             >
               <View
-                style={{
-                  left: scaleWidth(10),
-                  zIndex: isInSeat ? OVERLAY_Z_INDEX + 1 : 0,
-                }}
-                key="view-key"
+                style={[
+                  styles.fractionContainer,
+                  {
+                    backgroundColor: thresholdReached
+                      ? Colors.buzzerRed
+                      : Colors.culturedWhite,
+                  },
+                ]}
               >
-                <View
-                  style={[
-                    styles.fractionContainer,
-                    {
-                      backgroundColor: thresholdReached
-                        ? Colors.buzzerRed
-                        : Colors.culturedWhite,
-                    },
-                  ]}
-                >
-                  <View style={{ top: -scaleHeight(10) }}>
-                    <Text style={[styles.number, { fontSize: getFontSize() }]}>
-                      {flagsRaisedCount.toString().padStart(2, "0")}
-                    </Text>
-                  </View>
-                  <View style={{ transform: [{ rotate: "20deg" }] }}>
-                    <Text style={[styles.number, { fontSize: getFontSize() }]}>
-                      /
-                    </Text>
-                  </View>
-                  <View style={{ top: scaleHeight(10) }}>
-                    <Text style={[styles.number, { fontSize: getFontSize() }]}>
-                      {participantCount.toString().padStart(2, "0")}
-                    </Text>
-                  </View>
+                <View style={{ top: -scaleHeight(10) }}>
+                  <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                    {flagsRaisedCount.toString().padStart(2, "0")}
+                  </Text>
                 </View>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: fontStyles.xsmall.fontSize,
-                      color: Colors.culturedWhite,
-                      fontWeight: "600",
-                    }}
-                  >
-                    Flags Raised
+                <View style={{ transform: [{ rotate: "20deg" }] }}>
+                  <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                    /
+                  </Text>
+                </View>
+                <View style={{ top: scaleHeight(10) }}>
+                  <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                    {participantCount.toString().padStart(2, "0")}
                   </Text>
                 </View>
               </View>
-              <View
-                style={{
-                  alignItems: "center",
-                  right: scaleWidth(-12),
-                  //backgroundColor: "orange",
-                  width: "35%",
-                }}
+              <View>
+                <Text
+                  style={{
+                    fontSize: fontStyles.xsmall.fontSize,
+                    color: Colors.culturedWhite,
+                    fontWeight: "600",
+                  }}
+                >
+                  Flags Raised
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                alignItems: "center",
+                right: scaleWidth(-12),
+                //backgroundColor: "orange",
+                width: "35%",
+              }}
+            >
+              <Text
+                style={[
+                  styles.whosInSeatText,
+                  {
+                    paddingBottom: scaleWidth(10),
+                  },
+                ]}
               >
+                Who's in The Seat?
+              </Text>
+              {participantInSeat.seatFilled ? (
+                <>
+                  <Ionicons
+                    name="person-outline"
+                    size={scaleWidth(40)}
+                    color="black"
+                    style={{ paddingRight: scaleWidth(20) }}
+                  />
+
+                  <AutoSizeText
+                    style={styles.whosInSeatText}
+                    mode={ResizeTextMode.max_lines}
+                    numberOfLines={2}
+                    fontSize={fontStyles.xsmall.fontSize}
+                  >
+                    {participantInSeat.lastInSeat?.name}
+                  </AutoSizeText>
+                </>
+              ) : (
                 <Text
                   style={[
-                    styles.whosInSeatText,
+                    generic.title,
                     {
-                      paddingBottom: scaleWidth(10),
+                      ...fontStyles.xsmall,
+                      textAlign: "center",
+                      right: scaleWidth(10),
                     },
                   ]}
                 >
-                  Who's in The Seat?
+                  Empty
                 </Text>
-                {participantInSeat ? (
-                  <>
-                    <Ionicons
-                      name="person-outline"
-                      size={scaleWidth(40)}
-                      color="black"
-                      style={{ paddingRight: scaleWidth(20) }}
-                    />
-
-                    <AutoSizeText
-                      style={styles.whosInSeatText}
-                      mode={ResizeTextMode.max_lines}
-                      numberOfLines={2}
-                      fontSize={fontStyles.xsmall.fontSize}
-                    >
-                      {participantInSeat.name}
-                    </AutoSizeText>
-                  </>
-                ) : (
-                  <Text
-                    style={[
-                      generic.title,
-                      {
-                        ...fontStyles.xsmall,
-                        textAlign: "center",
-                        right: scaleWidth(10),
-                      },
-                    ]}
-                  >
-                    Empty
-                  </Text>
-                )}
-              </View>
+              )}
             </View>
-            <View>
-              <View
-                style={{
-                  alignSelf: "flex-end",
-                  top: scaleHeight(20),
-                  zIndex: 2,
-                  elevation: 2,
-                }}
-              >
-                <View style={styles.hamburger}>
-                  <Pressable
-                    style={({ pressed }) => [
-                      { opacity: pressed ? 0.5 : 1 },
-                      styles.hamburgerButton,
-                    ]}
-                    onPress={handlePress}
-                  >
-                    <FontAwesome6
-                      name="bars"
-                      size={fontStyles.large.fontSize}
-                      color={Colors.yellow}
-                    />
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-            <View>
-              <View
-                style={{
-                  left: scaleWidth(30),
-                  bottom: scaleWidth(130),
-                }}
-              >
-                <Entypo
-                  name="cross"
-                  size={scaleWidth(350)}
-                  color={flagRaised ? Colors.buzzerRed : Colors.disabledGray}
-                />
-              </View>
-              <View
-                style={{
-                  alignSelf: "center",
-                  bottom: insets.bottom
-                    ? -scaleHeight(insets.bottom * 4.2)
-                    : -scaleHeight(10),
-                  left: scaleWidth(10),
-                  pointerEvents: flagRaised ? "none" : "auto",
-                }}
-                onLayout={(e) => {
-                  console.log(
-                    insets.bottom ? "X: " : "SE: ",
-                    e.nativeEvent.layout.y
-                  );
-                }}
-              >
-                <GestureDetector gesture={panGesture}>
-                  <Animated.View style={[animatedStyle]}>
-                    <Entypo
-                      name="flag"
-                      size={scaleWidth(160)}
-                      color={Colors.red}
-                    />
-                  </Animated.View>
-                </GestureDetector>
+          </View>
+          <View>
+            <View
+              style={{
+                alignSelf: "flex-end",
+                top: scaleHeight(20),
+                zIndex: 2,
+                elevation: 2,
+              }}
+            >
+              <View style={styles.hamburger}>
+                <Pressable
+                  style={({ pressed }) => [
+                    { opacity: pressed ? 0.5 : 1 },
+                    styles.hamburgerButton,
+                  ]}
+                  onPress={handlePress}
+                >
+                  <FontAwesome6
+                    name="bars"
+                    size={fontStyles.large.fontSize}
+                    color={Colors.yellow}
+                  />
+                </Pressable>
               </View>
             </View>
           </View>
+          <View>
+            <View
+              style={{
+                left: scaleWidth(30),
+                bottom: scaleWidth(130),
+              }}
+            >
+              <Entypo
+                name="cross"
+                size={scaleWidth(350)}
+                color={flagRaised ? Colors.buzzerRed : Colors.disabledGray}
+              />
+            </View>
+            <View
+              style={{
+                alignSelf: "center",
+                bottom: insets.bottom
+                  ? -scaleHeight(insets.bottom * 4.2)
+                  : -scaleHeight(10),
+                left: scaleWidth(10),
+                pointerEvents: flagRaised ? "none" : "auto",
+              }}
+              onLayout={(e) => {
+                console.log(
+                  insets.bottom ? "X: " : "SE: ",
+                  e.nativeEvent.layout.y
+                );
+              }}
+            >
+              <GestureDetector gesture={panGesture}>
+                <Animated.View style={[animatedStyle]}>
+                  <Entypo
+                    name="flag"
+                    size={scaleWidth(160)}
+                    color={Colors.red}
+                  />
+                </Animated.View>
+              </GestureDetector>
+            </View>
+          </View>
         </View>
-      </GestureHandlerRootView>
+      </View>
       <>
         <InSeatOverlay />
         <InterruptOverlay />

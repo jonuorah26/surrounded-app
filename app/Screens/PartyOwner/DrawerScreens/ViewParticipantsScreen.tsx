@@ -1,4 +1,8 @@
-import { DrawerAppBar, ParticipantListItem } from "@/app/Components";
+import {
+  DrawerAppBar,
+  HiddenItems,
+  ParticipantListItem,
+} from "@/app/Components";
 import { Colors } from "@/app/Constants/Colors";
 import { scaleArea, scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
 import { fontStyles } from "@/app/Constants/GenericStyles";
@@ -24,6 +28,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
+import { SwipeListView } from "react-native-swipe-list-view";
 
 export default function ViewParticipantsScreen() {
   const insets = useSafeAreaInsets();
@@ -176,7 +181,7 @@ export default function ViewParticipantsScreen() {
     <SafeAreaView style={styles.container}>
       <DrawerAppBar title="Participants" />
       <View style={styles.listContainer}>
-        <FlatList
+        <SwipeListView
           data={Object.values(participants ?? {})}
           renderItem={({ item }) => (
             <ParticipantListItem
@@ -187,6 +192,9 @@ export default function ViewParticipantsScreen() {
               status={item.status}
             />
           )}
+          renderHiddenItem={({ item }) => <HiddenItems item={item} />}
+          rightOpenValue={-150}
+          stopRightSwipe={-150}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{
             paddingBottom: insets.bottom ? insets.bottom + 20 : 0,

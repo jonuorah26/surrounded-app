@@ -1,6 +1,6 @@
 import { Colors } from "@/app/Constants/Colors";
 import { scaleArea, scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Avatar, Chip, List, Text } from "react-native-paper";
 import Divider from "../../Divider";
 import { fontStyles } from "@/app/Constants/GenericStyles";
@@ -16,6 +16,7 @@ export const ParticipantListItem = ({
 }: ParticipantItem) => (
   <>
     <List.Item
+      style={{ backgroundColor: Colors.drawerBackgroundColor }}
       title={
         <View>
           <Text
@@ -146,6 +147,33 @@ const DisabledChip = () => (
   </View>
 );
 
+export const HiddenItems = ({ item }: { item: ParticipantItem }) => {
+  const handleRemove = () => {
+    console.log("Remove", item.id);
+  };
+
+  const handleMore = () => {
+    console.log("More", item.id);
+  };
+
+  return (
+    <View style={styles.hiddenActions}>
+      <TouchableOpacity
+        onPress={handleMore}
+        style={[styles.actionButton, styles.more]}
+      >
+        <Text style={styles.actionText}>More</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleRemove}
+        style={[styles.actionButton, styles.remove]}
+      >
+        <Text style={styles.actionText}>Remove</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   avatarWrapper: {
     width: scaleArea(50),
@@ -159,5 +187,30 @@ const styles = StyleSheet.create({
     height: scaleArea(12),
     borderRadius: scaleArea(6),
     borderColor: "white",
+  },
+  hiddenActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    backgroundColor: "transparent",
+    height: "98%",
+    zIndex: 10,
+  },
+  actionButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 75,
+    height: "100%",
+  },
+  more: {
+    backgroundColor: Colors.blue,
+    height: "100%",
+  },
+  remove: {
+    backgroundColor: Colors.buzzerRed,
+  },
+  actionText: {
+    color: Colors.culturedWhite,
+    fontWeight: "bold",
   },
 });
