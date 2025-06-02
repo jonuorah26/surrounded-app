@@ -26,7 +26,7 @@ function AllowParticipantsDuringSession() {
 
       <View>
         <Text style={styles.title}>
-          Allow More Particiapnts During Session?
+          Allow More Participants During Session?
         </Text>
         <View>
           <Button text="No" onPress={() => handleContinue(false)} />
@@ -42,6 +42,7 @@ export default AllowParticipantsDuringSession;
 const styles = StyleSheet.create({
   title: {
     ...generic.title,
+    textAlign: "center",
     bottom: 40,
   },
 });

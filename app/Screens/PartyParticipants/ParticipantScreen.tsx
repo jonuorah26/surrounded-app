@@ -314,11 +314,19 @@ function ParticipantScreen() {
               }}
             >
               <GestureDetector gesture={panGesture}>
-                <Animated.View style={[animatedStyle]}>
+                <Animated.View
+                  style={[animatedStyle]}
+                  pointerEvents={participantInSeat.seatFilled ? "auto" : "none"}
+                >
                   <Entypo
                     name="flag"
                     size={scaleWidth(160)}
-                    color={Colors.red}
+                    color={
+                      participantInSeat.seatFilled || flagRaised
+                        ? Colors.red
+                        : Colors.disabledGray
+                    }
+                    //color={Colors.red}
                   />
                 </Animated.View>
               </GestureDetector>

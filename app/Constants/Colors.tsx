@@ -16,6 +16,7 @@ export const Colors = {
   activeGreen: "#00C853",
   awayYellow: "#FFB300",
   offlineGray: "#616161",
+  cancelGray: "#9E9E9E",
 };
 
 /*

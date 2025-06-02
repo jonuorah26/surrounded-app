@@ -193,6 +193,7 @@ export default function ViewParticipantsScreen() {
             />
           )}
           renderHiddenItem={({ item }) => <HiddenItems item={item} />}
+          disableRightSwipe
           rightOpenValue={-150}
           stopRightSwipe={-150}
           keyExtractor={(item) => item.id}

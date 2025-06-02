@@ -1,3 +1,4 @@
+import { scaleArea, scaleWidth } from "@/app/Constants";
 import { Colors } from "@/app/Constants/Colors";
 import { fontStyles } from "@/app/Constants/GenericStyles";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
@@ -52,11 +53,12 @@ export const ExitToStart = () => {
   };
 
   return (
-    <TouchableOpacity onPress={handleExit}>
+    <TouchableOpacity onPress={handleExit} hitSlop={scaleArea(40)}>
       <MaterialIcons
         name="exit-to-app"
-        size={fontStyles.large.fontSize + 2}
+        size={fontStyles.large.fontSize + 8}
         color={Colors.yellow}
+        style={{ width: "100%", height: "200%", marginLeft: scaleWidth(10) }}
       />
     </TouchableOpacity>
   );

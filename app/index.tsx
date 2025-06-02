@@ -29,17 +29,19 @@ const theme = {
 export default function Index() {
   return (
     <GestureHandlerRootView style={styles.container}>
-      <Provider store={store}>
-        <UserTypeProvider>
-          <LoadingToastProvider>
-            <SafeAreaProvider>
-              <NavigationIndependentTree>
-                <RootStack />
-              </NavigationIndependentTree>
-            </SafeAreaProvider>
-          </LoadingToastProvider>
-        </UserTypeProvider>
-      </Provider>
+      <PaperProvider>
+        <Provider store={store}>
+          <UserTypeProvider>
+            <LoadingToastProvider>
+              <SafeAreaProvider>
+                <NavigationIndependentTree>
+                  <RootStack />
+                </NavigationIndependentTree>
+              </SafeAreaProvider>
+            </LoadingToastProvider>
+          </UserTypeProvider>
+        </Provider>
+      </PaperProvider>
     </GestureHandlerRootView>
   );
 }

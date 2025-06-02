@@ -1,11 +1,27 @@
 import { Colors } from "@/app/Constants/Colors";
 import { scaleArea, scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Avatar, Chip, List, Text } from "react-native-paper";
-import Divider from "../../Divider";
+import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import {
+  Avatar,
+  Button,
+  Chip,
+  List,
+  Modal,
+  Portal,
+  Text,
+} from "react-native-paper";
+import Divider from "../../../../Divider";
 import { fontStyles } from "@/app/Constants/GenericStyles";
 import { ParticipantItem } from "@/app/Types";
 import { PRESENCE_STATUS_COLORS } from "@/app/Constants";
+import { leaveParty } from "@/app/Firebase/FirestoreService";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/Store/Store";
+import { AppError } from "@/app/Firebase/Types";
+import { useLoadingToast } from "@/app/Context/LoadingToastContext";
+import { useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ListItemModal } from "./ListItemModal";
 
 export const ParticipantListItem = ({
   id,
@@ -148,29 +164,69 @@ const DisabledChip = () => (
 );
 
 export const HiddenItems = ({ item }: { item: ParticipantItem }) => {
-  const handleRemove = () => {
-    console.log("Remove", item.id);
+  const { id: partyId } = useSelector(
+    (state: RootState) => state.party.partyData
+  );
+  const { setLoadingText, setToastMessage } = useLoadingToast();
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleRemove = async () => {
+    Alert.alert(
+      "Alert",
+      `Are you sure you want to remove "${item.name}" from the party?`,
+      [
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              //console.log("Remove", item.id);
+              setLoadingText("Removing participant");
+              setToastMessage("");
+              await leaveParty(partyId, item.id);
+              setToastMessage("Participant removed!");
+            } catch (err) {
+              if (err instanceof AppError) {
+                setToastMessage(err.message);
+              } else {
+                setToastMessage("Error occured. Failed to remove participant.");
+              }
+            } finally {
+              setLoadingText("");
+            }
+          },
+          style: "destructive",
+        },
+        {
+          text: "No",
+          style: "cancel",
+        },
+      ]
+    );
   };
 
   const handleMore = () => {
-    console.log("More", item.id);
+    //console.log("More", item.id);
+    setModalOpen(true);
   };
 
   return (
-    <View style={styles.hiddenActions}>
-      <TouchableOpacity
-        onPress={handleMore}
-        style={[styles.actionButton, styles.more]}
-      >
-        <Text style={styles.actionText}>More</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={handleRemove}
-        style={[styles.actionButton, styles.remove]}
-      >
-        <Text style={styles.actionText}>Remove</Text>
-      </TouchableOpacity>
-    </View>
+    <>
+      <View style={styles.hiddenActions}>
+        <TouchableOpacity
+          onPress={handleMore}
+          style={[styles.actionButton, styles.more]}
+        >
+          <Text style={styles.actionText}>More</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleRemove}
+          style={[styles.actionButton, styles.remove]}
+        >
+          <Text style={styles.actionText}>Remove</Text>
+        </TouchableOpacity>
+      </View>
+      <ListItemModal item={item} open={modalOpen} setOpen={setModalOpen} />
+    </>
   );
 };
 
@@ -204,7 +260,6 @@ const styles = StyleSheet.create({
   },
   more: {
     backgroundColor: Colors.blue,
-    height: "100%",
   },
   remove: {
     backgroundColor: Colors.buzzerRed,
