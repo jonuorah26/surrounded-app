@@ -17,6 +17,7 @@ export default function Toast({ message, setMessage }: Props) {
         labelStyle: { color: Colors.yellow },
         onPress: () => setMessage(""),
       }}
+      //style={{ backgroundColor: "#323232" }}
     >
       {message}
     </Snackbar>

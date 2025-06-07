@@ -11,22 +11,24 @@ type Props = {
 
 export default function LoadingOverlay({ loadingText }: Props) {
   return (
-    <View
-      style={[styles.container, { backgroundColor: Colors.disablingOverlay }]}
-    >
-      <View style={{ alignItems: "center", gap: 20 }}>
-        <ActivityIndicator
-          animating={true}
-          color={Colors.yellow}
-          size={scaleArea(200)}
-        />
-        {loadingText && (
-          <Text style={{ ...fontStyles.large, textAlign: "center" }}>
-            {loadingText}
-          </Text>
-        )}
+    loadingText && (
+      <View
+        style={[styles.container, { backgroundColor: Colors.disablingOverlay }]}
+      >
+        <View style={{ alignItems: "center", gap: 20 }}>
+          <ActivityIndicator
+            animating={true}
+            color={Colors.yellow}
+            size={scaleArea(200)}
+          />
+          {loadingText && (
+            <Text style={{ ...fontStyles.large, textAlign: "center" }}>
+              {loadingText}
+            </Text>
+          )}
+        </View>
       </View>
-    </View>
+    )
   );
 }
 

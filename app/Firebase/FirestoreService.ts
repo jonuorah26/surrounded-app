@@ -88,6 +88,41 @@ export const modifyFlag = async (
   }
 };
 
+export const modifyDisable = async (
+  partyId: string,
+  participantId: string,
+  isDisabled: boolean
+) => {
+  try {
+    const partyRef = doc(db, PARTIES, partyId);
+    const participantRef = doc(
+      db,
+      PARTIES,
+      partyId,
+      PARTICIPANTS,
+      participantId
+    );
+
+    await runTransaction(db, async (transaction) => {
+      const partyDoc = await transaction.get(partyRef);
+      if (!partyDoc.exists()) {
+        throw new AppError("Party does not exist");
+      }
+
+      const partyData = partyDoc.data() as PartyData;
+      if (partyData.isEnded) {
+        throw new AppError("This party no longer exists");
+      }
+
+      transaction.update(participantRef, {
+        isDisabled,
+      } as Partial<ParticipantData>);
+    });
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const endParty = async (partyId: string, wait = true) => {
   try {
     var partyRef = doc(db, PARTIES, partyId);
@@ -418,7 +453,8 @@ export const resetFlags = async (partyId: string) => {
 
 export const enterSeat = async (
   partyId: string,
-  participantInSeat: ParticipantSeatData
+  participantInSeat: ParticipantSeatData,
+  manualOverride: boolean = false
 ) => {
   try {
     const partyRef = doc(db, PARTIES, partyId);
@@ -430,9 +466,9 @@ export const enterSeat = async (
       }
       const partyData = partyDoc.data() as PartyData;
       if (partyData.isEnded) {
-        throw new AppError("Party does no longer exists");
+        throw new AppError("Party no longer exists");
       }
-      if (partyData.participantInSeat.seatFilled) {
+      if (!manualOverride && partyData.participantInSeat.seatFilled) {
         if (
           partyData.participantInSeat.lastInSeat?.id ===
           participantInSeat.lastInSeat?.id
@@ -443,12 +479,40 @@ export const enterSeat = async (
         }
       }
 
-      //const participantRef = doc(db, PARTIES, partyId, PARTICIPANTS, participantId);
+      const participantId = participantInSeat.lastInSeat?.id || "";
+      const participantsRef = doc(
+        db,
+        PARTIES,
+        partyId,
+        PARTICIPANTS,
+        participantId
+      );
+
+      const participantDoc = await transaction.get(participantsRef);
+      if (!participantDoc.exists()) {
+        throw new AppError("Participant does not exist");
+      }
+      const participantData = participantDoc.data() as ParticipantData;
+
+      let flagsRaisedCount = partyData.flagsRaisedCount;
+      if (participantData.flag.raised) {
+        transaction.update(participantsRef, {
+          ...participantData,
+          flag: {
+            raised: false,
+            lastChangeBy: manualOverride ? "moderator" : "participant",
+          },
+        } as Partial<ParticipantData>);
+        --flagsRaisedCount;
+      }
+
       transaction.update(partyRef, {
         participantInSeat: participantInSeat,
+        flagsRaisedCount,
       } as Partial<PartyData>);
     });
   } catch (err) {
+    console.error(err);
     throw err;
   }
 };

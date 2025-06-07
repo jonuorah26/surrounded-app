@@ -29,7 +29,7 @@ const theme = {
 export default function Index() {
   return (
     <GestureHandlerRootView style={styles.container}>
-      <PaperProvider>
+      <PaperProvider theme={theme}>
         <Provider store={store}>
           <UserTypeProvider>
             <LoadingToastProvider>

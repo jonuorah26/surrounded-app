@@ -63,7 +63,10 @@ export const useParticipantsListener = ({
               name: participant.participantName,
               flagRaised: participant.flag.raised,
               isDisabled: participant.isDisabled,
-              status: { status: "active", lastSeen: "" },
+              status: prev[participantId]?.status || {
+                status: "active",
+                lastSeen: "",
+              },
             };
             const currLastDoc = lastDocRef.current;
 

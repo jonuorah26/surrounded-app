@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext } from "react";
 import Toast from "../Components/Toast";
 import LoadingOverlay from "../Components/LoadingOverlay";
+import { Portal } from "react-native-paper";
 
 export type LoadingToastSetters = {
   setToastMessage: React.Dispatch<React.SetStateAction<string>>;
@@ -26,7 +27,7 @@ export function LoadingToastProvider({
     <LoadingToastContext.Provider value={{ setToastMessage, setLoadingText }}>
       {children}
       <Toast message={toastMsg} setMessage={setToastMessage} />
-      {loadingText && <LoadingOverlay loadingText={loadingText} />}
+      <LoadingOverlay loadingText={loadingText} />
     </LoadingToastContext.Provider>
   );
 }

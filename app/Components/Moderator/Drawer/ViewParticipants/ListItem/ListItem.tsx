@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/app/Store/Store";
 import { AppError } from "@/app/Firebase/Types";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
-import { useState } from "react";
+import { Ref, useRef, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ListItemModal } from "./ListItemModal";
 
@@ -29,63 +29,81 @@ export const ParticipantListItem = ({
   flagRaised,
   isDisabled,
   status,
-}: ParticipantItem) => (
-  <>
-    <List.Item
-      style={{ backgroundColor: Colors.drawerBackgroundColor }}
-      title={
-        <View>
-          <Text
-            style={{
-              color: Colors.culturedWhite,
-              fontSize: fontStyles.xsmall.fontSize,
-            }}
-          >
-            {name}
-          </Text>
-          {status.status !== "" && status.status !== "active" && (
+}: ParticipantItem) => {
+  const { participantInSeat } = useSelector(
+    (state: RootState) => state.party.partyData
+  );
+  const isInSeat =
+    participantInSeat.seatFilled && participantInSeat.lastInSeat?.id === id;
+  const ref = useRef<View | null>(null);
+
+  return (
+    <>
+      <List.Item
+        ref={ref}
+        style={{ backgroundColor: Colors.drawerBackgroundColor }}
+        title={
+          <View>
             <Text
               style={{
-                color: Colors.secondaryText,
-                fontSize: fontStyles.xxsmall.fontSize,
+                color: Colors.culturedWhite,
+                fontSize: fontStyles.xsmall.fontSize,
               }}
             >
-              {`${status.lastSeen}`}
+              {name}
             </Text>
-          )}
-        </View>
-      }
-      description={
-        <View style={{ flex: 1, flexDirection: "row", gap: scaleWidth(5) }}>
-          {flagRaised && <FlagRaisedChip />}
-          {isDisabled && <DisabledChip />}
-        </View>
-      }
-      left={() => (
-        <View style={styles.avatarWrapper}>
-          <Avatar.Icon
-            size={scaleArea(50)}
-            icon="account"
-            color={Colors.yellow}
-            style={{ backgroundColor: Colors.blue }}
-          />
-          {status.status !== "" && (
-            <View
-              style={[
-                styles.statusDot,
-                { backgroundColor: PRESENCE_STATUS_COLORS[status.status] },
-              ]}
+            {status.status !== "" && status.status !== "active" && (
+              <Text
+                style={{
+                  color: Colors.secondaryText,
+                  fontSize: fontStyles.xxsmall.fontSize,
+                }}
+              >
+                {`${status.lastSeen}`}
+              </Text>
+            )}
+          </View>
+        }
+        description={
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              gap: scaleWidth(5),
+              flexWrap: "wrap",
+            }}
+          >
+            {flagRaised && <FlagRaisedChip />}
+            {isDisabled && <DisabledChip />}
+            {isInSeat && <InSeatChip />}
+          </View>
+        }
+        left={() => (
+          <View style={styles.avatarWrapper}>
+            <Avatar.Icon
+              size={scaleArea(50)}
+              icon="account"
+              color={Colors.yellow}
+              style={{ backgroundColor: Colors.blue }}
             />
-          )}
-        </View>
-      )}
-      onPress={() => {
-        /* Maybe open details */
-      }}
-    />
-    <Divider width={scaleWidth(400)} />
-  </>
-);
+            {status.status !== "" && (
+              <View
+                style={[
+                  styles.statusDot,
+                  { backgroundColor: PRESENCE_STATUS_COLORS[status.status] },
+                ]}
+              />
+            )}
+          </View>
+        )}
+        onPress={() => {
+          /* Maybe open details */
+        }}
+      />
+      <Divider width={scaleWidth(400)} color={Colors.black} />
+    </>
+  );
+};
 
 const FlagRaisedChip = () => (
   <View>
@@ -159,6 +177,44 @@ const DisabledChip = () => (
       mode="outlined"
     >
       Disabled
+    </Chip>
+  </View>
+);
+
+const InSeatChip = () => (
+  <View>
+    <Chip
+      icon={({ size, color }) => (
+        <View
+          style={{
+            marginHorizontal: -scaleWidth(8),
+            marginLeft: -scaleWidth(12),
+            marginVertical: -scaleHeight(8),
+          }}
+        >
+          <Avatar.Icon
+            size={scaleArea(28)}
+            icon="seat"
+            color={Colors.yellow} // 👈 Your custom color
+            style={{ backgroundColor: "transparent" }} // transparent bg if needed
+          />
+        </View>
+      )}
+      compact
+      style={{
+        backgroundColor: Colors.buzzerRedWithOpacity,
+        borderColor: Colors.buzzerRed,
+        marginTop: scaleHeight(5),
+        borderRadius: scaleArea(4),
+      }}
+      textStyle={{
+        color: Colors.culturedWhite,
+        marginVertical: -scaleHeight(20),
+        marginRight: scaleWidth(4),
+      }}
+      mode="outlined"
+    >
+      In Seat
     </Chip>
   </View>
 );
@@ -249,7 +305,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     backgroundColor: "transparent",
-    height: "98%",
+    height: "100%",
     zIndex: 10,
   },
   actionButton: {
