@@ -512,7 +512,6 @@ export const enterSeat = async (
       } as Partial<PartyData>);
     });
   } catch (err) {
-    console.error(err);
     throw err;
   }
 };

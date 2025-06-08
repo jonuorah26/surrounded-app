@@ -38,10 +38,15 @@ export const ParticipantListItem = ({
   const ref = useRef<View | null>(null);
 
   return (
-    <>
+    <View style={{}}>
       <List.Item
         ref={ref}
-        style={{ backgroundColor: Colors.drawerBackgroundColor }}
+        style={{
+          backgroundColor: Colors.drawerBackgroundColor,
+          borderBottomColor: Colors.disabledGray,
+          borderBottomWidth: scaleHeight(1.5),
+        }}
+        contentStyle={{}}
         title={
           <View>
             <Text
@@ -100,8 +105,7 @@ export const ParticipantListItem = ({
           /* Maybe open details */
         }}
       />
-      <Divider width={scaleWidth(400)} color={Colors.black} />
-    </>
+    </View>
   );
 };
 
@@ -306,7 +310,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "transparent",
     height: "100%",
-    zIndex: 10,
+    borderBottomColor: Colors.disabledGray,
+    borderBottomWidth: scaleHeight(1.5),
+    //zIndex: 10,
   },
   actionButton: {
     justifyContent: "center",

@@ -1,3 +1,5 @@
+import LoadingOverlay from "@/app/Components/LoadingOverlay";
+import Toast from "@/app/Components/Toast";
 import { Colors, scaleHeight } from "@/app/Constants";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import {
@@ -16,6 +18,11 @@ import { Button, Modal, Portal } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 
+/**
+ * NOTE: Modals will need their own loadingOverlay and Toast
+ * instead of using useLoadingToast()
+ */
+
 type Props = {
   item: ParticipantItem;
   open: boolean;
@@ -27,7 +34,8 @@ export function ListItemModal({ item, open, setOpen }: Props) {
     (state: RootState) => state.party.partyData
   );
   const { bottom } = useSafeAreaInsets();
-  const { setLoadingText, setToastMessage } = useLoadingToast();
+  const [toastMsg, setToastMessage] = useState("");
+  const [loadingText, setLoadingText] = useState("");
   const isInSeat =
     participantInSeat.seatFilled &&
     participantInSeat.lastInSeat?.id === item.id;
@@ -156,6 +164,10 @@ export function ListItemModal({ item, open, setOpen }: Props) {
           </Button>
         </View>
       </Modal>
+      <>
+        <Toast message={toastMsg} setMessage={setToastMessage} />
+        <LoadingOverlay loadingText={loadingText} />
+      </>
     </Portal>
   );
 }
