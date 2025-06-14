@@ -22,7 +22,12 @@ import { ParticipantItem, ParticipantItemMap } from "@/app/Types";
 import { useFocusEffect } from "@react-navigation/native";
 import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, View, StyleSheet, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  SafeAreaView as RnSafeAreaView,
+} from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -66,7 +71,7 @@ export default function ViewParticipantsScreen() {
       console.log("useFocusEffect: loadMoreParticipants");
       loadMoreParticipants();
 
-      // addMockParticipants(partyId, 200).then(() => {
+      // addMockParticipants(partyId, 4).then(() => {
       //   loadMoreParticipants();
       // });
 
@@ -178,53 +183,55 @@ export default function ViewParticipantsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <DrawerAppBar title="Participants" />
-      <View style={styles.listContainer}>
-        <SwipeListView
-          data={Object.values(participants ?? {})}
-          renderItem={({ item }) => (
-            <ParticipantListItem
-              name={item.name}
-              flagRaised={item.flagRaised}
-              id={item.id}
-              isDisabled={item.isDisabled}
-              status={item.status}
-            />
-          )}
-          renderHiddenItem={({ item }) => <HiddenItems item={item} />}
-          recalculateHiddenLayout
-          disableRightSwipe
-          rightOpenValue={-150}
-          stopRightSwipe={-150}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{
-            paddingBottom: insets.bottom ? insets.bottom + 20 : 0,
-          }}
-          refreshing={isRefreshing}
-          onRefresh={refreshParticipants}
-          onEndReachedThreshold={0.4}
-          onEndReached={() => {
-            if (focusedRef.current && !isLoadingMore && hasMore) {
-              loadMoreParticipants();
-            }
-          }}
-          ListFooterComponent={
-            isLoadingMore ? (
-              <Text style={styles.loadingParticipantsText}>
-                {`Loading${
-                  Object.values(participants ?? {}).length ? " more " : " "
-                }participants...`}
-              </Text>
-            ) : Object.values(participants ?? {}).length ? null : (
-              <View>
+    <SafeAreaView style={[styles.container]}>
+      <View style={[{ top: insets.top }]}>
+        <DrawerAppBar title="Participants" />
+        <View style={styles.listContainer}>
+          <SwipeListView
+            data={Object.values(participants ?? {})}
+            renderItem={({ item }) => (
+              <ParticipantListItem
+                name={item.name}
+                flagRaised={item.flagRaised}
+                id={item.id}
+                isDisabled={item.isDisabled}
+                status={item.status}
+              />
+            )}
+            renderHiddenItem={({ item }) => <HiddenItems item={item} />}
+            recalculateHiddenLayout
+            disableRightSwipe
+            rightOpenValue={-150}
+            stopRightSwipe={-150}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{
+              paddingBottom: insets.bottom ? insets.bottom + 20 : 0,
+            }}
+            refreshing={isRefreshing}
+            onRefresh={refreshParticipants}
+            onEndReachedThreshold={0.4}
+            onEndReached={() => {
+              if (focusedRef.current && !isLoadingMore && hasMore) {
+                loadMoreParticipants();
+              }
+            }}
+            ListFooterComponent={
+              isLoadingMore ? (
                 <Text style={styles.loadingParticipantsText}>
-                  No Participants
+                  {`Loading${
+                    Object.values(participants ?? {}).length ? " more " : " "
+                  }participants...`}
                 </Text>
-              </View>
-            )
-          }
-        />
+              ) : Object.values(participants ?? {}).length ? null : (
+                <View>
+                  <Text style={styles.loadingParticipantsText}>
+                    No Participants
+                  </Text>
+                </View>
+              )
+            }
+          />
+        </View>
       </View>
     </SafeAreaView>
   );

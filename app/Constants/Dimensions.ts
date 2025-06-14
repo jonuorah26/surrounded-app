@@ -6,6 +6,7 @@ const BASE_WIDTH = 414;
 const BASE_HEIGHT = 896;
 
 const { width, height } = Dimensions.get("window");
+//const { width, height } = Dimensions.get("screen");
 
 export const SH = (n: number) => height * n;
 export const SW = (n: number) => width * n;

@@ -56,9 +56,12 @@ export const ExitToStart = () => {
     <TouchableOpacity onPress={handleExit} hitSlop={scaleArea(40)}>
       <MaterialIcons
         name="exit-to-app"
-        size={fontStyles.large.fontSize + 8}
+        size={scaleArea(40)}
         color={Colors.yellow}
-        style={{ width: "100%", height: "200%", marginLeft: scaleWidth(10) }}
+        style={{
+          width: scaleArea(40),
+          height: scaleArea(40),
+        }}
       />
     </TouchableOpacity>
   );

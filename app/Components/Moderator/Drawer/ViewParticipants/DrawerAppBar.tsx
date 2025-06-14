@@ -29,12 +29,12 @@ export function DrawerAppBar({ title }: Props) {
           toggleDrawer();
         }}
         size={scaleArea(40)}
-        hitSlop={scaleArea(200)}
+        hitSlop={scaleArea(500)}
       />
       <Appbar.Content
         title={title}
         titleStyle={{ color: Colors.culturedWhite }}
-        style={{ marginLeft: -scaleWidth(15) }}
+        //style={{ marginLeft: -scaleWidth(15) }}
       />
     </Appbar.Header>
   );
