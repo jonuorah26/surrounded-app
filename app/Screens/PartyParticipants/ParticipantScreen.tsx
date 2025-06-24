@@ -284,9 +284,10 @@ function ParticipantScreen() {
               </View>
             </View>
           </View>
-          <View>
+          <View style={{ flex: 1 }}>
             <View
               style={{
+                flex: 1,
                 left: scaleWidth(30),
                 bottom: scaleWidth(130),
               }}
@@ -299,19 +300,15 @@ function ParticipantScreen() {
             </View>
             <View
               style={{
+                flex: 1,
                 alignSelf: "center",
-                bottom: insets.bottom
-                  ? -scaleHeight(insets.bottom * 4.2)
-                  : -scaleHeight(10),
+                // bottom: insets.bottom
+                //   ? -scaleHeight(insets.bottom * 4.2)
+                //   : -scaleHeight(10),
                 left: scaleWidth(10),
                 pointerEvents: flagRaised ? "none" : "auto",
               }}
-              onLayout={(e) => {
-                console.log(
-                  insets.bottom ? "X: " : "SE: ",
-                  e.nativeEvent.layout.y
-                );
-              }}
+              onLayout={(e) => {}}
             >
               <GestureDetector gesture={panGesture}>
                 <Animated.View

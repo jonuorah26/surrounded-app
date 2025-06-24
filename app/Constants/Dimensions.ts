@@ -8,9 +8,9 @@ const BASE_HEIGHT = 896;
 const { width, height } = Dimensions.get("window");
 //const { width, height } = Dimensions.get("screen");
 
-export const SH = (n: number) => height * n;
-export const SW = (n: number) => width * n;
-export const SA = (n: number) => height * width * n;
+// export const SH = (n: number) => height * n;
+// export const SW = (n: number) => width * n;
+// export const SA = (n: number) => height * width * n;
 
 // Scale factor based on width
 export const scaleWidth = (size: number) => (width / BASE_WIDTH) * size;

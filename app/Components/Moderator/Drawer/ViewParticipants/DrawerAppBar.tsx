@@ -18,7 +18,6 @@ export function DrawerAppBar({ title }: Props) {
     <Appbar.Header
       style={{
         backgroundColor: Colors.drawerBackgroundColor,
-        marginTop: -insets.top,
       }}
     >
       <Appbar.Action
@@ -29,7 +28,7 @@ export function DrawerAppBar({ title }: Props) {
           toggleDrawer();
         }}
         size={scaleArea(40)}
-        hitSlop={scaleArea(500)}
+        hitSlop={scaleArea(200)}
       />
       <Appbar.Content
         title={title}

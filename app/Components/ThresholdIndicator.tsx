@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: stickyBoxArea / 2,
     borderBottomRightRadius: stickyBoxArea / 2,
     zIndex: 1,
-    elevation: 1,
+    elevation: 5,
     shadowColor: Colors.black, // Add a subtle shadow
     shadowOffset: { width: 0, height: 4 }, // Shadow below the button
     shadowOpacity: 0.2, // Subtle shadow

@@ -27,6 +27,7 @@ import {
   StyleSheet,
   Text,
   SafeAreaView as RnSafeAreaView,
+  Platform,
 } from "react-native";
 import {
   SafeAreaView,
@@ -71,7 +72,7 @@ export default function ViewParticipantsScreen() {
       console.log("useFocusEffect: loadMoreParticipants");
       loadMoreParticipants();
 
-      // addMockParticipants(partyId, 4).then(() => {
+      // addMockParticipants(partyId, 50).then(() => {
       //   loadMoreParticipants();
       // });
 
@@ -183,8 +184,16 @@ export default function ViewParticipantsScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container]}>
-      <View style={[{ top: insets.top }]}>
+    <View style={[styles.container]}>
+      <View
+        style={{
+          flex: 1,
+          //margin: `${insets.top} ${insets.right} ${insets.bottom} ${insets.left}`,
+          marginTop: Platform.OS === "ios" ? insets.top : scaleHeight(70),
+          bottom: insets.bottom,
+          paddingBottom: insets.bottom,
+        }}
+      >
         <DrawerAppBar title="Participants" />
         <View style={styles.listContainer}>
           <SwipeListView
@@ -233,7 +242,7 @@ export default function ViewParticipantsScreen() {
           />
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

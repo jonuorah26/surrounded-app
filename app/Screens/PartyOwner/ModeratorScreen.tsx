@@ -108,13 +108,23 @@ function ModeratorScreen() {
   return (
     <>
       <View style={[generic.container, { justifyContent: "flex-start" }]}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <View style={{ flex: 3 }} /*Flag, hamburger button, Threshold  */>
+        <View
+          style={{
+            flex: 1,
+            top: insets.top,
+            bottom: insets.bottom,
+          }}
+        >
+          <View
+            style={{ flex: 3 }}
+            id="flag-hamburger button-threshold" /*Flag, hamburger button, Threshold  */
+            key="flag-hamburger button-threshold"
+          >
             <View
               style={{
                 flex: -1,
                 alignSelf: "flex-end",
-                marginTop: -scaleHeight(55),
+                //marginTop: -scaleHeight(55),
               }}
             >
               <FlagIndicator
@@ -153,6 +163,8 @@ function ModeratorScreen() {
               flex: 5,
               //bottom: insets.bottom ? 0 : 10,
             }}
+            id="inSeat-flagRaiseCount"
+            key="inSeat-flagRaiseCount"
           >
             <View
               style={{
@@ -288,12 +300,14 @@ function ModeratorScreen() {
             style={{
               flex: 1,
             }} /* control buttons */
+            id="control-buttons"
+            key="control-buttons"
           >
             <View
               style={{
                 flexDirection: "row",
-                bottom: insets.bottom || scaleHeight(70),
-                //bottom: scaleHeight(20),
+                //bottom: insets.bottom || scaleHeight(70),
+                bottom: scaleHeight(110),
               }}
             >
               <View style={{ flex: 1, alignItems: "center" }}>
@@ -333,7 +347,7 @@ function ModeratorScreen() {
               </View>
             </View>
           </View>
-        </SafeAreaView>
+        </View>
       </View>
     </>
   );

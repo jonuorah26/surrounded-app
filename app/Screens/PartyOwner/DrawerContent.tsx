@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, Pressable, Alert } from "react-native";
 import {
   DrawerContentComponentProps,
@@ -15,6 +15,7 @@ import { endParty } from "@/app/Firebase/FirestoreService";
 import { reset } from "@/app/Store/PartyReducer";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import { clearLastPartyData } from "@/app/Hooks";
+import PartyCodePopUp from "@/app/Components/Moderator/PartyCodePopUp";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
   const partyId = useSelector((state: RootState) => state.party.partyData.id);
@@ -23,6 +24,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
     navigation: { reset: navReset, navigate },
   } = props;
   const { setLoadingText, setToastMessage } = useLoadingToast();
+  const [seePartyCode, setSeePartyCode] = useState(false);
 
   const handleEndParty = () => {
     Alert.alert("Alert", "Are you sure you want to end the party?", [
@@ -94,7 +96,30 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           marginVertical: scaleHeight(24),
         }}
       >
-        <Pressable onPress={() => /*props.navigation.navigate("Settings")*/ {}}>
+        <Pressable onPress={() => setSeePartyCode(true)}>
+          <Text
+            style={{
+              fontSize: fontStyles.medium.fontSize,
+              color: Colors.culturedWhite,
+              alignSelf: "center",
+            }}
+          >
+            See Party Code
+          </Text>
+        </Pressable>
+        <PartyCodePopUp open={seePartyCode} setOpen={setSeePartyCode} />
+      </View>
+      <Divider />
+      <View
+        style={{
+          marginVertical: scaleHeight(24),
+        }}
+      >
+        <Pressable
+          onPress={() =>
+            Alert.alert("Alert", "Feature not available yet, but coming soon!")
+          }
+        >
           <Text
             style={{
               fontSize: fontStyles.medium.fontSize,
@@ -112,7 +137,11 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           marginVertical: scaleHeight(24),
         }}
       >
-        <Pressable onPress={() => /*props.navigation.navigate("Settings")*/ {}}>
+        <Pressable
+          onPress={() =>
+            Alert.alert("Alert", "Feature not available yet, but coming soon!")
+          }
+        >
           <Text
             style={{
               fontSize: fontStyles.medium.fontSize,
