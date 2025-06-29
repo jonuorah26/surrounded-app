@@ -9,7 +9,14 @@ import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Vibration,
+  Platform,
+} from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import {
   SafeAreaView,
@@ -121,6 +128,7 @@ function ParticipantScreen() {
           });
           //dispatch(updateFlag({ raised: true, lastChangeBy: "participant" }));
           translateY.value = withSpring(X_POSITION);
+          Vibration.vibrate();
         } catch (err) {
           if (err instanceof AppError) {
             setToastMessage(err.message);
@@ -302,9 +310,11 @@ function ParticipantScreen() {
               style={{
                 flex: 1,
                 alignSelf: "center",
-                // bottom: insets.bottom
-                //   ? -scaleHeight(insets.bottom * 4.2)
-                //   : -scaleHeight(10),
+                bottom: insets.bottom
+                  ? -scaleHeight(
+                      insets.bottom * (Platform.OS === "ios" ? 3.4 : 2.4)
+                    )
+                  : -scaleHeight(100),
                 left: scaleWidth(10),
                 pointerEvents: flagRaised ? "none" : "auto",
               }}
