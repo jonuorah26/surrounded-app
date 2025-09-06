@@ -1,4 +1,4 @@
-import { Colors } from "@/app/Constants/Colors";
+import { Colors } from "@/app/Constants";
 import { scaleArea, scaleWidth } from "@/app/Constants/Dimensions";
 import { DrawerNavProps } from "@/app/Types";
 import { useNavigation } from "@react-navigation/native";

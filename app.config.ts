@@ -14,5 +14,11 @@ export default {
       FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
       FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
     },
+    android: {
+      package: "com.anonymous.surroundedapp",
+    },
+    ios: {
+      bundleIdentifier: "com.anonymous.surroundedapp",
+    },
   },
 };
