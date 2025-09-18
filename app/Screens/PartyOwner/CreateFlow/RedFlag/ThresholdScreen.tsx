@@ -2,11 +2,12 @@ import ContinueButton from "@/app/Components/ContinueButton";
 import FlagIndicator from "@/app/Components/FlagIndicator";
 import LoadingOverlay from "@/app/Components/LoadingOverlay";
 import { Colors } from "@/app/Constants/Colors";
-import { scaleHeight, scaleWidth, SH } from "@/app/Constants/Dimensions";
+import { scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
 import { fontStyles, generic } from "@/app/Constants/GenericStyles";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import { createParty } from "@/app/Firebase/FirestoreService";
+import { registerForPushNotificationsAsync } from "@/app/Firebase/Notifications";
 import { StackNavigation } from "@/app/Screens/_layout";
 import {
   PartyData,
@@ -64,12 +65,15 @@ function ThresholdScreen() {
 
     try {
       setLoadingText("Creating Party...");
+
       const data: PartyData = {
         ...partyData,
         customVoteOutThreshold: custom ? parseInt(custom) : null,
         voteOutThresholdType: value,
       };
-      const result = await createParty(data);
+
+      const token = await registerForPushNotificationsAsync();
+      const result = await createParty(data, token);
 
       dispatch(updatePartyCode(result.partyCode));
       dispatch(updatePartyId(result.partyId));

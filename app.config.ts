@@ -13,9 +13,14 @@ export default {
       FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
       FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
       FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
+      FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL,
+      eas: {
+        projectId: "b3c242a9-ad3c-44de-8dda-ba5c78380b78",
+      },
     },
     android: {
       package: "com.anonymous.surroundedapp",
+      googleServicesFile: "./google-services.json",
     },
     ios: {
       bundleIdentifier: "com.anonymous.surroundedapp",

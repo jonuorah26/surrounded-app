@@ -11,7 +11,7 @@ import {
   updateParty,
   updatePartyId as updatePartyId,
 } from "../Store/PartyReducer";
-import { useUserTypeContext } from "../Context/UserTypeContext";
+import { UserType, useUserTypeContext } from "../Context/UserTypeContext";
 import {
   updateParticipant,
   updateParticipantId,
@@ -20,7 +20,7 @@ import {
 export const STORAGE_KEY = "lastSavedPartyData";
 
 export type LastSavedPartyData = {
-  role: "participant" | "moderator";
+  role: UserType;
   partyId: string;
   participantId?: string;
   lastPage?: "partyCodeGenerated" | "moderatorControls";
@@ -78,9 +78,8 @@ export const useOnAppLoad = () => {
       const lastSavedPartyData = await loadLastPartyData();
       console.log("lastSavedPartyData:", lastSavedPartyData);
       if (lastSavedPartyData) {
-        const { partyData } = await fetchParty(lastSavedPartyData.partyId);
-        //dispatch(updateParty(partyData));
         const role = lastSavedPartyData.role;
+        const { partyData } = await fetchParty(lastSavedPartyData.partyId);
 
         if (role === "participant") {
           const { participantData } = await fetchParticipant(

@@ -38,6 +38,8 @@ import { RemoveFromSeat } from "@/app/Firebase/FirestoreService";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 //import { Pressable } from "react-native-gesture-handler";
 
+type ButtonType = "reset" | "pause" | "";
+
 function ModeratorScreen() {
   usePartyListener();
   const { threshold, thresholdReached } = useThreshold();
@@ -75,17 +77,63 @@ function ModeratorScreen() {
     return baseSize / Math.max(1, maxLen * 0.4); // Adjust divisor for fine-tuning
   };
 
-  const handlePress = () => {
-    openDrawer();
+  const [clickData, setClickData] = useState<{
+    count: number;
+    timeoutRef: NodeJS.Timeout | number;
+    buttonType: ButtonType;
+  }>({
+    count: 0,
+    timeoutRef: 0,
+    buttonType: "",
+  });
+
+  const handeleTapSpam = (buttonType: ButtonType) => {
+    setClickData((prev) => {
+      if (prev.buttonType !== "" && buttonType !== prev.buttonType) {
+        prev.count = 0;
+        prev.buttonType = buttonType;
+        clearTimeout(prev.timeoutRef);
+        return prev;
+      }
+
+      ++prev.count;
+      console.log("count:", prev.count);
+      if (prev.count === 1) {
+        prev.buttonType = buttonType;
+        prev.timeoutRef = setTimeout(() => {
+          setClickData((prev) => ({ ...prev, count: 0, buttonType: "" }));
+        }, 5000);
+      } else if (prev.count > 3) {
+        alert(
+          `press and hold to ${
+            prev.buttonType === "pause"
+              ? isPaused
+                ? "unpause"
+                : "pause"
+              : "reset"
+          }`
+        );
+        prev.count = 0;
+        prev.buttonType = "";
+        clearTimeout(prev.timeoutRef);
+      }
+
+      return prev;
+    });
   };
 
-  const handlePause = () => {
-    if (!isPaused) {
-      setControl("pause");
-    } else {
-      setControl("unpause");
-    }
-  };
+  // const handlePress = () => {
+  //   openDrawer();
+  // };
+
+  // const handlePause = () => {
+  //   console.log("pressed");
+  //   if (!isPaused) {
+  //     setControl("pause");
+  //   } else {
+  //     setControl("unpause");
+  //   }
+  // };
 
   const handleRemoveFromSeat = async () => {
     try {
@@ -146,7 +194,7 @@ function ModeratorScreen() {
                     { opacity: pressed ? 0.5 : 1 },
                     styles.hamburgerButton,
                   ]}
-                  onPress={handlePress}
+                  onPress={openDrawer}
                 >
                   <FontAwesome6
                     name="bars"
@@ -314,6 +362,7 @@ function ModeratorScreen() {
                 <Pressable
                   style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
                   onLongPress={() => setControl("reset")}
+                  onPress={() => handeleTapSpam("reset")}
                   hitSlop={scaleArea(50)}
                 >
                   <View style={styles.controlButtons}>
@@ -329,7 +378,8 @@ function ModeratorScreen() {
               <View style={{ flex: 1, alignItems: "center" }}>
                 <Pressable
                   style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
-                  onLongPress={handlePause}
+                  onLongPress={() => setControl(isPaused ? "unpause" : "pause")}
+                  onPress={() => handeleTapSpam("pause")}
                   hitSlop={scaleArea(50)}
                 >
                   <View style={styles.controlButtons}>

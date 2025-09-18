@@ -49,7 +49,7 @@ export const stopPresenceUpdates = () => {
     clearInterval(presenceInterval);
 };
 
-export const removeParticipantPresenceracking = async (
+export const removeParticipantPresenceTracking = async (
   partyId: string,
   participantId: string
 ) => {
@@ -62,4 +62,14 @@ export const removeParticipantPresenceracking = async (
   } catch (err) {
     throw err;
   }
+};
+
+//below functions are/were for testing
+
+export const updateTestToken = async (token: string | null) => {
+  try {
+    await update(ref(rtDb), {
+      token,
+    });
+  } catch (err) {}
 };

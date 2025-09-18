@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import { store } from "./Store/Store";
 import { LoadingToastProvider } from "./Context/LoadingToastContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import * as Notifications from "expo-notifications";
 
 const theme = {
   ...DefaultTheme,
@@ -27,6 +28,15 @@ const theme = {
 };
 
 export default function Index() {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true, // 👈 show alert/banner even in foreground
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowList: false,
+    }),
+  });
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <PaperProvider theme={theme}>

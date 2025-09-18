@@ -108,7 +108,7 @@ function AddParticipants() {
         <KeyboardAwareScrollView
           contentContainerStyle={styles.scrollContainer}
           extraScrollHeight={20} // Ensures extra spacing for inputs near the keyboard
-          enableOnAndroid={true} // Smooth behavior on Android
+          //enableOnAndroid={true} // Smooth behavior on Android
           keyboardShouldPersistTaps="handled" // Allows taps even when the keyboard is open
         >
           <View style={styles.container}>

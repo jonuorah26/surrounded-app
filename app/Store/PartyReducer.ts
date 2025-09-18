@@ -13,6 +13,10 @@ export type ParticipantSeatData = {
   lastChangeBy: UserType;
 };
 
+export type PartyNotifications = {
+  thresholdReachedSent: boolean;
+};
+
 export type PartyData = {
   id: string;
   flagSystem: FlagSystemOption;
@@ -61,7 +65,7 @@ export const emptyParty: PartyData = {
 };
 
 const initialState: PartyState = {
-  partyData: { ...emptyParty },
+  partyData: JSON.parse(JSON.stringify(emptyParty)),
 };
 
 const partySlice = createSlice({
@@ -134,6 +138,9 @@ const partySlice = createSlice({
     ) => {
       state.partyData.participantInSeat = action.payload;
     },
+    // updateModeratorPushToken: (state, action: PayloadAction<string | null>) => {
+    //   state.partyData.moderatorPushToken = action.payload;
+    // },
   },
 });
 
@@ -155,6 +162,7 @@ export const {
   updateParty,
   updatePartyProperties,
   updateParticipantInSeat,
+  //updateModeratorPushToken,
 } = partySlice.actions;
 
 export default partySlice.reducer;

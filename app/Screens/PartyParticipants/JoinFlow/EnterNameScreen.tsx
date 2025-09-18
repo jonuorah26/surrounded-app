@@ -26,6 +26,7 @@ import { addParticipantToParty } from "@/app/Firebase/FirestoreService";
 import { updateParticipantCount } from "@/app/Store/PartyReducer";
 import { AppError } from "@/app/Firebase/Types";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
+import { registerForPushNotificationsAsync } from "@/app/Firebase/Notifications";
 
 function EnterNameScreen() {
   const [name, setName] = useState("");
@@ -43,7 +44,8 @@ function EnterNameScreen() {
     try {
       setLoadingText("Joining Party...");
       setToastMessage("");
-      const result = await addParticipantToParty(name, partyId);
+      const token = await registerForPushNotificationsAsync();
+      const result = await addParticipantToParty(name, partyId, token);
 
       dispatch(updateParticipantName(name));
       dispatch(updateParticipantId(result.participantId));

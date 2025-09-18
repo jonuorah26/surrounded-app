@@ -46,7 +46,7 @@ export const useThreshold = () => {
         if (userType === "moderator") {
           alert("Threshold Reached!");
         } else {
-          if (participantId === participantInSeat?.id) {
+          if (participantId === participantInSeat?.lastInSeat?.id) {
             alert("You have been voted out!");
           }
         }

@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FlagSystemOption, VoteOutThresholdType } from "./PartyReducer";
+import { UserType } from "../Context/UserTypeContext";
 
 export type Flag = {
   raised: boolean;
-  lastChangeBy: "moderator" | "participant";
+  lastChangeBy: UserType;
 };
 export type ParticipantData = {
   id: string;

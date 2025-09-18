@@ -33,10 +33,14 @@ import {
   Flag,
   ParticipantData,
 } from "../Store/ParticipantReducer";
-import { AppError } from "./Types";
+import {
+  AppError,
+  ParticipantDbPproperties,
+  PartyDbPproperties,
+} from "./Types";
 import { ref } from "firebase/database";
 import {
-  removeParticipantPresenceracking,
+  removeParticipantPresenceTracking,
   stopPresenceUpdates,
 } from "./RealtimePresenceService";
 import { ParticipantItem, ParticipantItemMap } from "../Types";
@@ -194,7 +198,10 @@ export const startParty = async (partyId: string) => {
 //   }
 // };
 
-export const createParty = async (partyData: PartyData) => {
+export const createParty = async (
+  partyData: PartyData,
+  moderatorPushToken: string | null
+) => {
   const partyCode = await generatePartyCode();
   var partyRef = doc(collection(db, PARTIES));
   const partyId = `party_${partyRef.id}`;
@@ -208,7 +215,11 @@ export const createParty = async (partyData: PartyData) => {
     await setDoc(partyRef, {
       ...partyData,
       createdAt: new Date(),
-    });
+      moderatorPushToken,
+      notifications: {
+        thresholdReachedSent: false,
+      },
+    } as PartyDbPproperties);
 
     return { partyId, partyCode };
   } catch (err) {
@@ -231,7 +242,7 @@ export const findParty = async (partyCode: string) => {
 
     const partyDoc = result.docs[0];
     const partyId = partyDoc.id;
-    var partyData = emptyParty;
+    var partyData = JSON.parse(JSON.stringify(emptyParty)) as PartyData;
     partyData = copyMatchingProperties(partyDoc.data(), partyData) as PartyData;
 
     return { partyId, partyData };
@@ -249,12 +260,13 @@ export const fetchParty = async (partyId: string) => {
       throw new AppError("Could not find party");
     }
 
-    const partyDoc = result.data() as PartyData;
+    const partyDoc = result.data() as PartyDbPproperties;
     if (partyDoc.isEnded) {
       throw new AppError("Party no longer exists");
     }
 
-    var partyData = JSON.parse(JSON.stringify(emptyParty));
+    var partyData = JSON.parse(JSON.stringify(emptyParty)) as PartyData;
+
     partyData = copyMatchingProperties(partyDoc, partyData) as PartyData;
 
     return { partyData };
@@ -327,7 +339,7 @@ export const leaveParty = async (partyId: string, participantId: string) => {
       transaction.delete(participantRef);
 
       stopPresenceUpdates();
-      removeParticipantPresenceracking(partyId, participantId);
+      removeParticipantPresenceTracking(partyId, participantId);
 
       const updatedData: Partial<PartyData> = {
         participantCount: partyData.participantCount - 1,
@@ -346,7 +358,8 @@ export const leaveParty = async (partyId: string, participantId: string) => {
 
 export const addParticipantToParty = async (
   participantName: string,
-  partyId: string
+  partyId: string,
+  pushToken: string | null
 ) => {
   try {
     const partyRef = doc(db, PARTIES, partyId);
@@ -358,7 +371,7 @@ export const addParticipantToParty = async (
         throw new AppError("Party does not exist");
       }
 
-      const partyData = partyDoc.data() as PartyData;
+      const partyData = partyDoc.data() as PartyDbPproperties;
       if (partyData.isEnded) {
         throw new AppError("Party no longer exists");
       }
@@ -391,7 +404,8 @@ export const addParticipantToParty = async (
         participantName,
         isDisabled: false,
         flag: { raised: false, lastChangeBy: "moderator" },
-      } as ParticipantData);
+        pushToken,
+      } as ParticipantDbPproperties);
 
       // Increment participant count safely
       transaction.update(partyRef, {
@@ -605,6 +619,8 @@ export const fetchParticipantsBatch = async (
   }
 };
 
+//below functions are/were for testing
+
 export const addMockParticipants = async (partyId: string, count: number) => {
   try {
     const participantsRef = collection(db, PARTIES, partyId, PARTICIPANTS);
@@ -617,7 +633,7 @@ export const addMockParticipants = async (partyId: string, count: number) => {
       const participantId = `p_${newDocRef.id}`;
       newDocRef = doc(db, PARTIES, partyId, PARTICIPANTS, participantId);
 
-      const participantData: ParticipantData = {
+      const participantData: Partial<ParticipantData> = {
         id: participantId,
         participantName: `Mock User ${letters[i % letters.length]}-${i + 1}`,
         isDisabled: Math.random() < 0.1, // 10% chance of disabled
@@ -687,6 +703,28 @@ export const deleteAllParticipants = async (partyId: string) => {
     console.log(`Successfully deleted ${snapshot.size} participants.`);
   } catch (err) {
     console.error("Failed to delete participants:", err);
+    throw err;
+  }
+};
+
+export const updateTestToken = async (token: string | null) => {
+  try {
+    const TESTING = "testing";
+    const TEST_NOTIFICATION = "testNotification";
+
+    const testNotification = await getDoc(doc(db, TESTING, TEST_NOTIFICATION));
+
+    var trigger = true;
+
+    if (testNotification?.exists()) {
+      trigger = !testNotification?.data()?.trigger;
+    }
+
+    await setDoc(doc(db, TESTING, TEST_NOTIFICATION), {
+      trigger,
+      token,
+    });
+  } catch (err) {
     throw err;
   }
 };

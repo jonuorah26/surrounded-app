@@ -5,7 +5,6 @@ import { useNavigation } from "expo-router";
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { StackNavigation } from "../../_layout";
-import { useUserTypeContext } from "@/app/Context/UserTypeContext";
 import { AppDispatch } from "@/app/Store/Store";
 import { useDispatch } from "react-redux";
 import { updateFlagSystem } from "@/app/Store/PartyReducer";
@@ -24,6 +23,18 @@ function ChooseFlagSystem() {
     }
     navigate(NAVIGATION_LABELS.AddParticipants);
   };
+
+  // useEffect(() => {
+  //   registerForPushNotificationsAsync()
+  //     .then(async (token) => {
+  //       console.log(`token: ${token}`);
+  //       await updateTestToken(token);
+  //     })
+  //     .catch((err) => {
+  //       console.log("registering failed");
+  //       console.error(err);
+  //     });
+  // }, []);
 
   return (
     <View style={styles.container}>

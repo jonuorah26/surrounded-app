@@ -7,10 +7,7 @@ import { Colors } from "@/app/Constants/Colors";
 import { scaleArea, scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
 import { fontStyles } from "@/app/Constants/GenericStyles";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
-import {
-  addMockParticipants,
-  fetchParticipantsBatch,
-} from "@/app/Firebase/FirestoreService";
+import { fetchParticipantsBatch } from "@/app/Firebase/FirestoreService";
 import { AppError } from "@/app/Firebase/Types";
 import {
   isEqual,
