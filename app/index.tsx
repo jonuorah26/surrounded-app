@@ -28,14 +28,14 @@ const theme = {
 };
 
 export default function Index() {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowBanner: true, // 👈 show alert/banner even in foreground
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-      shouldShowList: false,
-    }),
-  });
+  // Notifications.setNotificationHandler({
+  //   handleNotification: async () => ({
+  //     shouldShowBanner: true, // 👈 show alert/banner even in foreground
+  //     shouldPlaySound: true,
+  //     shouldSetBadge: false,
+  //     shouldShowList: false,
+  //   }),
+  // });
 
   return (
     <GestureHandlerRootView style={styles.container}>

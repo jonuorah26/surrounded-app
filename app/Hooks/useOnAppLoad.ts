@@ -19,11 +19,22 @@ import {
 
 export const STORAGE_KEY = "lastSavedPartyData";
 
-export type LastSavedPartyData = {
-  role: UserType;
-  partyId: string;
-  participantId?: string;
-  lastPage?: "partyCodeGenerated" | "moderatorControls";
+export type LastSavedPartyData =
+  | {
+      role: "moderator";
+      partyId: string;
+      lastPage: "partyCodeGenerated" | "moderatorControls";
+    }
+  | {
+      role: "participant";
+      partyId: string;
+      participantId: string;
+    };
+
+const testLastSaved: LastSavedPartyData = {
+  role: "moderator",
+  partyId: "", //enter partyId,
+  lastPage: "moderatorControls",
 };
 
 export const saveLastPartyData = async (data: LastSavedPartyData) => {
@@ -67,36 +78,37 @@ export const useOnAppLoad = () => {
   const { setUserType } = useUserTypeContext();
 
   const handleAppLoad = async () => {
-    // await saveLastPartyData({
-    //   role: "participant",
-    //   partyId: "party_vf9zKWicM7quBUT7VfhW",
-    //   participantId: "p_lmcdsT2pghsrsec6Jfvl",
-    // });
     setToastMessage("");
     try {
-      debugger;
+      //to test, enter partyData below that you want to be load
+      //await saveLastPartyData({})
+
       const lastSavedPartyData = await loadLastPartyData();
       console.log("lastSavedPartyData:", lastSavedPartyData);
+
       if (lastSavedPartyData) {
-        const role = lastSavedPartyData.role;
-        const { partyData } = await fetchParty(lastSavedPartyData.partyId);
+        const { role, partyId } = lastSavedPartyData;
+
+        const { partyData } = await fetchParty(partyId);
 
         if (role === "participant") {
+          const { participantId } = lastSavedPartyData;
           const { participantData } = await fetchParticipant(
-            lastSavedPartyData.partyId,
-            lastSavedPartyData.participantId ?? ""
+            partyId,
+            participantId ?? ""
           );
           dispatch(updateParty(partyData));
-          dispatch(updatePartyId(lastSavedPartyData.partyId));
+          dispatch(updatePartyId(partyId));
           dispatch(updateParticipant(participantData));
-          dispatch(updateParticipantId(lastSavedPartyData.participantId ?? ""));
+          dispatch(updateParticipantId(participantId ?? ""));
           setUserType("participant");
           setInitialRoute(NAVIGATION_LABELS.ParticipantScreen);
         } else {
+          const { lastPage } = lastSavedPartyData;
           dispatch(updateParty(partyData));
-          dispatch(updatePartyId(lastSavedPartyData.partyId));
+          dispatch(updatePartyId(partyId));
           setUserType("moderator");
-          switch (lastSavedPartyData.lastPage) {
+          switch (lastPage) {
             case "partyCodeGenerated":
               setInitialRoute(NAVIGATION_LABELS.PartyCodeGenerated);
               break;

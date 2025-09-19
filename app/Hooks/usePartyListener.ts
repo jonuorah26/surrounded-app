@@ -42,7 +42,7 @@ export const usePartyListener = () => {
 
         // Detect changed properties
         Object.keys(newData).forEach((objKey) => {
-          if (objKey in DB_PROPERTY_LABELS_NOT_IN_REDUX) {
+          if (!(objKey in partyData)) {
             return;
           }
 

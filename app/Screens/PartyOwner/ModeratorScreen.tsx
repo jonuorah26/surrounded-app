@@ -161,193 +161,199 @@ function ModeratorScreen() {
             flex: 1,
             top: insets.top,
             bottom: insets.bottom,
+            paddingBottom: scaleHeight(10),
           }}
         >
-          <View
-            style={{ flex: 3 }}
-            id="flag-hamburger button-threshold" /*Flag, hamburger button, Threshold  */
+          <View /*Flag, hamburger button, Threshold  */
+            style={{ flex: 4.6, justifyContent: "flex-start" }}
+            id="flag-hamburger button-threshold"
             key="flag-hamburger button-threshold"
           >
-            <View
-              style={{
-                flex: -1,
-                alignSelf: "flex-end",
-                //marginTop: -scaleHeight(55),
-              }}
-            >
-              <FlagIndicator
-                color={Colors.red}
-                useRounded={false}
-                absolute={false}
-              />
-            </View>
-            <View style={styles.flagAndHamburgerRow}>
-              <View style={{ flex: -1, alignSelf: "flex-end" }}>
-                <ThresholdIndicator
-                  color={Colors.yellow}
-                  threshold={threshold ?? 0}
+            <>
+              <View
+                style={{
+                  flex: -1,
+                  alignSelf: "flex-end",
+                  //marginTop: -scaleHeight(55),
+                }}
+              >
+                <FlagIndicator
+                  color={Colors.red}
+                  useRounded={false}
+                  absolute={false}
                 />
               </View>
-              <View style={styles.hamburger}>
-                <Pressable
-                  style={({ pressed }) => [
-                    { opacity: pressed ? 0.5 : 1 },
-                    styles.hamburgerButton,
-                  ]}
-                  onPress={openDrawer}
-                >
-                  <FontAwesome6
-                    name="bars"
-                    size={fontStyles.large.fontSize}
+              <View style={styles.flagAndHamburgerRow}>
+                <View style={{ flex: -1, alignSelf: "flex-end" }}>
+                  <ThresholdIndicator
                     color={Colors.yellow}
+                    threshold={threshold ?? 0}
                   />
-                </Pressable>
+                </View>
+                <View style={styles.hamburger}>
+                  <Pressable
+                    style={({ pressed }) => [
+                      { opacity: pressed ? 0.5 : 1 },
+                      styles.hamburgerButton,
+                    ]}
+                    onPress={openDrawer}
+                  >
+                    <FontAwesome6
+                      name="bars"
+                      size={fontStyles.large.fontSize}
+                      color={Colors.yellow}
+                    />
+                  </Pressable>
+                </View>
               </View>
-            </View>
+            </>
           </View>
           <View /* "Who's in Seat" and Flag raise count */
             style={{
               flexDirection: "row",
-              flex: 5,
+              flex: 7.8,
               //bottom: insets.bottom ? 0 : 10,
             }}
             id="inSeat-flagRaiseCount"
             key="inSeat-flagRaiseCount"
           >
-            <View
-              style={{
-                flex: 1.2,
-                alignSelf: "flex-start",
-                bottom: scaleHeight(100),
-                left: scaleWidth(10),
-                paddingLeft: scaleWidth(10),
-              }}
-            >
-              <View style={{ alignItems: "center" }}>
-                <Text
+            <>
+              <View /*Who's in Seat */
+                style={{
+                  flex: 1.2,
+                  alignSelf: "flex-start",
+                  //bottom: scaleHeight(100),
+                  //left: scaleWidth(10),
+                  paddingLeft: scaleWidth(10),
+                }}
+              >
+                <View style={{ alignItems: "center" }}>
+                  <Text
+                    style={[
+                      styles.whosInSeatText,
+                      {
+                        paddingBottom: scaleWidth(10),
+                        marginLeft: scaleWidth(5),
+                        width: "150%",
+                      },
+                    ]}
+                  >
+                    Who's in The Seat?
+                  </Text>
+                  {participantInSeat.seatFilled ? (
+                    <Popover
+                      from={(sourceRef, showPopover) => (
+                        <Pressable
+                          onLongPress={showPopover}
+                          hitSlop={scaleArea(60)}
+                          style={{ width: "120%" }}
+                        >
+                          <View
+                            style={{
+                              alignItems: "center",
+                            }}
+                          >
+                            <Ionicons
+                              name="person-outline"
+                              size={scaleArea(50)}
+                              color="black"
+                            />
+                            <AutoSizeText
+                              style={[styles.whosInSeatText]}
+                              mode={ResizeTextMode.max_lines}
+                              numberOfLines={2}
+                              fontSize={fontStyles.xsmall.fontSize}
+                            >
+                              {participantInSeat.lastInSeat?.name}
+                            </AutoSizeText>
+                          </View>
+                        </Pressable>
+                      )}
+                      placement={Placement.RIGHT}
+                      arrowSize={{ height: 0, width: 0 }}
+                      popoverStyle={{
+                        backgroundColor: Colors.yellow,
+                        marginLeft: -scaleWidth(20),
+                      }}
+                      displayArea={{
+                        x: 0,
+                        y: -scaleHeight(538),
+                        width: Dimensions.get("screen").width,
+                        height: Dimensions.get("screen").height,
+                      }}
+                    >
+                      <View style={{ paddingHorizontal: scaleArea(8) }}>
+                        <OpacityPressable onPress={handleRemoveFromSeat}>
+                          <Text style={{ paddingVertical: scaleArea(12) }}>
+                            Remove from seat
+                          </Text>
+                        </OpacityPressable>
+                      </View>
+                    </Popover>
+                  ) : (
+                    <Text
+                      style={[
+                        generic.title,
+                        { ...fontStyles.xsmall, textAlign: "center" },
+                      ]}
+                    >
+                      Empty
+                    </Text>
+                  )}
+                </View>
+              </View>
+              <View /*Flag Raise Count */
+                style={{
+                  flex: 5,
+                  alignSelf: "flex-end",
+                  alignItems: "center",
+                  right: scaleWidth(45),
+                }}
+              >
+                <View
                   style={[
-                    styles.whosInSeatText,
+                    styles.fractionContainer,
                     {
-                      paddingBottom: scaleWidth(10),
-                      marginLeft: scaleWidth(5),
-                      width: "150%",
+                      backgroundColor: thresholdReached
+                        ? Colors.buzzerRed
+                        : Colors.culturedWhite,
                     },
                   ]}
                 >
-                  Who's in The Seat?
-                </Text>
-                {participantInSeat.seatFilled ? (
-                  <Popover
-                    from={(sourceRef, showPopover) => (
-                      <Pressable
-                        onLongPress={showPopover}
-                        hitSlop={scaleArea(60)}
-                        style={{ width: "120%" }}
-                      >
-                        <View
-                          style={{
-                            alignItems: "center",
-                          }}
-                        >
-                          <Ionicons
-                            name="person-outline"
-                            size={scaleArea(50)}
-                            color="black"
-                          />
-                          <AutoSizeText
-                            style={[styles.whosInSeatText]}
-                            mode={ResizeTextMode.max_lines}
-                            numberOfLines={2}
-                            fontSize={fontStyles.xsmall.fontSize}
-                          >
-                            {participantInSeat.lastInSeat?.name}
-                          </AutoSizeText>
-                        </View>
-                      </Pressable>
-                    )}
-                    placement={Placement.RIGHT}
-                    arrowSize={{ height: 0, width: 0 }}
-                    popoverStyle={{
-                      backgroundColor: Colors.yellow,
-                      marginLeft: -scaleWidth(20),
-                    }}
-                    displayArea={{
-                      x: 0,
-                      y: -scaleHeight(538),
-                      width: Dimensions.get("screen").width,
-                      height: Dimensions.get("screen").height,
-                    }}
-                  >
-                    <View style={{ paddingHorizontal: scaleArea(8) }}>
-                      <OpacityPressable onPress={handleRemoveFromSeat}>
-                        <Text style={{ paddingVertical: scaleArea(12) }}>
-                          Remove from seat
-                        </Text>
-                      </OpacityPressable>
-                    </View>
-                  </Popover>
-                ) : (
+                  <View style={{ top: -scaleHeight(20) }}>
+                    <Text style={[styles.number]}>
+                      {flagsRaisedCount.toString().padStart(2, "0")}
+                    </Text>
+                  </View>
+                  <View style={{ transform: [{ rotate: "20deg" }] }}>
+                    <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                      /
+                    </Text>
+                  </View>
+                  <View style={{ top: scaleHeight(20) }}>
+                    <Text style={[styles.number, { fontSize: getFontSize() }]}>
+                      {participantCount.toString().padStart(2, "0")}
+                    </Text>
+                  </View>
+                </View>
+                <View style={{}}>
                   <Text
-                    style={[
-                      generic.title,
-                      { ...fontStyles.xsmall, textAlign: "center" },
-                    ]}
+                    style={{
+                      fontSize: fontStyles.large.fontSize,
+                      color: Colors.culturedWhite,
+                    }}
                   >
-                    Empty
-                  </Text>
-                )}
-              </View>
-            </View>
-            <View
-              style={{
-                flex: 5,
-                alignSelf: "flex-start",
-                alignItems: "center",
-                right: scaleWidth(45),
-              }}
-            >
-              <View
-                style={[
-                  styles.fractionContainer,
-                  {
-                    backgroundColor: thresholdReached
-                      ? Colors.buzzerRed
-                      : Colors.culturedWhite,
-                  },
-                ]}
-              >
-                <View style={{ top: -scaleHeight(20) }}>
-                  <Text style={[styles.number]}>
-                    {flagsRaisedCount.toString().padStart(2, "0")}
-                  </Text>
-                </View>
-                <View style={{ transform: [{ rotate: "20deg" }] }}>
-                  <Text style={[styles.number, { fontSize: getFontSize() }]}>
-                    /
-                  </Text>
-                </View>
-                <View style={{ top: scaleHeight(20) }}>
-                  <Text style={[styles.number, { fontSize: getFontSize() }]}>
-                    {participantCount.toString().padStart(2, "0")}
+                    Flags Raised
                   </Text>
                 </View>
               </View>
-              <View style={{}}>
-                <Text
-                  style={{
-                    fontSize: fontStyles.large.fontSize,
-                    color: Colors.culturedWhite,
-                  }}
-                >
-                  Flags Raised
-                </Text>
-              </View>
-            </View>
+            </>
           </View>
-          <View
+          <View /* control buttons */
             style={{
-              flex: 1,
-            }} /* control buttons */
+              flex: 4,
+              justifyContent: "flex-end",
+            }}
             id="control-buttons"
             key="control-buttons"
           >
@@ -355,10 +361,12 @@ function ModeratorScreen() {
               style={{
                 flexDirection: "row",
                 //bottom: insets.bottom || scaleHeight(70),
-                bottom: scaleHeight(110),
+                //bottom: scaleHeight(110),
               }}
             >
-              <View style={{ flex: 1, alignItems: "center" }}>
+              <View /* Reset Button */
+                style={{ flex: 1, alignItems: "center" }}
+              >
                 <Pressable
                   style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
                   onLongPress={() => setControl("reset")}
@@ -375,7 +383,9 @@ function ModeratorScreen() {
                 </Pressable>
                 <Text style={styles.controlButtonLabel}>Reset Flags</Text>
               </View>
-              <View style={{ flex: 1, alignItems: "center" }}>
+              <View /* Pause Button */
+                style={{ flex: 1, alignItems: "center" }}
+              >
                 <Pressable
                   style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
                   onLongPress={() => setControl(isPaused ? "unpause" : "pause")}
