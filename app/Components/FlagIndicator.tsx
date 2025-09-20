@@ -89,6 +89,7 @@ function FlagIndicator({
 }
 
 export default FlagIndicator;
+
 const stickyBoxArea = scaleArea(160) * scaleArea(90);
 const styles = StyleSheet.create({
   shadow: {

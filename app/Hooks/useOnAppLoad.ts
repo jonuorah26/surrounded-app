@@ -3,7 +3,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { NAVIGATION_LABELS } from "../Constants/Navigation";
 import { useLoadingToast } from "../Context/LoadingToastContext";
-import { fetchParticipant, fetchParty } from "../Firebase/FirestoreService";
+import {
+  fetchParticipant,
+  fetchParty,
+  updatePushToken,
+} from "../Firebase/FirestoreService";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../Store/Store";
 import { update } from "firebase/database";
@@ -16,6 +20,9 @@ import {
   updateParticipant,
   updateParticipantId,
 } from "../Store/ParticipantReducer";
+
+import { registerForPushNotificationsAsync } from "../Firebase/Notifications";
+import { Platform } from "react-native";
 
 export const STORAGE_KEY = "lastSavedPartyData";
 
@@ -81,14 +88,23 @@ export const useOnAppLoad = () => {
     setToastMessage("");
     try {
       //to test, enter partyData below that you want to be load
-      //await saveLastPartyData({})
+      // await saveLastPartyData({
+      //   role: "moderator",
+      //   lastPage: "moderatorControls",
+      //   partyId: "party_E0iL46qItXBw1ZUfz7Ef",
+      // });
+      await clearLastPartyData();
 
       const lastSavedPartyData = await loadLastPartyData();
       console.log("lastSavedPartyData:", lastSavedPartyData);
 
       if (lastSavedPartyData) {
-        const { role, partyId } = lastSavedPartyData;
+        var pushToken = null;
+        if (Platform.OS !== "ios") {
+          pushToken = await registerForPushNotificationsAsync();
+        }
 
+        const { role, partyId } = lastSavedPartyData;
         const { partyData } = await fetchParty(partyId);
 
         if (role === "participant") {
@@ -97,6 +113,7 @@ export const useOnAppLoad = () => {
             partyId,
             participantId ?? ""
           );
+          await updatePushToken(pushToken, partyId, participantId);
           dispatch(updateParty(partyData));
           dispatch(updatePartyId(partyId));
           dispatch(updateParticipant(participantData));
@@ -104,6 +121,8 @@ export const useOnAppLoad = () => {
           setUserType("participant");
           setInitialRoute(NAVIGATION_LABELS.ParticipantScreen);
         } else {
+          await updatePushToken(pushToken, partyId);
+
           const { lastPage } = lastSavedPartyData;
           dispatch(updateParty(partyData));
           dispatch(updatePartyId(partyId));

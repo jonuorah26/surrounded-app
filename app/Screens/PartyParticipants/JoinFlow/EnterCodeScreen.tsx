@@ -34,10 +34,11 @@ function EnterCodeScreen() {
   const dispatch = useDispatch<AppDispatch>();
 
   const handleContinue = async () => {
-    if (!code) {
-      alert("Please enter the party code");
+    if (!code || code.length > 8) {
+      alert("Please enter a valid code");
       return;
     }
+
     try {
       setLoadingText("Finding Party...");
       setToastMessage("");

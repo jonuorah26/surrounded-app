@@ -45,6 +45,8 @@ import {
 } from "./RealtimePresenceService";
 import { ParticipantItem, ParticipantItemMap } from "../Types";
 import { UserType } from "../Context/UserTypeContext";
+import { isDevice } from "expo-device";
+import { Platform } from "react-native";
 
 export const modifyFlag = async (
   partyId: string,
@@ -246,6 +248,47 @@ export const findParty = async (partyCode: string) => {
     partyData = copyMatchingProperties(partyDoc.data(), partyData) as PartyData;
 
     return { partyId, partyData };
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const updatePushToken = async (
+  token: string | null,
+  partyId: string,
+  participantId: string = ""
+) => {
+  try {
+    if (token === null) {
+      if (
+        isDevice &&
+        Platform.OS !==
+          "ios" /**FIXME: Remove platform condition once iOS push is set up */
+      ) {
+        throw new AppError("Push token is null");
+      } else {
+        return;
+      }
+    }
+
+    const partyRef = doc(db, PARTIES, partyId);
+
+    if (participantId) {
+      const participantRef = doc(
+        db,
+        PARTIES,
+        partyId,
+        PARTICIPANTS,
+        participantId
+      );
+      await updateDoc(participantRef, {
+        pushToken: token,
+      } as Partial<ParticipantDbPproperties>);
+    } else {
+      await updateDoc(partyRef, {
+        moderatorPushToken: token,
+      } as Partial<PartyDbPproperties>);
+    }
   } catch (err) {
     throw err;
   }

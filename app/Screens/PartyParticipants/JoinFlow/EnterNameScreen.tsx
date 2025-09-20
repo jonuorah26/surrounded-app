@@ -40,6 +40,10 @@ function EnterNameScreen() {
       alert("Please enter a name");
       return;
     }
+    if (name.length > 30) {
+      alert("Please enter a name of 30 character or less");
+      return;
+    }
 
     try {
       setLoadingText("Joining Party...");

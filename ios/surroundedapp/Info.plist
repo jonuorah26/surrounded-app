@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>surrounded-app</string>
+    <string>Versus</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -46,6 +46,10 @@
     </dict>
     <key>NSUserTrackingUsageDescription</key>
     <string>This identifier will be used to deliver personalized ads to you.</string>
+    <key>UIAppFonts</key>
+    <array>
+      <string>MaterialCommunityIcons.ttf</string>
+    </array>
     <key>UIBackgroundModes</key>
     <array>
       <string>fetch</string>

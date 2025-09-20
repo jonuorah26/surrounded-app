@@ -3,7 +3,7 @@ import { Colors } from "@/app/Constants/Colors";
 import { generic } from "@/app/Constants/GenericStyles";
 import { useNavigation } from "expo-router";
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Alert } from "react-native";
 import { StackNavigation } from "../../_layout";
 import { AppDispatch } from "@/app/Store/Store";
 import { useDispatch } from "react-redux";
@@ -19,6 +19,10 @@ function ChooseFlagSystem() {
       dispatch(updateFlagSystem("red"));
     } else {
       dispatch(updateFlagSystem("green"));
+      Alert.alert(
+        "Working on it!",
+        "Feature not available yet, but coming soon!"
+      );
       return;
     }
     navigate(NAVIGATION_LABELS.AddParticipants);

@@ -4,3 +4,5 @@ export * from "./Dimensions";
 export * from "./GenericStyles";
 export * from "./Navigation";
 export * from "./Presence";
+
+export const TITLE = "Surrounded";

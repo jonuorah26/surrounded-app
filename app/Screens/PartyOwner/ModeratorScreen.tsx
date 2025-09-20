@@ -13,6 +13,7 @@ import {
   SafeAreaView,
   Text,
   Dimensions,
+  Platform,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Feather from "@expo/vector-icons/Feather";
@@ -159,9 +160,9 @@ function ModeratorScreen() {
         <View
           style={{
             flex: 1,
-            top: insets.top,
-            bottom: insets.bottom,
-            paddingBottom: scaleHeight(10),
+            marginTop: insets.top,
+            marginBottom: insets.bottom,
+            paddingBottom: Platform.OS === "android" ? scaleHeight(10) : 0,
           }}
         >
           <View /*Flag, hamburger button, Threshold  */
@@ -174,7 +175,6 @@ function ModeratorScreen() {
                 style={{
                   flex: -1,
                   alignSelf: "flex-end",
-                  //marginTop: -scaleHeight(55),
                 }}
               >
                 <FlagIndicator
@@ -212,7 +212,8 @@ function ModeratorScreen() {
             style={{
               flexDirection: "row",
               flex: 7.8,
-              //bottom: insets.bottom ? 0 : 10,
+              marginLeft: scaleWidth(20),
+              //gap: 5,
             }}
             id="inSeat-flagRaiseCount"
             key="inSeat-flagRaiseCount"
@@ -222,9 +223,7 @@ function ModeratorScreen() {
                 style={{
                   flex: 1.2,
                   alignSelf: "flex-start",
-                  //bottom: scaleHeight(100),
-                  //left: scaleWidth(10),
-                  paddingLeft: scaleWidth(10),
+                  //alignItems: "center",
                 }}
               >
                 <View style={{ alignItems: "center" }}>
@@ -233,7 +232,7 @@ function ModeratorScreen() {
                       styles.whosInSeatText,
                       {
                         paddingBottom: scaleWidth(10),
-                        marginLeft: scaleWidth(5),
+                        //marginLeft: scaleWidth(5),
                         width: "150%",
                       },
                     ]}
@@ -360,8 +359,6 @@ function ModeratorScreen() {
             <View
               style={{
                 flexDirection: "row",
-                //bottom: insets.bottom || scaleHeight(70),
-                //bottom: scaleHeight(110),
               }}
             >
               <View /* Reset Button */

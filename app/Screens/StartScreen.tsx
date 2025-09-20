@@ -9,6 +9,8 @@ import { NAVIGATION_LABELS } from "../Constants/Navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "../Store/Store";
 import { useEffect } from "react";
+import { scaleHeight } from "../Constants";
+import Logo from "../Components/Logo";
 const CREATE = "create-party";
 const JOIN = "join-party";
 
@@ -36,7 +38,7 @@ export default function Start() {
   return (
     <View style={styles.container}>
       <View style={styles.logo}>
-        <PlaceholderLogo />
+        <Logo />
       </View>
       <View style={styles.containerButtons}>
         <Button text="Create A Party" onPress={() => handlePress(CREATE)} />
@@ -49,11 +51,13 @@ export default function Start() {
 const styles = StyleSheet.create({
   container: {
     ...generic.container,
+    justifyContent: "space-evenly",
+    //gap: scaleHeight(20),
   },
   containerButtons: {
-    bottom: "4%",
+    //bottom: "4%",
   },
   logo: {
-    bottom: "11%",
+    //bottom: "11%",
   },
 });

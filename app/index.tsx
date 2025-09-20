@@ -10,6 +10,12 @@ import { store } from "./Store/Store";
 import { LoadingToastProvider } from "./Context/LoadingToastContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as Notifications from "expo-notifications";
+import * as SplashScreen from "expo-splash-screen";
+
+// 👇 Call here, not inside a component
+SplashScreen.preventAutoHideAsync().catch(() => {
+  /* ignore if already hidden */
+});
 
 const theme = {
   ...DefaultTheme,

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, View, StyleSheet } from "react-native";
 import { generic } from "../Constants/GenericStyles";
-import { PlaceholderLogo } from "../Components";
 import { Colors } from "../Constants/Colors";
 import { scaleHeight } from "../Constants/Dimensions";
+import Logo from "../Components/Logo";
 
 export default function SplashScreen() {
   const [showActivityInidcator, setShowActivityIndicator] = useState(false);
@@ -15,7 +15,7 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.logo}>
-        <PlaceholderLogo />
+        <Logo />
       </View>
       <View style={styles.activityIndicator}>
         {showActivityInidcator && (

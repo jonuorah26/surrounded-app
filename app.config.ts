@@ -2,7 +2,7 @@ import "dotenv/config";
 
 export default {
   expo: {
-    name: "surrounded-app",
+    name: "Versus",
     slug: "surrounded-app",
     version: "1.0.0",
     extra: {
@@ -21,9 +21,24 @@ export default {
     android: {
       package: "com.anonymous.surroundedapp",
       googleServicesFile: "./google-services.json",
+      splash: {
+        image: "./assets/images/splash.png",
+        resizeMode: "contain", // or "cover"
+        backgroundColor: "#1e90ff",
+      },
     },
     ios: {
       bundleIdentifier: "com.anonymous.surroundedapp",
+      splash: {
+        image: "./assets/images/splash.png",
+        resizeMode: "contain", // or "cover"
+        backgroundColor: "#1e90ff",
+      },
+    },
+    splash: {
+      image: "./assets/images/splash.png",
+      resizeMode: "contain", // or "cover"
+      backgroundColor: "#1e90ff",
     },
   },
 };

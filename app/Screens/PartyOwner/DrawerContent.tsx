@@ -117,7 +117,10 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
       >
         <Pressable
           onPress={() =>
-            Alert.alert("Alert", "Feature not available yet, but coming soon!")
+            Alert.alert(
+              "Working on it!",
+              "Feature not available yet, but coming soon!"
+            )
           }
         >
           <Text
@@ -139,7 +142,10 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
       >
         <Pressable
           onPress={() =>
-            Alert.alert("Alert", "Feature not available yet, but coming soon!")
+            Alert.alert(
+              "Working on it!",
+              "Feature not available yet, but coming soon!"
+            )
           }
         >
           <Text
