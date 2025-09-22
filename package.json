@@ -48,6 +48,7 @@
     "react-native-auto-size-text": "^1.1.1",
     "react-native-background-timer": "^2.4.1",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-google-mobile-ads": "^15.7.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-paper": "^5.13.1",
     "react-native-popover-view": "^6.1.0",

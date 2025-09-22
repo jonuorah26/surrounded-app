@@ -55,7 +55,13 @@ export const useThreshold = () => {
       }
       return flagsRaisedCount >= threshold;
     });
-  }, [flagsRaisedCount, threshold, participantCount]);
+  }, [
+    flagsRaisedCount,
+    threshold,
+    participantCount,
+    participantId,
+    participantInSeat?.lastInSeat?.id,
+  ]);
 
   return { threshold, thresholdReached };
 };

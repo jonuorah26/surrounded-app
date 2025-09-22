@@ -6,32 +6,31 @@ import Constants from "expo-constants";
 export async function registerForPushNotificationsAsync(): Promise<
   string | null
 > {
+  if (Platform.OS === "ios" || !Device.isDevice) {
+    return "MockTocken"; //FIXME: remove once iOS notifications implemented
+  }
+
   let token: string | null = null;
 
-  if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
 
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    if (finalStatus !== "granted") {
-      console.warn("Failed to get push token");
-      return null;
-    }
-    const projectId = Constants.expoConfig?.extra?.eas?.projectId;
-    token = (
-      await Notifications.getExpoPushTokenAsync({
-        projectId,
-      })
-    ).data;
-    console.log("Expo push token:", token);
-  } else {
-    console.warn("Must use physical device for push notifications");
+  if (existingStatus !== "granted") {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
   }
+
+  if (finalStatus !== "granted") {
+    console.warn("Failed to get push token");
+    return null;
+  }
+  const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+  token = (
+    await Notifications.getExpoPushTokenAsync({
+      projectId,
+    })
+  ).data;
+  console.log("Expo push token:", token);
 
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {

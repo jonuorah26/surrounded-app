@@ -93,16 +93,13 @@ export const useOnAppLoad = () => {
       //   lastPage: "moderatorControls",
       //   partyId: "party_E0iL46qItXBw1ZUfz7Ef",
       // });
-      await clearLastPartyData();
+      //await clearLastPartyData();
 
       const lastSavedPartyData = await loadLastPartyData();
       console.log("lastSavedPartyData:", lastSavedPartyData);
 
       if (lastSavedPartyData) {
-        var pushToken = null;
-        if (Platform.OS !== "ios") {
-          pushToken = await registerForPushNotificationsAsync();
-        }
+        const pushToken = await registerForPushNotificationsAsync();
 
         const { role, partyId } = lastSavedPartyData;
         const { partyData } = await fetchParty(partyId);

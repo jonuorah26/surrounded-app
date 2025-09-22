@@ -28,7 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 function ThresholdScreen() {
   const [value, setValue] = useState<VoteOutThresholdType>("");
   const [custom, setCustom] = useState<string | null>();
-  const { setLoadingText, setToastMessage } = useLoadingToast();
+  const { setLoadingText, setToastMessage, showAd } = useLoadingToast();
   const { navigate } = useNavigation<StackNavigation>();
   const dispatch = useDispatch<AppDispatch>();
   const partyData = useSelector((state: RootState) => state.party.partyData);
@@ -65,6 +65,7 @@ function ThresholdScreen() {
 
     try {
       setLoadingText("Creating Party...");
+      setToastMessage("");
 
       const data: PartyData = {
         ...partyData,
@@ -77,11 +78,15 @@ function ThresholdScreen() {
 
       dispatch(updatePartyCode(result.partyCode));
       dispatch(updatePartyId(result.partyId));
-      navigate(NAVIGATION_LABELS.PartyCodeGenerated);
+
+      showAd(() => {
+        navigate(NAVIGATION_LABELS.PartyCodeGenerated);
+        setLoadingText("");
+      });
     } catch (err) {
       setToastMessage("Error occured. Failed to create party.");
+      setLoadingText("");
     }
-    setLoadingText("");
   };
 
   return (

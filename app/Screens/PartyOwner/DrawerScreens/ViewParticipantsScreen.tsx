@@ -9,11 +9,7 @@ import { fontStyles } from "@/app/Constants/GenericStyles";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import { fetchParticipantsBatch } from "@/app/Firebase/FirestoreService";
 import { AppError } from "@/app/Firebase/Types";
-import {
-  isEqual,
-  useParticipantPresence,
-  useParticipantsListener,
-} from "@/app/Hooks";
+import { useParticipantPresence, useParticipantsListener } from "@/app/Hooks";
 import { RootState } from "@/app/Store/Store";
 import { ParticipantItem, ParticipantItemMap } from "@/app/Types";
 import { useFocusEffect } from "@react-navigation/native";
@@ -32,6 +28,7 @@ import {
 } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { SwipeListView } from "react-native-swipe-list-view";
+import { ONE_MIN } from "@/app/Constants";
 
 export default function ViewParticipantsScreen() {
   const insets = useSafeAreaInsets();
@@ -52,8 +49,7 @@ export default function ViewParticipantsScreen() {
   const { id: partyId } = useSelector(
     (state: RootState) => state.party.partyData
   );
-  const { setToastMessage } = useLoadingToast();
-  //   const { participantStatusMap } = useParticipantPresence();
+  const { setToastMessage, showAd } = useLoadingToast();
   const { presenceCheck } = useParticipantPresence(setParticipants);
   useParticipantsListener({
     setParticipantItems: setParticipants,
@@ -84,62 +80,6 @@ export default function ViewParticipantsScreen() {
     }, [partyId])
   );
 
-  //   const loadMoreItems = async () => {
-  //     if (isLoadingMore || !hasMore) return;
-  //     setIsLoadingMore(true);
-
-  //     setTimeout(() => {
-  //       const skip = data.length;
-  //       const nextBatch: ParticipantItem[] = [];
-
-  //       for (let i = skip; i < skip + BATCH_SIZE && i < 120; ++i) {
-  //         nextBatch.push({
-  //           id: `id-${i + 1}`,
-  //           name: `Mock participant ${i + 1}`,
-  //         });
-  //       }
-
-  //       setData((prev) => [...prev, ...nextBatch]);
-  //       setHasMore(skip + BATCH_SIZE < 120);
-  //       setIsLoadingMore(false);
-  //     }, 3000);
-  //   };
-
-  //   useEffect(() => {
-
-  //     if (!participantStatusMap || !participants)
-  //         return;
-  //     // try {
-  //     //   setToastMessage("");
-  //     //   const updatedParticipants: ParticipantItemMap = { ...participants };
-  //     //   Object.entries(participants).forEach(([id, data]) => {
-  //     //     if (!(id in participantStatusMap)) {
-  //     //       throw new AppError("particpant missing from status map");
-  //     //     }
-  //     //     updatedParticipants[id].status = participantStatusMap[id];
-  //     //   });
-  //     //   setParticipants((prev) => ({ ...prev, ...updatedParticipants }));
-  //     // } catch (err) {
-  //     //   if (err instanceof AppError) {
-  //     //     setToastMessage(err.message);
-  //     //   }
-  //     // }
-
-  //   }, [participants, participantStatusMap]);
-
-  //   const updateParticipantStatuses = (participants: ParticipantItemMap) => {
-
-  //     const updatedParticipants: ParticipantItemMap = { ...participants };
-  //     Object.entries(updatedParticipants).forEach(([id, data]) => {
-  //       if (participantStatusMap && (id in participantStatusMap)) {
-  //         if (!isEqual(updatedParticipants[id].status, participantStatusMap[id])) {
-  //             updatedParticipants[id].status = participantStatusMap[id];
-  //         }
-  //       }
-  //     });
-  //     setParticipants((prev) => ({ ...prev, ...updatedParticipants }));
-  //   }
-
   const loadMoreParticipants = async () => {
     if (!partyId || !hasMore || isLoadingMore) {
       return;
@@ -151,14 +91,17 @@ export default function ViewParticipantsScreen() {
       const { participantItems, lastVisible, hasMore } =
         await fetchParticipantsBatch(partyId, BATCH_SIZE, lastDoc);
 
-      setParticipants((prev) => ({ ...prev, ...participantItems }));
-      setLastDoc(lastVisible);
-      setHasMore(hasMore);
+      showAd(async () => {
+        setParticipants((prev) => ({ ...prev, ...participantItems }));
+        setLastDoc(lastVisible);
+        setHasMore(hasMore);
+        setIsLoadingMore(false);
+        await presenceCheck();
+      });
     } catch (err) {
       setToastMessage("Error occured loading participants. Please try again.");
-    } finally {
-      await presenceCheck();
       setIsLoadingMore(false);
+      //await presenceCheck();
     }
   };
 

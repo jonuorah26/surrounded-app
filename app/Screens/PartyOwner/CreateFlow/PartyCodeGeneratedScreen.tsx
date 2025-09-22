@@ -13,10 +13,7 @@ import { StackNavigation } from "../../_layout";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
 import { usePartyListener } from "@/app/Hooks/usePartyListener";
 import { startParty } from "@/app/Firebase/FirestoreService";
-import {
-  startParty as reduxStartParty,
-  updateModeratorPushToken,
-} from "@/app/Store/PartyReducer";
+import { startParty as reduxStartParty } from "@/app/Store/PartyReducer";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import * as Clipboard from "expo-clipboard";
 import { saveLastPartyData } from "@/app/Hooks";
@@ -31,7 +28,7 @@ function PartyCodeGeneratedScreen() {
   } = useSelector((state: RootState) => state.party);
   const proceedDisabled = participantCount < minParticipants;
   const dispatch = useDispatch<AppDispatch>();
-  const { setLoadingText, setToastMessage } = useLoadingToast();
+  const { setLoadingText, setToastMessage, showAd } = useLoadingToast();
 
   useEffect(() => {
     if (!partyId) return;
@@ -50,14 +47,18 @@ function PartyCodeGeneratedScreen() {
 
       await startParty(partyId);
       dispatch(reduxStartParty());
-      navReset({
-        index: 0,
-        routes: [{ name: NAVIGATION_LABELS.ModeratorScreen }],
+
+      showAd(() => {
+        navReset({
+          index: 0,
+          routes: [{ name: NAVIGATION_LABELS.ModeratorScreen }],
+        });
+        setLoadingText("");
       });
     } catch (err) {
       setToastMessage("Error occured. Failed to start party.");
+      setLoadingText("");
     }
-    setLoadingText("");
   };
 
   const handleCopyCode = async () => {

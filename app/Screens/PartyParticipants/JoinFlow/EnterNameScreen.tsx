@@ -30,8 +30,8 @@ import { registerForPushNotificationsAsync } from "@/app/Firebase/Notifications"
 
 function EnterNameScreen() {
   const [name, setName] = useState("");
-  const { setLoadingText, setToastMessage } = useLoadingToast();
-  const { navigate, reset: navReset } = useNavigation<StackNavigation>();
+  const { setLoadingText, setToastMessage, showAd } = useLoadingToast();
+  const { reset: navReset } = useNavigation<StackNavigation>();
   const dispatch = useDispatch<AppDispatch>();
   const partyId = useSelector((state: RootState) => state.party.partyData.id);
 
@@ -54,9 +54,13 @@ function EnterNameScreen() {
       dispatch(updateParticipantName(name));
       dispatch(updateParticipantId(result.participantId));
       dispatch(updateParticipantCount(result.participantCount));
-      navReset({
-        index: 0,
-        routes: [{ name: NAVIGATION_LABELS.ParticipantScreen }],
+
+      showAd(() => {
+        navReset({
+          index: 0,
+          routes: [{ name: NAVIGATION_LABELS.ParticipantScreen }],
+        });
+        setLoadingText("");
       });
     } catch (err) {
       if (err instanceof AppError) {
@@ -64,8 +68,8 @@ function EnterNameScreen() {
       } else {
         setToastMessage("Error ocurred. Failed to join party.");
       }
+      setLoadingText("");
     }
-    setLoadingText("");
   };
 
   return (

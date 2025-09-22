@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Overlay from "../Overlay";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/Store/Store";
@@ -9,6 +9,7 @@ import { scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import { RemoveFromSeat } from "@/app/Firebase/FirestoreService";
 import { AppError } from "@/app/Firebase/Types";
+import { CLICK_SPAM_TIMEOUT } from "@/app/Constants";
 
 export default function InSeatOverlay() {
   const { id: participantId } = useSelector(
@@ -28,27 +29,13 @@ export default function InSeatOverlay() {
     manuallyLeft: false,
   });
 
-  // useEffect(() => {
-  //   if (!participantId) return;
-
-  //   if (participantInSeat) {
-  //     lastInSeatRef.current = {
-  //       id: participantInSeat.id,
-  //       manuallyLeft: false,
-  //     };
-  //   } else {
-  //     if (
-  //       lastInSeatRef.current.id === participantId &&
-  //       !lastInSeatRef.current.manuallyLeft
-  //     ) {
-  //       setToastMessage("You have been removed from the seat.");
-  //     }
-  //     lastInSeatRef.current = {
-  //       id: "",
-  //       manuallyLeft: false,
-  //     };
-  //   }
-  // }, [participantId, participantInSeat]);
+  const clickDataRef = useRef<{
+    count: number;
+    timeoutRef: NodeJS.Timeout | number;
+  }>({
+    count: 0,
+    timeoutRef: 0,
+  });
 
   const handleRemoveFromSeat = async () => {
     try {
@@ -69,6 +56,22 @@ export default function InSeatOverlay() {
     setLoadingText("");
   };
 
+  const handeleTapSpam = () => {
+    const clickData = clickDataRef.current;
+
+    ++clickData.count;
+    console.log("count:", clickData.count);
+    if (clickData.count === 1) {
+      clickData.timeoutRef = setTimeout(() => {
+        clickData.count = 0;
+      }, CLICK_SPAM_TIMEOUT);
+    } else if (clickData.count > 3) {
+      alert(`Press and hold to leave the seat`);
+      clickData.count = 0;
+      clearTimeout(clickData.timeoutRef);
+    }
+  };
+
   return (
     showOverlay && (
       <View
@@ -81,6 +84,7 @@ export default function InSeatOverlay() {
         <Button
           text="Leave Seat"
           onLongPress={handleRemoveFromSeat}
+          onPress={handeleTapSpam}
           styles={{
             button: {
               zIndex: 10,

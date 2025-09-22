@@ -23,7 +23,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
   const {
     navigation: { reset: navReset, navigate },
   } = props;
-  const { setLoadingText, setToastMessage } = useLoadingToast();
+  const { setLoadingText, setToastMessage, showAd } = useLoadingToast();
   const [seePartyCode, setSeePartyCode] = useState(false);
 
   const handleEndParty = () => {
@@ -38,16 +38,20 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             //reset entire state
             dispatch(reset());
             clearLastPartyData();
-            navReset({
-              index: 0,
-              routes: [{ name: NAVIGATION_LABELS.Start }],
+
+            showAd(() => {
+              navReset({
+                index: 0,
+                routes: [{ name: NAVIGATION_LABELS.Start }],
+              });
+              setLoadingText("");
             });
           } catch (err) {
             setToastMessage(
               "Error occured attempting to end party. Please try again."
             );
+            setLoadingText("");
           }
-          setLoadingText("");
         },
         style: "destructive",
       },

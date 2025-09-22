@@ -17,7 +17,7 @@ export const ExitToStart = () => {
   const router = useNavigation<StackNavigation>();
   const partyId = useSelector((state: RootState) => state.party.partyData.id);
   const dispatch = useDispatch<AppDispatch>();
-  const { setLoadingText, setToastMessage } = useLoadingToast();
+  const { setLoadingText, setToastMessage, showAd } = useLoadingToast();
 
   const handleExit = () => {
     Alert.alert(
@@ -33,14 +33,18 @@ export const ExitToStart = () => {
               await endParty(partyId);
               dispatch(reset());
               clearLastPartyData();
-              router.reset({
-                index: 0,
-                routes: [{ name: NAVIGATION_LABELS.Start }],
+
+              showAd(() => {
+                router.reset({
+                  index: 0,
+                  routes: [{ name: NAVIGATION_LABELS.Start }],
+                });
+                setLoadingText("");
               });
             } catch (err) {
               setToastMessage("Error occured. Failed to end party.");
+              setLoadingText("");
             }
-            setLoadingText("");
           },
           style: "destructive",
         },

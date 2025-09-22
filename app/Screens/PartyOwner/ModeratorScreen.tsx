@@ -37,6 +37,7 @@ import { saveLastPartyData, useThreshold } from "@/app/Hooks";
 import { DrawerNavProps } from "@/app/Types";
 import { RemoveFromSeat } from "@/app/Firebase/FirestoreService";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
+import { CLICK_SPAM_TIMEOUT } from "@/app/Constants";
 //import { Pressable } from "react-native-gesture-handler";
 
 type ButtonType = "reset" | "pause" | "";
@@ -78,7 +79,7 @@ function ModeratorScreen() {
     return baseSize / Math.max(1, maxLen * 0.4); // Adjust divisor for fine-tuning
   };
 
-  const [clickData, setClickData] = useState<{
+  const clickDataRef = useRef<{
     count: number;
     timeoutRef: NodeJS.Timeout | number;
     buttonType: ButtonType;
@@ -89,52 +90,38 @@ function ModeratorScreen() {
   });
 
   const handeleTapSpam = (buttonType: ButtonType) => {
-    setClickData((prev) => {
-      if (prev.buttonType !== "" && buttonType !== prev.buttonType) {
-        prev.count = 0;
-        prev.buttonType = buttonType;
-        clearTimeout(prev.timeoutRef);
-        return prev;
-      }
+    const clickData = clickDataRef.current;
 
-      ++prev.count;
-      console.log("count:", prev.count);
-      if (prev.count === 1) {
-        prev.buttonType = buttonType;
-        prev.timeoutRef = setTimeout(() => {
-          setClickData((prev) => ({ ...prev, count: 0, buttonType: "" }));
-        }, 5000);
-      } else if (prev.count > 3) {
-        alert(
-          `press and hold to ${
-            prev.buttonType === "pause"
-              ? isPaused
-                ? "unpause"
-                : "pause"
-              : "reset"
-          }`
-        );
-        prev.count = 0;
-        prev.buttonType = "";
-        clearTimeout(prev.timeoutRef);
-      }
+    if (clickData.buttonType !== "" && buttonType !== clickData.buttonType) {
+      clickData.count = 0;
+      clickData.buttonType = buttonType;
+      clearTimeout(clickData.timeoutRef);
+      return clickData;
+    }
 
-      return prev;
-    });
+    ++clickData.count;
+    console.log("count:", clickData.count);
+    if (clickData.count === 1) {
+      clickData.buttonType = buttonType;
+      clickData.timeoutRef = setTimeout(() => {
+        clickData.count = 0;
+        clickData.buttonType = "";
+      }, CLICK_SPAM_TIMEOUT);
+    } else if (clickData.count > 3) {
+      alert(
+        `Press and hold to ${
+          clickData.buttonType === "pause"
+            ? isPaused
+              ? "unpause"
+              : "pause"
+            : "reset"
+        }`
+      );
+      clickData.count = 0;
+      clickData.buttonType = "";
+      clearTimeout(clickData.timeoutRef);
+    }
   };
-
-  // const handlePress = () => {
-  //   openDrawer();
-  // };
-
-  // const handlePause = () => {
-  //   console.log("pressed");
-  //   if (!isPaused) {
-  //     setControl("pause");
-  //   } else {
-  //     setControl("unpause");
-  //   }
-  // };
 
   const handleRemoveFromSeat = async () => {
     try {

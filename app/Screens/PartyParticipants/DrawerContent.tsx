@@ -32,7 +32,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
   const {
     navigation: { reset: navReset, closeDrawer },
   } = props;
-  const { setLoadingText, setToastMessage } = useLoadingToast();
+  const { setLoadingText, setToastMessage, showAd } = useLoadingToast();
 
   const handleLeaveParty = () => {
     Alert.alert("Alert", "Are you sure you want to leave the party?", [
@@ -47,16 +47,20 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             dispatch(partyReset());
             dispatch(participantReset());
             clearLastPartyData();
-            navReset({
-              index: 0,
-              routes: [{ name: NAVIGATION_LABELS.Start }],
+
+            showAd(() => {
+              navReset({
+                index: 0,
+                routes: [{ name: NAVIGATION_LABELS.Start }],
+              });
+              setLoadingText("");
             });
           } catch (err) {
             setToastMessage(
               "Error occured attempting to leaving party. Please try again."
             );
+            setLoadingText("");
           }
-          setLoadingText("");
         },
         style: "destructive",
       },

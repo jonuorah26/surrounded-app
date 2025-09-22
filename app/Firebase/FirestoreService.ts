@@ -204,16 +204,20 @@ export const createParty = async (
   partyData: PartyData,
   moderatorPushToken: string | null
 ) => {
-  const partyCode = await generatePartyCode();
-  var partyRef = doc(collection(db, PARTIES));
-  const partyId = `party_${partyRef.id}`;
-
-  partyData.id = partyId;
-  partyData.partyCode = partyCode;
-
-  partyRef = doc(db, PARTIES, partyId);
-
   try {
+    if (moderatorPushToken === null) {
+      throw new AppError("Push token is null");
+    }
+
+    const partyCode = await generatePartyCode();
+    var partyRef = doc(collection(db, PARTIES));
+    const partyId = `party_${partyRef.id}`;
+
+    partyData.id = partyId;
+    partyData.partyCode = partyCode;
+
+    partyRef = doc(db, PARTIES, partyId);
+
     await setDoc(partyRef, {
       ...partyData,
       createdAt: new Date(),
@@ -260,15 +264,7 @@ export const updatePushToken = async (
 ) => {
   try {
     if (token === null) {
-      if (
-        isDevice &&
-        Platform.OS !==
-          "ios" /**FIXME: Remove platform condition once iOS push is set up */
-      ) {
-        throw new AppError("Push token is null");
-      } else {
-        return;
-      }
+      throw new AppError("Push token is null");
     }
 
     const partyRef = doc(db, PARTIES, partyId);

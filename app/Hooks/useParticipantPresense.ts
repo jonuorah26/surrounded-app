@@ -13,10 +13,7 @@ import { rtDb } from "../Firebase/FirebaseConfig";
 import { useLoadingToast } from "../Context/LoadingToastContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { AppError } from "../Firebase/Types";
-
-const ONE_MIN = 60000;
-const ONE_HOUR = ONE_MIN * 60;
-const ONE_DAY = ONE_HOUR * 24;
+import { ONE_DAY, ONE_HOUR, ONE_MIN } from "../Constants";
 
 // For each participant, create a listener like this:
 const unsubscribeListeners: Record<string, Function> = {};
@@ -50,7 +47,7 @@ export const useParticipantPresence = (
         const now = Date.now();
 
         snapshot.forEach((doc) => {
-          const participantId = doc.key;
+          const participantId = doc.key ?? "";
           if (!(participantId in prev)) return;
 
           const presence = doc.val() as ParticipantPresence;

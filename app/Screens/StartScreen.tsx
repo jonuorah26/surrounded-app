@@ -11,6 +11,7 @@ import { RootState } from "../Store/Store";
 import { useEffect } from "react";
 import { scaleHeight } from "../Constants";
 import Logo from "../Components/Logo";
+
 const CREATE = "create-party";
 const JOIN = "join-party";
 
@@ -19,6 +20,7 @@ export default function Start() {
   const { setUserType } = useUserTypeContext();
   const party = useSelector((state: RootState) => state.party);
   const participant = useSelector((state: RootState) => state.participant);
+  //const { showAd } = useLoadingToast();
 
   useEffect(() => {
     console.log("Party Reducer:", party);
@@ -28,9 +30,11 @@ export default function Start() {
   const handlePress = (id: typeof JOIN | typeof CREATE) => {
     if (id === CREATE) {
       setUserType("moderator");
+      //showAd(() => navigate(NAVIGATION_LABELS.ChooseFlagSystem));
       navigate(NAVIGATION_LABELS.ChooseFlagSystem);
     } else {
       setUserType("participant");
+      //showAd(() => navigate(NAVIGATION_LABELS.EnterCode));
       navigate(NAVIGATION_LABELS.EnterCode);
     }
   };
