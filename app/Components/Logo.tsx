@@ -1,9 +1,16 @@
 import React from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
+import { View, StyleSheet, Text, Image, Platform } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { fontStyles } from "../Constants/GenericStyles";
-import { scaleArea, scaleHeight, scaleWidth } from "../Constants/Dimensions";
-import { TITLE } from "../Constants";
+import {
+  rem,
+  SA,
+  scaleArea,
+  scaleHeight,
+  scaleWidth,
+  SW,
+} from "../Constants/Dimensions";
+import { MOBILE_OS, TITLE } from "../Constants";
 
 function Logo() {
   return (
@@ -46,8 +53,8 @@ const styles = StyleSheet.create({
   logo: {
     //width: 200, // Diameter of the circle
     //height: 200, // Diameter of the circle
-    width: scaleArea(350),
-    height: scaleArea(350),
+    width: Platform.OS in MOBILE_OS ? scaleArea(350) : rem(32),
+    height: Platform.OS in MOBILE_OS ? scaleArea(350) : rem(32),
   },
   logoText: {
     fontSize: fontStyles.large.fontSize,

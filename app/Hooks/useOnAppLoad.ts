@@ -23,6 +23,7 @@ import {
 
 import { registerForPushNotificationsAsync } from "../Firebase/Notifications";
 import { Platform } from "react-native";
+import { MOBILE_OS } from "../Constants";
 
 export const STORAGE_KEY = "lastSavedPartyData";
 
@@ -46,9 +47,15 @@ const testLastSaved: LastSavedPartyData = {
 
 export const saveLastPartyData = async (data: LastSavedPartyData) => {
   try {
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    const json = await AsyncStorage.getItem(STORAGE_KEY);
-    console.log("AsyncStorage.getItem(STORAGE_KEY):", json);
+    if (Platform.OS in MOBILE_OS) {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      const json = await AsyncStorage.getItem(STORAGE_KEY);
+      console.log("AsyncStorage.getItem(STORAGE_KEY):", json);
+    } else if (Platform.OS === "web") {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      const json = localStorage.getItem(STORAGE_KEY);
+      console.log("localStorage.getItem(STORAGE_KEY):", json);
+    }
   } catch (e) {
     //console.error("Error saving party data:", e);
     throw e;
@@ -58,7 +65,13 @@ export const saveLastPartyData = async (data: LastSavedPartyData) => {
 export const loadLastPartyData =
   async (): Promise<LastSavedPartyData | null> => {
     try {
-      const json = await AsyncStorage.getItem(STORAGE_KEY);
+      var json: string | null = "";
+      if (Platform.OS in MOBILE_OS) {
+        json = await AsyncStorage.getItem(STORAGE_KEY);
+      } else if (Platform.OS === "web") {
+        json = localStorage.getItem(STORAGE_KEY);
+      }
+
       return json ? JSON.parse(json) : null;
     } catch (e) {
       // console.error("Error loading party data:", e);
@@ -69,7 +82,11 @@ export const loadLastPartyData =
 
 export const clearLastPartyData = async () => {
   try {
-    await AsyncStorage.removeItem(STORAGE_KEY);
+    if (Platform.OS in MOBILE_OS) {
+      await AsyncStorage.removeItem(STORAGE_KEY);
+    } else if (Platform.OS === "web") {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   } catch (e) {
     //console.error("Error clearing party data:", e);
     throw e;

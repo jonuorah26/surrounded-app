@@ -2,12 +2,18 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
+import { MOBILE_OS } from "../Constants";
 
 export async function registerForPushNotificationsAsync(): Promise<
   string | null
 > {
-  if (Platform.OS === "ios" || !Device.isDevice) {
-    return "MockTocken"; //FIXME: remove once iOS notifications implemented
+  if (
+    !(Platform.OS in MOBILE_OS) ||
+    !Device.isDevice ||
+    Platform.OS ===
+      "ios" /* FIXME: remove ios condition once iOS notifications implemented */
+  ) {
+    return "N/A";
   }
 
   let token: string | null = null;

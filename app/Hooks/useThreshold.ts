@@ -2,6 +2,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../Store/Store";
 import { useEffect, useState } from "react";
 import { useUserTypeContext } from "../Context/UserTypeContext";
+import { useDialog } from "../Context/DialogContext";
+import { Platform } from "react-native";
+import { MOBILE_OS } from "../Constants";
 
 export const useThreshold = () => {
   const {
@@ -17,6 +20,12 @@ export const useThreshold = () => {
   const [threshold, setThreshold] = useState<number | null>(null);
   const [thresholdReached, setThresholdReached] = useState(false);
   const { userType } = useUserTypeContext();
+
+  const { dialog } = useDialog();
+  const alert =
+    Platform.OS in MOBILE_OS
+      ? window.alert
+      : (msg: string) => dialog("Alert", msg);
 
   useEffect(() => {
     var updatedThreshold = threshold;

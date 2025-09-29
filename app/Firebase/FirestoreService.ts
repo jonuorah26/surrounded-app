@@ -202,7 +202,7 @@ export const startParty = async (partyId: string) => {
 
 export const createParty = async (
   partyData: PartyData,
-  moderatorPushToken: string | null
+  moderatorPushToken: string | null = "N/A"
 ) => {
   try {
     if (moderatorPushToken === null) {

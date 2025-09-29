@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions } from "react-native";
+import { Dimensions, PixelRatio, Platform } from "react-native";
 
 // Base dimensions from a standard device (e.g., iPhone 11: 414 x 896)
 const BASE_WIDTH = 414;
@@ -8,9 +8,9 @@ const BASE_HEIGHT = 896;
 const { width, height } = Dimensions.get("window");
 //const { width, height } = Dimensions.get("screen");
 
-// export const SH = (n: number) => height * n;
-// export const SW = (n: number) => width * n;
-// export const SA = (n: number) => height * width * n;
+export const SH = (n: number) => height * n;
+export const SW = (n: number) => width * n;
+export const SA = (n: number) => height * width * n;
 
 // Scale factor based on width
 export const scaleWidth = (size: number) => (width / BASE_WIDTH) * size;
@@ -27,3 +27,15 @@ export const scaleArea = (size: number) => {
 
 export const scaleFont = (size: number) =>
   Math.sqrt((width * height) / (BASE_WIDTH * BASE_HEIGHT)) * size;
+
+// Set a base font size (like the browser default)
+const BASE_REM = 16;
+
+export const rem = (multiplier: number) => {
+  if (Platform.OS === "web") {
+    // On web, return real rem CSS unit
+    return `${multiplier}rem`;
+  }
+  // On native, scale numerically
+  return PixelRatio.getFontScale() * BASE_REM * multiplier;
+};
