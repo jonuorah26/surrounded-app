@@ -5,6 +5,7 @@ import { useUserTypeContext } from "../Context/UserTypeContext";
 import { useDialog } from "../Context/DialogContext";
 import { Platform } from "react-native";
 import { MOBILE_OS } from "../Constants";
+import { playAlarm } from "../Utilities";
 
 export const useThreshold = () => {
   const {
@@ -53,9 +54,13 @@ export const useThreshold = () => {
 
       if (!prev && flagsRaisedCount >= threshold) {
         if (userType === "moderator") {
+          playAlarm();
           alert("Threshold Reached!");
         } else {
-          if (participantId === participantInSeat?.lastInSeat?.id) {
+          if (
+            participantInSeat.seatFilled &&
+            participantId === participantInSeat?.lastInSeat?.id
+          ) {
             alert("You have been voted out!");
           }
         }
@@ -70,6 +75,7 @@ export const useThreshold = () => {
     participantCount,
     participantId,
     participantInSeat?.lastInSeat?.id,
+    participantInSeat?.seatFilled,
   ]);
 
   return { threshold, thresholdReached };

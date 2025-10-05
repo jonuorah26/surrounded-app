@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/Store/Store";
 import { updateAllowParticipantsDuringSessionOption } from "@/app/Store/PartyReducer";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
+import { rem } from "@/app/Constants";
 
 function AllowParticipantsDuringSession() {
   const { navigate } = useNavigation<StackNavigation>();
@@ -21,16 +22,28 @@ function AllowParticipantsDuringSession() {
     navigate(NAVIGATION_LABELS.Threshold);
   };
   return (
-    <View style={generic.container}>
-      <FlagIndicator color={Colors.red} useRounded={false} />
+    <View style={[generic.container]}>
+      <FlagIndicator
+        color={Colors.red}
+        useRounded={false}
+        id="flag-indicator-allow"
+      />
 
       <View>
         <Text style={styles.title}>
           Allow More Participants During Session?
         </Text>
         <View>
-          <Button text="No" onPress={() => handleContinue(false)} />
-          <Button text="Yes" onPress={() => handleContinue(true)} />
+          <Button
+            styles={{ button: styles.button }}
+            text="No"
+            onPress={() => handleContinue(false)}
+          />
+          <Button
+            styles={{ button: styles.button }}
+            text="Yes"
+            onPress={() => handleContinue(true)}
+          />
         </View>
       </View>
     </View>
@@ -42,7 +55,13 @@ export default AllowParticipantsDuringSession;
 const styles = StyleSheet.create({
   title: {
     ...generic.title,
+    fontSize: rem(3),
     textAlign: "center",
     bottom: 40,
+  },
+  button: {
+    width: "100%",
+    alignSelf: "center",
+    maxWidth: "1000px" as any,
   },
 });

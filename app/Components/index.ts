@@ -10,3 +10,4 @@ export { default as PlaceholderLogo } from "./PlaceholderLogo";
 export { default as ThresholdIndicator } from "./ThresholdIndicator";
 export * from "./Moderator";
 export * from "./Participant";
+export { default as CustomDialog } from "./CustomDialog";

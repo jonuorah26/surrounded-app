@@ -8,20 +8,34 @@ type Props = {
   title?: string;
   message?: string;
   buttons?: AlertButton[];
+  manual?: {
+    isOpen: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  };
 };
 
-export default function CustomDialog({ title, message, buttons }: Props) {
-  const { clear, isOpen } = useDialog();
+export default function CustomDialog({
+  title,
+  message,
+  buttons,
+  manual,
+}: Props) {
+  const { clear, isOpen: dialogOpen } = useDialog();
 
-  React.useEffect(() => {
-    if (isOpen) console.log("dialog open");
-  }, [isOpen]);
+  const dismissAction =
+    manual === undefined ? clear : () => manual.setOpen(false);
+  const isOpen = manual === undefined ? dialogOpen : manual.isOpen;
 
   return (
     <Dialog
       visible={isOpen}
-      onDismiss={clear}
-      style={{ backgroundColor: Colors.drawerBackgroundColor }}
+      onDismiss={dismissAction}
+      style={{
+        backgroundColor: Colors.drawerBackgroundColor,
+        maxWidth: "1000px" as any,
+        width: "95%",
+        alignSelf: "center",
+      }}
     >
       <Dialog.Title style={{ color: Colors.culturedWhite }}>
         {title}
@@ -33,14 +47,10 @@ export default function CustomDialog({ title, message, buttons }: Props) {
         {buttons?.length ? (
           buttons.map((button) => (
             <Button
-              onPress={() =>
-                button.onPress
-                  ? () => {
-                      button.onPress?.();
-                      clear();
-                    }
-                  : clear()
-              }
+              onPress={() => {
+                button.onPress?.();
+                dismissAction();
+              }}
               textColor={
                 button.style === "destructive" ? Colors.buzzerRed : Colors.blue
               }
@@ -49,7 +59,7 @@ export default function CustomDialog({ title, message, buttons }: Props) {
             </Button>
           ))
         ) : (
-          <Button onPress={() => clear()}>OK</Button>
+          <Button onPress={dismissAction}>OK</Button>
         )}
       </Dialog.Actions>
     </Dialog>

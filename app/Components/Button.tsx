@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2, // Subtle shadow
     shadowRadius: 6,
     elevation: 5, // For Android shadow
+    justifyContent: "center",
   },
   buttonText: {
     color: Colors.white,

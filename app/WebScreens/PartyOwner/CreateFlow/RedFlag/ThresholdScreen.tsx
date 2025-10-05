@@ -89,7 +89,11 @@ function ThresholdScreen() {
   return (
     <View style={[generic.container]}>
       <View style={{ flex: 1 }}>
-        <FlagIndicator color={Colors.red} useRounded={false} />
+        <FlagIndicator
+          color={Colors.red}
+          useRounded={false}
+          id="flag-indicator-threshold"
+        />
       </View>
       <View style={{ flex: 20, zIndex: 2, elevation: 2 }}>
         <KeyboardAwareScrollView

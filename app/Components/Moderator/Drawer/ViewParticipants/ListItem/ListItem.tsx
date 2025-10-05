@@ -1,6 +1,17 @@
 import { Colors } from "@/app/Constants/Colors";
-import { scaleArea, scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
-import { View, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import {
+  rem,
+  scaleArea,
+  scaleHeight,
+  scaleWidth,
+} from "@/app/Constants/Dimensions";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Platform,
+} from "react-native";
 import {
   Avatar,
   Button,
@@ -13,7 +24,7 @@ import {
 import Divider from "../../../../Divider";
 import { fontStyles } from "@/app/Constants/GenericStyles";
 import { ParticipantItem } from "@/app/Types";
-import { PRESENCE_STATUS_COLORS } from "@/app/Constants";
+import { MOBILE_OS, PRESENCE_STATUS_COLORS } from "@/app/Constants";
 import { leaveParty } from "@/app/Firebase/FirestoreService";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/Store/Store";
@@ -22,6 +33,8 @@ import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import { Ref, useRef, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ListItemModal } from "./ListItemModal";
+import { useDialog } from "@/app/Context/DialogContext";
+import { useDoubleTap } from "@/app/Hooks";
 
 export const ParticipantListItem = ({
   id,
@@ -109,6 +122,88 @@ export const ParticipantListItem = ({
   );
 };
 
+export const ParticipantListItemWeb = ({ item }: { item: ParticipantItem }) => {
+  const { id, isDisabled, flagRaised, name, status } = item;
+  const { participantInSeat } = useSelector(
+    (state: RootState) => state.party.partyData
+  );
+  const isInSeat =
+    participantInSeat.seatFilled && participantInSeat.lastInSeat?.id === id;
+  const ref = useRef<View | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleDoubleClick = useDoubleTap(() => setModalOpen(true));
+
+  return (
+    <>
+      <div onClick={handleDoubleClick}>
+        <List.Item
+          ref={ref}
+          style={{
+            backgroundColor: Colors.drawerBackgroundColor,
+            borderBottomColor: Colors.disabledGray,
+            borderBottomWidth: scaleHeight(1.5),
+          }}
+          title={
+            <View>
+              <Text
+                style={{
+                  color: Colors.culturedWhite,
+                  fontSize: fontStyles.xsmall.fontSize,
+                }}
+              >
+                {name}
+              </Text>
+              {status.status !== "" && status.status !== "active" && (
+                <Text
+                  style={{
+                    color: Colors.secondaryText,
+                    fontSize: fontStyles.xxsmall.fontSize,
+                  }}
+                >
+                  {`${status.lastSeen}`}
+                </Text>
+              )}
+            </View>
+          }
+          description={
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                gap: scaleWidth(5),
+                flexWrap: "wrap",
+              }}
+            >
+              {flagRaised && <FlagRaisedChip />}
+              {isDisabled && <DisabledChip />}
+              {isInSeat && <InSeatChip />}
+            </View>
+          }
+          left={() => (
+            <View style={styles.avatarWrapper}>
+              <Avatar.Icon
+                size={scaleArea(50)}
+                icon="account"
+                color={Colors.yellow}
+                style={{ backgroundColor: Colors.blue }}
+              />
+              {status.status !== "" && (
+                <View
+                  style={[
+                    styles.statusDot,
+                    { backgroundColor: PRESENCE_STATUS_COLORS[status.status] },
+                  ]}
+                />
+              )}
+            </View>
+          )}
+        />
+      </div>
+      <ListItemModal item={item} setOpen={setModalOpen} open={modalOpen} />
+    </>
+  );
+};
+
 const FlagRaisedChip = () => (
   <View>
     <Chip
@@ -144,6 +239,38 @@ const FlagRaisedChip = () => (
     >
       Flag Raised
     </Chip>
+  </View>
+);
+
+const FlagRaisedChipWeb = () => (
+  <View
+    style={{
+      backgroundColor: Colors.buzzerRedWithOpacity,
+      borderWidth: 1,
+      borderColor: Colors.buzzerRed,
+      marginTop: scaleHeight(5),
+      borderRadius: scaleArea(4),
+      flexDirection: "row",
+      alignItems: "center",
+    }}
+  >
+    <Avatar.Icon
+      size={rem(1.8)}
+      icon="flag-outline"
+      color={Colors.yellow} // 👈 Your custom color
+      style={{
+        backgroundColor: "transparent",
+        marginHorizontal: rem(-0.2),
+      }} // transparent bg if needed
+    />
+    <Text
+      style={{
+        color: Colors.culturedWhite,
+        paddingRight: rem(0.25),
+      }}
+    >
+      Flag Raised
+    </Text>
   </View>
 );
 
@@ -229,9 +356,11 @@ export const HiddenItems = ({ item }: { item: ParticipantItem }) => {
   );
   const { setLoadingText, setToastMessage } = useLoadingToast();
   const [modalOpen, setModalOpen] = useState(false);
+  const { dialog } = useDialog();
+  const alert = Platform.OS in MOBILE_OS ? Alert.alert : dialog;
 
   const handleRemove = async () => {
-    Alert.alert(
+    alert(
       "Alert",
       `Are you sure you want to remove "${item.name}" from the party?`,
       [

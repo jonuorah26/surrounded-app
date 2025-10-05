@@ -23,6 +23,7 @@ import { scaleHeight } from "@/app/Constants/Dimensions";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/Store/Store";
 import {
+  updateFlagSystem,
   updateMaxParticipants,
   updateMaxSameAsMinOption,
   updateMinParticipants,
@@ -101,9 +102,19 @@ function AddParticipants() {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      dispatch(updateFlagSystem(""));
+    };
+  }, []);
+
   return (
     <View style={[generic.container]}>
-      <FlagIndicator color={Colors.red} useRounded={false} />
+      <FlagIndicator
+        color={Colors.red}
+        useRounded={false}
+        id="flag-indicator-add"
+      />
       <View style={{ flex: 1, zIndex: 2, elevation: 2 }}>
         <KeyboardAwareScrollView
           contentContainerStyle={styles.scrollContainer}

@@ -7,7 +7,13 @@ import { AppDispatch, RootState } from "@/app/Store/Store";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  DimensionValue,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { StackNavigation } from "../../RootStack";
 import { NAVIGATION_LABELS } from "@/app/Constants/Navigation";
@@ -17,6 +23,7 @@ import { startParty as reduxStartParty } from "@/app/Store/PartyReducer";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import * as Clipboard from "expo-clipboard";
 import { saveLastPartyData } from "@/app/Hooks";
+import { rem, scaleWidth } from "@/app/Constants";
 
 function PartyCodeGeneratedScreen() {
   usePartyListener();
@@ -95,7 +102,7 @@ function PartyCodeGeneratedScreen() {
               >
                 <MaterialIcons
                   name="content-copy"
-                  size={fontStyles.large.fontSize + 5}
+                  size={fontStyles.large.fontSize}
                 />
               </TouchableOpacity>
             </View>
@@ -129,7 +136,7 @@ function PartyCodeGeneratedScreen() {
           </View>
         </View>
       </View>
-      <View style={{ flex: 5, justifyContent: "flex-start" }}>
+      <View style={{ flex: 4 }}>
         <Button
           text="Enter Session"
           onPress={handleProceed}
@@ -138,6 +145,9 @@ function PartyCodeGeneratedScreen() {
             button: {
               ...styles.proceedButton,
               opacity: proceedDisabled ? 0.5 : 1,
+            },
+            buttonText: {
+              fontSize: rem(2),
             },
           }}
           disabled={proceedDisabled}
@@ -157,12 +167,14 @@ const styles = StyleSheet.create({
   },
   partyCodeHeader: {
     ...generic.title,
+    fontSize: rem(2.6),
     //bottom: "13%",
   },
   codeContainer: {
+    width: "20rem" as DimensionValue,
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: "2%",
+    paddingVertical: rem(0.8),
     backgroundColor: Colors.white,
     borderRadius: 10,
     justifyContent: "center",
@@ -172,7 +184,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   codeText: {
-    fontSize: fontStyles.large.fontSize + 5,
+    //fontSize: fontStyles.large.fontSize + 5,
+    fontSize: rem(2.6),
     fontWeight: fontStyles.large.fontWeight,
     //marginRight: 10,
     marginRight: "4%",
@@ -187,7 +200,8 @@ const styles = StyleSheet.create({
     color: Colors.white,
     //alignSelf: "center",
     top: "8%",
-    fontSize: fontStyles.xsmall.fontSize,
+    //fontSize: fontStyles.xsmall.fontSize,
+    fontSize: rem(1.5),
     marginHorizontal: "10%",
     //fontWeight: "600",
   },
@@ -198,24 +212,28 @@ const styles = StyleSheet.create({
   },
   waitingForParticipantsText: {
     color: Colors.white,
-    fontSize: fontStyles.medium.fontSize,
+    //fontSize: fontStyles.medium.fontSize,
+    fontSize: rem(2.4),
     fontWeight: fontStyles.medium.fontWeight,
     //marginBottom: 20,
   },
   participantsJoinedNum: {
     color: Colors.white,
-    fontSize: fontStyles.large.fontSize,
+    //fontSize: fontStyles.large.fontSize,
+    fontSize: rem(3),
     fontWeight: fontStyles.medium.fontWeight,
     //marginBottom: 10,
   },
   participantsJoinedText: {
     color: Colors.white,
-    fontSize: fontStyles.medium.fontSize,
+    //fontSize: fontStyles.medium.fontSize,
+    fontSize: rem(2.4),
     fontWeight: fontStyles.medium.fontWeight,
   },
 
   proceedButton: {
     alignSelf: "flex-end",
+
     //top: "20%",
   },
 });

@@ -1,9 +1,10 @@
 import React from "react";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { Platform, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Colors } from "../Constants/Colors";
 import { scaleArea, scaleHeight, scaleWidth } from "../Constants/Dimensions";
 import Svg, { Polygon } from "react-native-svg";
 import { shadow } from "react-native-paper";
+import { MOBILE_OS } from "../Constants";
 
 type Props = {
   color: string;
@@ -11,6 +12,8 @@ type Props = {
   absolute?: boolean;
   roundedBorderSide?: "left" | "right";
   useRounded?: boolean;
+  platform?: "web" | "mobile";
+  id?: string;
 };
 function FlagIndicator({
   color,
@@ -18,6 +21,7 @@ function FlagIndicator({
   absolute = true,
   roundedBorderSide = "left",
   useRounded = true,
+  id = "flag-indicator",
 }: Props) {
   var baseStyle: ViewStyle = {};
   if (useRounded) {
@@ -76,14 +80,38 @@ function FlagIndicator({
     <View style={[baseStyle, style]}></View>
   ) : (
     <View style={[baseStyle, style]}>
-      <Svg
-        height={scaleArea(100)}
-        width={scaleArea(200)}
-        style={styles.shadow}
-        //style={{ transform: [{ rotateZ: "180deg" }] }}
-      >
-        <Polygon points={points} fill={Colors.red} />
-      </Svg>
+      {Platform.OS in MOBILE_OS ? (
+        <Svg
+          height={scaleArea(100)}
+          width={scaleArea(200)}
+          style={styles.shadow}
+        >
+          <Polygon points={points} fill={Colors.red} />
+        </Svg>
+      ) : (
+        <svg
+          width={flagWidth}
+          height={flagHeight}
+          style={{ overflow: "visible" }}
+        >
+          <defs>
+            <filter id={`shadow-${id}`}>
+              <feDropShadow
+                dx="0"
+                dy="0"
+                stdDeviation="6"
+                floodColor="black"
+                floodOpacity="0.4"
+              />
+            </filter>
+          </defs>
+          <polygon
+            points={points}
+            fill={Colors.red}
+            filter={`url(#shadow-${id})`}
+          />
+        </svg>
+      )}
     </View>
   );
 }

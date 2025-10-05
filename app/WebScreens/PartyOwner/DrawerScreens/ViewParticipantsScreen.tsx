@@ -1,13 +1,18 @@
 import {
   DrawerAppBar,
   HiddenItems,
+  ListItemModal,
   ParticipantListItem,
+  ParticipantListItemWeb,
 } from "@/app/Components";
 import { Colors } from "@/app/Constants/Colors";
 import { scaleArea, scaleHeight, scaleWidth } from "@/app/Constants/Dimensions";
 import { fontStyles } from "@/app/Constants/GenericStyles";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
-import { fetchParticipantsBatch } from "@/app/Firebase/FirestoreService";
+import {
+  addMockParticipants,
+  fetchParticipantsBatch,
+} from "@/app/Firebase/FirestoreService";
 import { AppError } from "@/app/Firebase/Types";
 import { useParticipantPresence, useParticipantsListener } from "@/app/Hooks";
 import { RootState } from "@/app/Store/Store";
@@ -21,6 +26,7 @@ import {
   Text,
   SafeAreaView as RnSafeAreaView,
   Platform,
+  FlatList,
 } from "react-native";
 import {
   SafeAreaView,
@@ -136,22 +142,9 @@ export default function ViewParticipantsScreen() {
       >
         <DrawerAppBar title="Participants" />
         <View style={styles.listContainer}>
-          <SwipeListView
+          <FlatList
             data={Object.values(participants ?? {})}
-            renderItem={({ item }) => (
-              <ParticipantListItem
-                name={item.name}
-                flagRaised={item.flagRaised}
-                id={item.id}
-                isDisabled={item.isDisabled}
-                status={item.status}
-              />
-            )}
-            renderHiddenItem={({ item }) => <HiddenItems item={item} />}
-            recalculateHiddenLayout
-            disableRightSwipe
-            rightOpenValue={-150}
-            stopRightSwipe={-150}
+            renderItem={({ item }) => <ParticipantListItemWeb item={item} />}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{
               paddingBottom: insets.bottom ? insets.bottom + 20 : 0,
@@ -191,7 +184,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.drawerBackgroundColor,
     flex: 1,
   },
-  listContainer: { padding: scaleWidth(12) },
+  listContainer: { padding: scaleWidth(12), flex: 1 },
   avatarWrapper: {
     width: scaleArea(50),
     height: scaleArea(50),

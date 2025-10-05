@@ -6,7 +6,7 @@ import StartScreen from "./StartScreen";
 
 import { Colors } from "../Constants/Colors";
 
-import { ParamListBase } from "@react-navigation/native";
+import { ParamListBase, useNavigation } from "@react-navigation/native";
 
 import ModeratorDrawerNavigator from "./PartyOwner/DrawerNavigator";
 import JoinFlowScreens from "./PartyParticipants/JoinFlow/Navigation";
@@ -19,6 +19,9 @@ import LoadingOverlay from "../Components/LoadingOverlay";
 import { useOnAppLoad } from "../Hooks";
 import * as SplashScreen from "expo-splash-screen";
 import { View } from "react-native";
+import { FlagIndicator } from "../Components";
+import { useSelector } from "react-redux";
+import { RootState } from "../Store/Store";
 
 const Stack = createNativeStackNavigator();
 export type StackNavigation = NativeStackNavigationProp<ParamListBase>;

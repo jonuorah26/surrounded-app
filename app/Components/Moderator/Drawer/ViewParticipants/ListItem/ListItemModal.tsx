@@ -1,9 +1,12 @@
+import { CustomDialog } from "@/app/Components";
 import LoadingOverlay from "@/app/Components/LoadingOverlay";
 import Toast from "@/app/Components/Toast";
-import { Colors, scaleHeight } from "@/app/Constants";
+import { Colors, MOBILE_OS, scaleHeight } from "@/app/Constants";
+import { useDialog } from "@/app/Context/DialogContext";
 import { useLoadingToast } from "@/app/Context/LoadingToastContext";
 import {
   enterSeat,
+  leaveParty,
   modifyDisable,
   modifyFlag,
   RemoveFromSeat,
@@ -13,7 +16,7 @@ import { ParticipantSeatData } from "@/app/Store/PartyReducer";
 import { RootState } from "@/app/Store/Store";
 import { ParticipantItem } from "@/app/Types";
 import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Platform } from "react-native";
 import { Button, Modal, Portal } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
@@ -39,6 +42,8 @@ export function ListItemModal({ item, open, setOpen }: Props) {
   const isInSeat =
     participantInSeat.seatFilled &&
     participantInSeat.lastInSeat?.id === item.id;
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { setToastMessage: setContextToast } = useLoadingToast();
 
   const handleDisable = async (isDisabled: boolean) => {
     try {
@@ -159,6 +164,14 @@ export function ListItemModal({ item, open, setOpen }: Props) {
           >
             {isInSeat ? "Remove from Seat" : "Put in Seat"}
           </Button>
+          {!(Platform.OS in MOBILE_OS) && (
+            <Button
+              onPress={() => setDialogOpen(true)}
+              textColor={Colors.buzzerRed}
+            >
+              Remove from Party
+            </Button>
+          )}
           <Button onPress={() => setOpen(false)} textColor={Colors.cancelGray}>
             Cancel
           </Button>
@@ -167,6 +180,44 @@ export function ListItemModal({ item, open, setOpen }: Props) {
       <>
         <Toast message={toastMsg} setMessage={setToastMessage} />
         <LoadingOverlay loadingText={loadingText} />
+        {!(Platform.OS in MOBILE_OS) && (
+          <CustomDialog
+            title="Alert"
+            message={`Are you sure you want to remove "${item.name}" from the party?`}
+            buttons={[
+              {
+                text: "Yes",
+                onPress: async () => {
+                  try {
+                    //console.log("Remove", item.id);
+                    //debugger;
+                    setLoadingText("Removing participant");
+                    setContextToast("");
+                    setToastMessage("");
+                    await leaveParty(partyId, item.id);
+                    setContextToast("Participant removed!");
+                  } catch (err) {
+                    if (err instanceof AppError) {
+                      setToastMessage(err.message);
+                    } else {
+                      setToastMessage(
+                        "Error occured. Failed to remove participant."
+                      );
+                    }
+                  } finally {
+                    setLoadingText("");
+                  }
+                },
+                style: "destructive",
+              },
+              {
+                text: "No",
+                style: "cancel",
+              },
+            ]}
+            manual={{ isOpen: dialogOpen, setOpen: setDialogOpen }}
+          />
+        )}
       </>
     </Portal>
   );

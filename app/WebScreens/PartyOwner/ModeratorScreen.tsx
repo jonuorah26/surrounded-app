@@ -197,10 +197,10 @@ function ModeratorScreen() {
           </View>
           <View /* "Who's in Seat" and Flag raise count */
             style={{
-              flexDirection: "row",
+              //flexDirection: "row",
               flex: 7.8,
-              marginLeft: scaleWidth(20),
-              //gap: 5,
+              marginLeft: scaleWidth(10),
+              gap: scaleHeight(30),
             }}
             id="inSeat-flagRaiseCount"
             key="inSeat-flagRaiseCount"
@@ -291,9 +291,9 @@ function ModeratorScreen() {
               <View /*Flag Raise Count */
                 style={{
                   flex: 5,
-                  alignSelf: "flex-end",
+                  alignSelf: "center",
                   alignItems: "center",
-                  right: scaleWidth(45),
+                  //right: scaleWidth(45),
                 }}
               >
                 <View
@@ -322,7 +322,7 @@ function ModeratorScreen() {
                     </Text>
                   </View>
                 </View>
-                <View style={{}}>
+                <View>
                   <Text
                     style={{
                       fontSize: fontStyles.large.fontSize,
@@ -470,5 +470,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "80%",
     textAlign: "center",
+    paddingVertical: scaleHeight(5),
   },
 });

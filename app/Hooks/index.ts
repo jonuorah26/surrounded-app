@@ -7,3 +7,4 @@ export * from "./useOnAppLoad";
 export * from "./useParticipantPresense";
 export * from "./useParticipantsListener";
 export * from "./useAds";
+export * from "./useDoubleTap";

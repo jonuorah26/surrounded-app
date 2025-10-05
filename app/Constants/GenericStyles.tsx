@@ -1,6 +1,7 @@
-import { StyleSheet, TextStyle } from "react-native";
+import { Platform, StyleSheet, TextStyle } from "react-native";
 import { Colors } from "./Colors";
-import { scaleFont } from "./Dimensions";
+import { rem, scaleFont } from "./Dimensions";
+import { MOBILE_OS } from ".";
 
 const basic: TextStyle = {
   color: Colors.white,
