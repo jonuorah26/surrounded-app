@@ -28,8 +28,8 @@ const app = initializeApp(firebaseConfig);
 //const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 //const analytics = getAnalytics(app);
 
-const db = getFirestore(app);
-const rtDb = getDatabase(app);
+const db = typeof window !== "undefined" ? getFirestore(app) : ({} as any);
+const rtDb = typeof window !== "undefined" ? getDatabase(app) : ({} as any);
 //const messaging = getMessaging(app);
 
 export { /*auth,*/ db, rtDb };

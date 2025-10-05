@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "predeploy": "npx expo export --platform web",
+    "predeploy": "PUBLIC_URL=/surrounded-app npx expo export --platform web",
     "deploy": "gh-pages -d dist"
   },
   "jest": {

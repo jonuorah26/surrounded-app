@@ -35,6 +35,16 @@ export default {
         backgroundColor: "#1e90ff",
       },
     },
+    web: {
+      output: "static",
+      publicPath: "/surrounded-app/",
+      build: {
+        publicPath: process.env.PUBLIC_URL || "/",
+      },
+      config: {
+        basename: "/surrounded-app",
+      },
+    },
     splash: {
       image: "./assets/images/splash.png",
       resizeMode: "contain", // or "cover"

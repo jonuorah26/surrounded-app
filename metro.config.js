@@ -1,37 +1,27 @@
-// // metro.config.js
-// const { getDefaultConfig } = require("expo/metro-config");
-
-// const config = getDefaultConfig(__dirname);
-
-// config.resolver.alias = {
-//   "@": __dirname,
-// };
-
-// // -----------------------------------------------------------------------------
-// // Firebase / Expo SDK 53: allow “.cjs” files and use classic Node “exports”
-// // resolution so Firebase sub‑packages are bundled correctly.
-// // -----------------------------------------------------------------------------
-// config.resolver.sourceExts = ["ts", "tsx", "js", "jsx", "cjs", "json"];
-// config.resolver.sourceExts = config.resolver.sourceExts || [];
-// if (!config.resolver.sourceExts.includes("cjs")) {
-//   config.resolver.sourceExts.push("cjs");
-// }
-
-// // Disable the new, stricter “package.json exports” resolution until every
-// // dependency (Firebase, React‑Native‑WebView, etc.) ships full export maps.
-// config.resolver.unstable_enablePackageExports = false;
-
-// // -----------------------------------------------------------------------------
-// // That’s it – export the tweaked config.
-// // -----------------------------------------------------------------------------
-// module.exports = config;
-
 // metro.config.js
 const { getDefaultConfig } = require("expo/metro-config");
 const exclusionList = require("metro-config/src/defaults/exclusionList");
 const path = require("path");
 
 const config = getDefaultConfig(__dirname);
+
+// --- PATCH: ensure correct asset and public paths for GitHub Pages ---
+
+config.transformer = config.transformer || {};
+config.transformer.publicPath = "/surrounded-app/";
+
+// Optional local dev middleware to strip base path
+config.server = {
+  ...config.server,
+  enhanceMiddleware: (middleware) => {
+    return (req, res, next) => {
+      if (req.url.startsWith("/surrounded-app/")) {
+        req.url = req.url.replace("/surrounded-app", "");
+      }
+      return middleware(req, res, next);
+    };
+  },
+};
 
 // Allow .mjs globally (some packages need it)
 config.resolver.sourceExts = [
