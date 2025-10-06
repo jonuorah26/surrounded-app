@@ -5,24 +5,6 @@ const path = require("path");
 
 const config = getDefaultConfig(__dirname);
 
-// --- PATCH: ensure correct asset and public paths for GitHub Pages ---
-
-config.transformer = config.transformer || {};
-config.transformer.publicPath = "/surrounded-app/";
-
-// Optional local dev middleware to strip base path
-config.server = {
-  ...config.server,
-  enhanceMiddleware: (middleware) => {
-    return (req, res, next) => {
-      if (req.url.startsWith("/surrounded-app/")) {
-        req.url = req.url.replace("/surrounded-app", "");
-      }
-      return middleware(req, res, next);
-    };
-  },
-};
-
 // Allow .mjs globally (some packages need it)
 config.resolver.sourceExts = [
   "web.ts",

@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
   logo: {
     //width: 200, // Diameter of the circle
     //height: 200, // Diameter of the circle
-    width: rem(32),
-    height: rem(32),
+    width: scaleArea(400),
+    height: scaleArea(400),
     //width: Platform.OS in MOBILE_OS ? scaleArea(350) : rem(32),
     //height: Platform.OS in MOBILE_OS ? scaleArea(350) : rem(32),
   },
